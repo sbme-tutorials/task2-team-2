@@ -118,11 +118,13 @@ kidney =np.full((20,75 ), 255)
 liver=np.full((50, 35), 220)
 spleen=np.full((30, 55), 130)
 fat=np.full((10,60), 50)
+intestine=np.full((37,20), 90)
 ## adding tissues to the phantom
 Rectangle_phantom [20:40, 10:85]=kidney
 Rectangle_phantom[ 45:95, 90:125 ]=liver
 Rectangle_phantom[90:120, 20:75]=spleen
 Rectangle_phantom [5:15 ,40:100]=fat
+Rectangle_phantom [43:80 ,30:50]=intestine
 # assign T1 and T2 to each tissue 
 T1=np.full((n[2], n[2]), 0) 
 
@@ -130,24 +132,29 @@ kidneyT1 =np.full((20,75 ), 400)
 liverT1=np.full((50, 35), 400)
 spleenT1=np.full((30, 55), 550)
 fatT1=np.full((10,60), 250)
+intestineT1=np.full((37,20), 700)
 
 T1 [20:40, 10:85]=kidneyT1
 T1[ 45:95, 90:125]=liverT1
 T1[90:120,20:75]=spleenT1
 T1  [5:15 ,40:100]=fatT1
+T1  [43:80 ,30:50]=intestineT1
 #to make it able to show as image
 T1= (255*T1)/np.max(T1)
 #
 T2=np.full((n[2], n[2]) , 0)  
+
 kidneyT2 =np.full((20,75 ),  60) 
 liverT2=np.full((50, 35), 40)
 spleenT2=np.full((30, 55), 60)
 fatT2=np.full((10,60), 70)
+intestineT2=np.full((37,20), 30)
 
 T2 [20:40, 10:85]=kidneyT2
 T2[ 45:95, 90:125]=liverT2
 T2[90:120, 20:75]=spleenT2
 T2 [5:15 ,40:100]=fatT2
+T2 [43:80 ,30:50]=intestineT2
 
 T2= (255*T2)/np.max(T2)
 
@@ -171,7 +178,7 @@ np.savetxt('RectanglePhantom.txt' ,All, delimiter=',')
 #I=x[1:int(z),:]
 #T1=x[1+int(z):2*int(z),:]
 #T2=x[1+2*int(z):3*int(z),:]
-pl.imshow(different_square_phantom, cmap='gray', vmin=0, vmax=255)
+pl.imshow(Rectangle_phantom, cmap='gray', vmin=0, vmax=255)
 
 
 

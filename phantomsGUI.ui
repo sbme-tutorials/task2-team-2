@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>652</width>
+    <width>651</width>
     <height>599</height>
    </rect>
   </property>
@@ -40,14 +40,14 @@
    <widget class="plotWidget" name="decay_grapgh">
     <property name="geometry">
      <rect>
-      <x>390</x>
+      <x>370</x>
       <y>350</y>
       <width>256</width>
       <height>192</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="path_of_file">
     <property name="geometry">
      <rect>
       <x>90</x>
@@ -82,7 +82,7 @@
       <string>Size</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QComboBox" name="phantom_size">
      <property name="geometry">
       <rect>
        <x>120</x>
@@ -120,7 +120,7 @@
       <string>Displayed Property</string>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox_2">
+    <widget class="QComboBox" name="phantom_mode">
      <property name="geometry">
       <rect>
        <x>120</x>
@@ -197,7 +197,7 @@
       <string>Time-To-Repeat</string>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_2">
+    <widget class="QLineEdit" name="TR_edit">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -207,7 +207,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_3">
+    <widget class="QLineEdit" name="TE_edit">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -217,7 +217,7 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_4">
+    <widget class="QLineEdit" name="FA_edit">
      <property name="geometry">
       <rect>
        <x>100</x>
@@ -228,13 +228,26 @@
      </property>
     </widget>
    </widget>
+   <widget class="QPushButton" name="shepp_logan">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>60</y>
+      <width>191</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Shepp-Logan Phantom</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>652</width>
+     <width>651</width>
      <height>21</height>
     </rect>
    </property>
