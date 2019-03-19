@@ -27,26 +27,6 @@
      <string>Browse</string>
     </property>
    </widget>
-   <widget class="PlotWidget" name="recovery_grapgh">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>350</y>
-      <width>256</width>
-      <height>192</height>
-     </rect>
-    </property>
-   </widget>
-   <widget class="plotWidget" name="decay_grapgh">
-    <property name="geometry">
-     <rect>
-      <x>370</x>
-      <y>350</y>
-      <width>256</width>
-      <height>192</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="path_of_file">
     <property name="geometry">
      <rect>
@@ -241,6 +221,36 @@
      <string>Shepp-Logan Phantom</string>
     </property>
    </widget>
+   <widget class="PlotWidget" name="recovery_graph">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>360</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="PlotWidget" name="decay_graph">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>360</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="graphicsView">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>100</y>
+      <width>256</width>
+      <height>192</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -259,11 +269,6 @@
    <class>PlotWidget</class>
    <extends>QGraphicsView</extends>
    <header>pyqtgraph.h</header>
-  </customwidget>
-  <customwidget>
-   <class>plotWidget</class>
-   <extends>QGraphicsView</extends>
-   <header>pyqtgrapght.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
