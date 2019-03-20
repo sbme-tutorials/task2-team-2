@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from pyqtgraph import PlotWidget
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -102,5 +103,4 @@ class Ui_MainWindow(object):
         self.label_5.setText(_translate("MainWindow", "Time-To-Repeat"))
         self.shepp_logan.setText(_translate("MainWindow", "Shepp-Logan Phantom"))
 
-from pyqtgrapght import plotWidget
-from pyqtgraph import PlotWidget
+
