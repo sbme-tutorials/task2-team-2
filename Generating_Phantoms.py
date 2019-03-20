@@ -178,7 +178,7 @@ np.savetxt('RectanglePhantom.txt' ,All, delimiter=',')
 #I=x[1:int(z),:]
 #T1=x[1+int(z):2*int(z),:]
 #T2=x[1+2*int(z):3*int(z),:]
-pl.imshow(Rectangle_phantom, cmap='gray', vmin=0, vmax=255)
+pl.imshow(square_phantom , cmap='gray', vmin=0, vmax=255)
 
 
 
