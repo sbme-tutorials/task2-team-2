@@ -59,7 +59,7 @@ T2= (255*T2)/np.max(T2)
 
 #concatentaion of all properties to save in file
 All=np.concatenate ((square_phantom,T1,T2)) #concatentation row wise (fo2 b3d)
-np.savetxt('squrePhantom.txt' ,All, delimiter=',')
+#np.savetxt('squrePhantom.txt' ,All, delimiter=',')
 ########################################################################
 different_square_phantom = np.zeros ((n[1], n[1]))
 #small squares with different intensity to simulate different tissues
@@ -108,7 +108,7 @@ T2= (255*T2)/np.max(T2)
 
 #concatentaion of all properties to save in file
 All=np.concatenate ((different_square_phantom,T1,T2)) #concatentation row wise (fo2 b3d)
-np.savetxt('DifferentSquarePhantom.txt' ,All, delimiter=',')
+#np.savetxt('DifferentSquarePhantom.txt' ,All, delimiter=',')
 #############################################
 
 
@@ -160,7 +160,10 @@ T2= (255*T2)/np.max(T2)
 
 #concatentaion of all properties to save in file
 All=np.concatenate ((Rectangle_phantom,T1,T2)) #concatentation row wise (fo2 b3d)
-np.savetxt('RectanglePhantom.txt' ,All, delimiter=',')
+#np.savetxt('RectanglePhantom.txt' ,All, delimiter=',')
+np.save('data.npy', All)
+new_num_arr = np.load('data.npy')
+
 #
 #
 #
@@ -173,12 +176,12 @@ np.savetxt('RectanglePhantom.txt' ,All, delimiter=',')
 ##check for all
 #x= np.loadtxt('squrePhantom.txt', delimiter=',')
 #print(len(x))
-#z=(len(x)/3)
-#
-#I=x[1:int(z),:]
-#T1=x[1+int(z):2*int(z),:]
-#T2=x[1+2*int(z):3*int(z),:]
-pl.imshow(square_phantom , cmap='gray', vmin=0, vmax=255)
+z=(len(new_num_arr)/3)
+
+I=new_num_arr[1:int(z),:]
+T1=new_num_arr[1+int(z):2*int(z),:]
+T2=new_num_arr[1+2*int(z):3*int(z),:]
+pl.imshow(I       , cmap='gray', vmin=0, vmax=255)
 
 
 
