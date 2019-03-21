@@ -8,14 +8,12 @@ Created on Wed Mar 20 19:34:52 2019
 import sys
 import math
 
-from PyQt5 import QtWidgets ,QtGui
+from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QFileDialog
 import numpy as np
-from PyQt5 import QtWidgets
 from Main_GUI import Ui_MainWindow
-import numpy as np
-import matplotlib.pyplot as pl
 import qimage2ndarray
 
 
@@ -38,10 +36,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Must not exceed 5
         self.ui.pixel_counter=0
         
-        # Change these variables to the real t1 and t2 got from the pixmap
-        # You should pass them the values in the plot() function
-        self.ui.t1=1
-        self.ui.t2=1
+       
 
         
         
@@ -55,9 +50,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.I=Phantom_file[1:int(SeparatingArrays),:]
            self.T1=Phantom_file[1+int(SeparatingArrays):2*int(SeparatingArrays),:]
            self.T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
+           size_of_matrix= np.size(self.T1)
+           self.ui.show_phantom_label.setGeometry(0,0,math.sqrt(size_of_matrix),math.sqrt(size_of_matrix))
            self.getValueFromProperties_ComboBox()
-           #show phantom according to chosen property      
-#    
+           #show phantom according to chosen property        
            
         else:
                 msg = QtWidgets.QMessageBox()
@@ -69,7 +65,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
   
     def getValueFromProperties_ComboBox(self):
           PropertyOfPhantom=self.ui.properties_comboBox.currentText()
-          print(str(PropertyOfPhantom))
+          
            #show phantom according to chosen property      
           if str(PropertyOfPhantom)== ("T1"):
               phantom=qimage2ndarray.array2qimage(self.T1)
@@ -97,22 +93,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # checking whether the event is a mouse click and the target is the widget
         if event.type() == event.MouseButtonPress and source is self.ui.show_phantom_label:
             # Getting scaled height in case of resizing
-            self.ui.scaled_height=self.ui.show_phantom_label.geometry().height()
+            #self.ui.scaled_height=self.ui.show_phantom_label.geometry().height()
             # Getting scaled Width
-            self.ui.scaled_width=self.ui.show_phantom_label.geometry().width()
+            #self.ui.scaled_width=self.ui.show_phantom_label.geometry().width()
             # Calculating the ratio of scaling in both height and width
-            self.ui.scaled_height_ratio=self.ui.scaled_height/self.ui.default_height
-            self.ui.scaled_width_ratio=self.ui.scaled_width/self.ui.default_width
+            #self.ui.scaled_height_ratio=self.ui.scaled_height/self.ui.default_height
+            #self.ui.scaled_width_ratio=self.ui.scaled_width/self.ui.default_width
             # Getting mouse position 
             self.ui.mouse_pos= event.pos()
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
-            self.ui.pixel_clicked_x= math.floor(self.ui.mouse_pos.x()/self.ui.scaled_width_ratio)
-            self.ui.pixel_clicked_y= math.floor(self.ui.mouse_pos.y()/self.ui.scaled_height_ratio)
+            self.ui.pixel_clicked_x= math.floor(self.ui.mouse_pos.x())#/self.ui.scaled_width_ratio)
+            self.ui.pixel_clicked_y= math.floor(self.ui.mouse_pos.y())#/self.ui.scaled_height_ratio)
             # Plotting
             self.plot()
-        return super(ApplicationWindow, self).eventFilter(source, event)
+            return super(ApplicationWindow, self).eventFilter(source, event)
     
     # Plot function
     def plot(self):
@@ -124,9 +120,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # A time array from 1 to 1000 seconds
         t= np.arange(1000)
         # T1 equation
-        t1_plot= 1 - np.exp(-t/self.ui.t1)   # Replace self.ui.t1 with the T1
+        t1_plot=[]
+        if self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y] == 0:
+            self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= 0.00000000000001
+        t1_plot= 1 - np.exp(-t/self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y])   # Replace self.ui.t1 with the T1
         # T2 equation
-        t2_plot= np.exp(-t/self.ui.t2)   #Replace the self.ui.t2 with the T2
+        t2_plot=[]
+        if self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y] == 0:
+            self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= 0.00000000000001
+        t2_plot= np.exp(-t/self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y])   #Replace the self.ui.t2 with the T2
         # Checking if no more than 5 pixels are chosen
         if self.ui.pixel_counter<5:
             # Plotting T1
