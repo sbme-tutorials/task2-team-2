@@ -6,12 +6,12 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5 import QtCore, QtWidgets
+from pyqtgraph import PlotWidget
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(973, 700)
+        MainWindow.resize(1081, 866)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -28,12 +28,41 @@ class Ui_MainWindow(object):
         self.tab.setObjectName("tab")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.tab)
         self.gridLayout_3.setObjectName("gridLayout_3")
+        self.verticalLayout_5 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.lineEdit = QtWidgets.QLineEdit(self.tab)
         self.lineEdit.setObjectName("lineEdit")
+<<<<<<< HEAD
         self.gridLayout_3.addWidget(self.lineEdit, 0, 0, 1, 1)
         self.sheppLogan_button = QtWidgets.QPushButton(self.tab)
         self.sheppLogan_button.setObjectName("sheppLogan_button")
         self.gridLayout_3.addWidget(self.sheppLogan_button, 1, 1, 1, 1)
+=======
+        self.verticalLayout_5.addWidget(self.lineEdit)
+        self.label = QtWidgets.QLabel(self.tab)
+        self.label.setMinimumSize(QtCore.QSize(512, 512))
+        self.label.setFrameShape(QtWidgets.QFrame.Box)
+        self.label.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.label.setText("")
+        self.label.setScaledContents(True)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setObjectName("label")
+        self.verticalLayout_5.addWidget(self.label)
+        spacerItem = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_5.addItem(spacerItem)
+        self.gridLayout_3.addLayout(self.verticalLayout_5, 0, 0, 1, 1)
+        self.verticalLayout_4 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.verticalLayout_3 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.pushButton = QtWidgets.QPushButton(self.tab)
+        self.pushButton.setObjectName("pushButton")
+        self.verticalLayout_3.addWidget(self.pushButton)
+        self.pushButton_2 = QtWidgets.QPushButton(self.tab)
+        self.pushButton_2.setObjectName("pushButton_2")
+        self.verticalLayout_3.addWidget(self.pushButton_2)
+        self.verticalLayout_4.addLayout(self.verticalLayout_3)
+>>>>>>> 9551c9cd471bf98819dc8ddd164b7bc511138455
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.groupBox = QtWidgets.QGroupBox(self.tab)
@@ -44,6 +73,7 @@ class Ui_MainWindow(object):
         self.label_2 = QtWidgets.QLabel(self.groupBox)
         self.label_2.setObjectName("label_2")
         self.gridLayout_4.addWidget(self.label_2, 0, 0, 1, 1)
+<<<<<<< HEAD
         self.size_comboBox = QtWidgets.QComboBox(self.groupBox)
         self.size_comboBox.setObjectName("size_comboBox")
         self.size_comboBox.addItem("")
@@ -52,6 +82,17 @@ class Ui_MainWindow(object):
         self.size_comboBox.addItem("")
         self.size_comboBox.addItem("")
         self.gridLayout_4.addWidget(self.size_comboBox, 0, 1, 1, 1)
+=======
+        self.comboBox = QtWidgets.QComboBox(self.groupBox)
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.comboBox.addItem("")
+        self.gridLayout_4.addWidget(self.comboBox, 0, 1, 1, 1)
+>>>>>>> 9551c9cd471bf98819dc8ddd164b7bc511138455
         self.label_3 = QtWidgets.QLabel(self.groupBox)
         self.label_3.setObjectName("label_3")
         self.gridLayout_4.addWidget(self.label_3, 1, 0, 1, 1)
@@ -90,10 +131,13 @@ class Ui_MainWindow(object):
         self.lineEdit_4.setObjectName("lineEdit_4")
         self.gridLayout_2.addWidget(self.lineEdit_4, 3, 1, 1, 1)
         self.verticalLayout.addWidget(self.groupBox_2)
-        self.gridLayout_3.addLayout(self.verticalLayout, 2, 1, 1, 1)
+        self.verticalLayout_4.addLayout(self.verticalLayout)
+        self.verticalLayout_2 = QtWidgets.QVBoxLayout()
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.label_8 = QtWidgets.QLabel(self.tab)
         self.label_8.setAlignment(QtCore.Qt.AlignCenter)
         self.label_8.setObjectName("label_8")
+<<<<<<< HEAD
         self.gridLayout_3.addWidget(self.label_8, 3, 1, 1, 1)
         self.recovery_gragh = QtWidgets.QGraphicsView(self.tab)
         self.recovery_gragh.setObjectName("recovery_gragh")
@@ -116,6 +160,21 @@ class Ui_MainWindow(object):
         self.show_phantom_label.setAlignment(QtCore.Qt.AlignCenter)
         self.show_phantom_label.setObjectName("show_phantom_label")
         self.gridLayout_3.addWidget(self.show_phantom_label, 1, 0, 6, 1)
+=======
+        self.verticalLayout_2.addWidget(self.label_8)
+        self.graphicsView = PlotWidget(self.tab)
+        self.graphicsView.setObjectName("graphicsView")
+        self.verticalLayout_2.addWidget(self.graphicsView)
+        self.label_7 = QtWidgets.QLabel(self.tab)
+        self.label_7.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_7.setObjectName("label_7")
+        self.verticalLayout_2.addWidget(self.label_7)
+        self.graphicsView_2 = PlotWidget(self.tab)
+        self.graphicsView_2.setObjectName("graphicsView_2")
+        self.verticalLayout_2.addWidget(self.graphicsView_2)
+        self.verticalLayout_4.addLayout(self.verticalLayout_2)
+        self.gridLayout_3.addLayout(self.verticalLayout_4, 0, 1, 1, 1)
+>>>>>>> 9551c9cd471bf98819dc8ddd164b7bc511138455
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
@@ -123,7 +182,11 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
+<<<<<<< HEAD
         self.menubar.setGeometry(QtCore.QRect(0, 0, 973, 21))
+=======
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1081, 22))
+>>>>>>> 9551c9cd471bf98819dc8ddd164b7bc511138455
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -137,6 +200,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+<<<<<<< HEAD
         self.sheppLogan_button.setText(_translate("MainWindow", "Shepp-Logan Phantom"))
         self.groupBox.setTitle(_translate("MainWindow", "Phantom Properties"))
         self.label_2.setText(_translate("MainWindow", "Size"))
@@ -146,6 +210,19 @@ class Ui_MainWindow(object):
         self.size_comboBox.setItemText(2, _translate("MainWindow", "256x256"))
         self.size_comboBox.setItemText(3, _translate("MainWindow", "512x512"))
         self.size_comboBox.setItemText(4, _translate("MainWindow", "1024x1024"))
+=======
+        self.pushButton.setText(_translate("MainWindow", "Browse"))
+        self.pushButton_2.setText(_translate("MainWindow", "Shepp-Logan Phantom"))
+        self.groupBox.setTitle(_translate("MainWindow", "Phantom Properties"))
+        self.label_2.setText(_translate("MainWindow", "Size"))
+        self.comboBox.setCurrentText(_translate("MainWindow", "Default"))
+        self.comboBox.setItemText(0, _translate("MainWindow", "Default"))
+        self.comboBox.setItemText(1, _translate("MainWindow", "32x32"))
+        self.comboBox.setItemText(2, _translate("MainWindow", "128x128"))
+        self.comboBox.setItemText(3, _translate("MainWindow", "256x256"))
+        self.comboBox.setItemText(4, _translate("MainWindow", "512x512"))
+        self.comboBox.setItemText(5, _translate("MainWindow", "1024x1024"))
+>>>>>>> 9551c9cd471bf98819dc8ddd164b7bc511138455
         self.label_3.setText(_translate("MainWindow", "Displayed Property"))
         self.properties_comboBox.setItemText(0, _translate("MainWindow", "T1"))
         self.properties_comboBox.setItemText(1, _translate("MainWindow", "T2"))
@@ -159,7 +236,10 @@ class Ui_MainWindow(object):
         self.lineEdit_4.setPlaceholderText(_translate("MainWindow", "Degrees"))
         self.label_8.setText(_translate("MainWindow", "T1 Plot"))
         self.label_7.setText(_translate("MainWindow", "T2 Plot"))
+<<<<<<< HEAD
         self.browse_button.setText(_translate("MainWindow", "Browse"))
+=======
+>>>>>>> 9551c9cd471bf98819dc8ddd164b7bc511138455
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Part 1"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Part 2"))
 
