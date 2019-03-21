@@ -21,27 +21,30 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         super(ApplicationWindow,self).__init__()
         self.ui= Ui_MainWindow()
         self.ui.setupUi(self)
+    
         # Assigning a filter for the label to catch any mouse events
         self.ui.show_phantom_label.installEventFilter(self)
         # Getting Default size of the label on starting the application
         self.ui.default_height= self.ui.show_phantom_label.geometry().height()
         self.ui.default_width= self.ui.show_phantom_label.geometry().width()
+        #connecting browsebutton with loading the file function
         self.ui.browse_button.clicked.connect(self.button_clicked)
+        #calling the property from the combobox to display the phantom
+
+        
+        
         
     def  button_clicked(self):
         fileName, _filter = QFileDialog.getOpenFileName(self, "Choose a phantom", "", "Filter -- ( *.npy)")
         if fileName:
            Phantom_file=np.load(fileName)
            SeparatingArrays=(len(Phantom_file)/3)
-           print(SeparatingArrays)
-           I=Phantom_file[1:int(SeparatingArrays),:]
-           T1=Phantom_file[1+int(SeparatingArrays):2*int(SeparatingArrays),:]
-           T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
-           phantom=qimage2ndarray.array2qimage(I)
-           pixmap_of_phantom=QPixmap.fromImage(phantom)
-           self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)          
-           
-    
+           self.I=Phantom_file[1:int(SeparatingArrays),:]
+           self.T1=Phantom_file[1+int(SeparatingArrays):2*int(SeparatingArrays),:]
+           self.T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
+           self.getValueFromProperties_ComboBox()
+           #show phantom according to chosen property      
+#    
            
         else:
                 msg = QtWidgets.QMessageBox()
@@ -51,7 +54,24 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 msg.setWindowTitle("Error")
                 msg.exec_()   
   
-    #def getValueFromProperties_ComboBox:
+    def getValueFromProperties_ComboBox(self):
+          PropertyOfPhantom=self.ui.properties_comboBox.currentText()
+          print(str(PropertyOfPhantom))
+           #show phantom according to chosen property      
+          if str(PropertyOfPhantom)== ("T1"):
+              phantom=qimage2ndarray.array2qimage(self.T1)
+              pixmap_of_phantom=QPixmap.fromImage(phantom)
+              self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
+          elif str(PropertyOfPhantom)== ("Proton Density"):
+              phantom=qimage2ndarray.array2qimage(self.I)
+              pixmap_of_phantom=QPixmap.fromImage(phantom)
+              self.ui.show_phantom_label.setPixmap(pixmap_of_phantom) 
+          else:
+              phantom=qimage2ndarray.array2qimage(self.T2)
+              pixmap_of_phantom=QPixmap.fromImage(phantom)
+              self.ui.show_phantom_label.setPixmap(pixmap_of_phantom) 
+              
+             
         
     
     # This is the filter used to catch mouse events exculesivly on label
