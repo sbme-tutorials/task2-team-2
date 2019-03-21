@@ -22,10 +22,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui= Ui_MainWindow()
         self.ui.setupUi(self)
         # Assigning a filter for the label to catch any mouse events
-        self.ui.label.installEventFilter(self)
+        self.ui.show_phantom_label.installEventFilter(self)
         # Getting Default size of the label on starting the application
-        self.ui.default_height= self.ui.label.geometry().height()
-        self.ui.default_width= self.ui.label.geometry().width()
+        self.ui.default_height= self.ui.show_phantom_label.geometry().height()
+        self.ui.default_width= self.ui.show_phantom_label.geometry().width()
         self.ui.browse_button.clicked.connect(self.button_clicked)
         
     def  button_clicked(self):
@@ -39,7 +39,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
            phantom=qimage2ndarray.array2qimage(I)
            pixmap_of_phantom=QPixmap.fromImage(phantom)
-           self.ui.label.setPixmap(pixmap_of_phantom)          
+           self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)          
            
     
            
@@ -60,11 +60,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
     def eventFilter(self, source, event):
         # checking whether the event is a mouse click and the target is the widget
-        if event.type() == event.MouseButtonPress and source is self.ui.label:
+        if event.type() == event.MouseButtonPress and source is self.ui.show_phantom_label:
             # Getting scaled height in case of resizing
-            self.ui.scaled_height=self.ui.label.geometry().height()
+            self.ui.scaled_height=self.ui.show_phantom_label.geometry().height()
             # Getting scaled Width
-            self.ui.scaled_width=self.ui.label.geometry().width()
+            self.ui.scaled_width=self.ui.show_phantom_label.geometry().width()
             # Calculating the ratio of scaling in both height and width
             self.ui.scaled_height_ratio=self.ui.scaled_height/self.ui.default_height
             self.ui.scaled_width_ratio=self.ui.scaled_width/self.ui.default_width
