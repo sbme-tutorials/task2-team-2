@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Main.ui'
+# Form implementation generated from reading ui file 'Main_GUI.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5 import QtCore, QtWidgets
+from pyqtgraph import PlotWidget
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -46,6 +46,7 @@ class Ui_MainWindow(object):
         self.gridLayout_4.addWidget(self.label_2, 0, 0, 1, 1)
         self.comboBox = QtWidgets.QComboBox(self.groupBox)
         self.comboBox.setObjectName("comboBox")
+        self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
@@ -95,16 +96,16 @@ class Ui_MainWindow(object):
         self.label_8.setAlignment(QtCore.Qt.AlignCenter)
         self.label_8.setObjectName("label_8")
         self.gridLayout_3.addWidget(self.label_8, 3, 1, 1, 1)
-        self.graphicsView_2 = QtWidgets.QGraphicsView(self.tab)
-        self.graphicsView_2.setObjectName("graphicsView_2")
-        self.gridLayout_3.addWidget(self.graphicsView_2, 4, 1, 1, 2)
+        self.graphicsView = PlotWidget(self.tab)
+        self.graphicsView.setObjectName("graphicsView")
+        self.gridLayout_3.addWidget(self.graphicsView, 4, 1, 1, 2)
         self.label_7 = QtWidgets.QLabel(self.tab)
         self.label_7.setAlignment(QtCore.Qt.AlignCenter)
         self.label_7.setObjectName("label_7")
         self.gridLayout_3.addWidget(self.label_7, 5, 1, 1, 1)
-        self.graphicsView = QtWidgets.QGraphicsView(self.tab)
-        self.graphicsView.setObjectName("graphicsView")
-        self.gridLayout_3.addWidget(self.graphicsView, 6, 1, 1, 2)
+        self.graphicsView_2 = PlotWidget(self.tab)
+        self.graphicsView_2.setObjectName("graphicsView_2")
+        self.gridLayout_3.addWidget(self.graphicsView_2, 6, 1, 1, 2)
         self.pushButton = QtWidgets.QPushButton(self.tab)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout_3.addWidget(self.pushButton, 0, 1, 1, 1)
@@ -142,10 +143,11 @@ class Ui_MainWindow(object):
         self.label_2.setText(_translate("MainWindow", "Size"))
         self.comboBox.setCurrentText(_translate("MainWindow", "Default"))
         self.comboBox.setItemText(0, _translate("MainWindow", "Default"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "128x128"))
-        self.comboBox.setItemText(2, _translate("MainWindow", "256x256"))
-        self.comboBox.setItemText(3, _translate("MainWindow", "512x512"))
-        self.comboBox.setItemText(4, _translate("MainWindow", "1024x1024"))
+        self.comboBox.setItemText(1, _translate("MainWindow", "32x32"))
+        self.comboBox.setItemText(2, _translate("MainWindow", "128x128"))
+        self.comboBox.setItemText(3, _translate("MainWindow", "256x256"))
+        self.comboBox.setItemText(4, _translate("MainWindow", "512x512"))
+        self.comboBox.setItemText(5, _translate("MainWindow", "1024x1024"))
         self.label_3.setText(_translate("MainWindow", "Displayed Property"))
         self.comboBox_2.setItemText(0, _translate("MainWindow", "T1"))
         self.comboBox_2.setItemText(1, _translate("MainWindow", "T2"))
