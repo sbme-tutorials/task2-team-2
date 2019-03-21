@@ -59,6 +59,7 @@ T2= (255*T2)/np.max(T2)
 
 #concatentaion of all properties to save in file
 All=np.concatenate ((square_phantom,T1,T2)) #concatentation row wise (fo2 b3d)
+np.save('square_phantom.npy', All)
 #np.savetxt('squrePhantom.txt' ,All, delimiter=',')
 ########################################################################
 different_square_phantom = np.zeros ((n[1], n[1]))
@@ -109,6 +110,7 @@ T2= (255*T2)/np.max(T2)
 #concatentaion of all properties to save in file
 All=np.concatenate ((different_square_phantom,T1,T2)) #concatentation row wise (fo2 b3d)
 #np.savetxt('DifferentSquarePhantom.txt' ,All, delimiter=',')
+np.save('different_square_phantom.npy', All)
 #############################################
 
 

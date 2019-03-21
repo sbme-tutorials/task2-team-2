@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'Main.ui'
+# Form implementation generated from reading ui file 'Main_GUI.ui'
 #
 # Created by: PyQt5 UI code generator 5.9.2
 #
@@ -31,9 +31,9 @@ class Ui_MainWindow(object):
         self.lineEdit = QtWidgets.QLineEdit(self.tab)
         self.lineEdit.setObjectName("lineEdit")
         self.gridLayout_3.addWidget(self.lineEdit, 0, 0, 1, 1)
-        self.pushButton_2 = QtWidgets.QPushButton(self.tab)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout_3.addWidget(self.pushButton_2, 1, 1, 1, 1)
+        self.sheppLogan_button = QtWidgets.QPushButton(self.tab)
+        self.sheppLogan_button.setObjectName("sheppLogan_button")
+        self.gridLayout_3.addWidget(self.sheppLogan_button, 1, 1, 1, 1)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.groupBox = QtWidgets.QGroupBox(self.tab)
@@ -105,9 +105,9 @@ class Ui_MainWindow(object):
         self.graphicsView = QtWidgets.QGraphicsView(self.tab)
         self.graphicsView.setObjectName("graphicsView")
         self.gridLayout_3.addWidget(self.graphicsView, 6, 1, 1, 2)
-        self.pushButton = QtWidgets.QPushButton(self.tab)
-        self.pushButton.setObjectName("pushButton")
-        self.gridLayout_3.addWidget(self.pushButton, 0, 1, 1, 1)
+        self.browse_button = QtWidgets.QPushButton(self.tab)
+        self.browse_button.setObjectName("browse_button")
+        self.gridLayout_3.addWidget(self.browse_button, 0, 1, 1, 1)
         self.label = QtWidgets.QLabel(self.tab)
         self.label.setFrameShape(QtWidgets.QFrame.Box)
         self.label.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -123,7 +123,7 @@ class Ui_MainWindow(object):
         self.gridLayout.addWidget(self.tabWidget, 0, 0, 1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 973, 22))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 973, 21))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -137,7 +137,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.pushButton_2.setText(_translate("MainWindow", "Shepp-Logan Phantom"))
+        self.sheppLogan_button.setText(_translate("MainWindow", "Shepp-Logan Phantom"))
         self.groupBox.setTitle(_translate("MainWindow", "Phantom Properties"))
         self.label_2.setText(_translate("MainWindow", "Size"))
         self.comboBox.setCurrentText(_translate("MainWindow", "Default"))
@@ -159,7 +159,7 @@ class Ui_MainWindow(object):
         self.lineEdit_4.setPlaceholderText(_translate("MainWindow", "Degrees"))
         self.label_8.setText(_translate("MainWindow", "T1 Plot"))
         self.label_7.setText(_translate("MainWindow", "T2 Plot"))
-        self.pushButton.setText(_translate("MainWindow", "Browse"))
+        self.browse_button.setText(_translate("MainWindow", "Browse"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Part 1"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Part 2"))
 

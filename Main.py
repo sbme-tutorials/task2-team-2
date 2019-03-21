@@ -20,8 +20,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Getting Default size of the label on starting the application
         self.ui.default_height= self.ui.label.geometry().height()
         self.ui.default_width= self.ui.label.geometry().width()
-        
-        
+        self.ui.
+    def     
     # This is the filter used to catch mouse events exculesivly on label
     # source >> the target widget
     # event >> the mouse event passed
