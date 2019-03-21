@@ -163,8 +163,8 @@ T2= (255*T2)/np.max(T2)
 #concatentaion of all properties to save in file
 All=np.concatenate ((Rectangle_phantom,T1,T2)) #concatentation row wise (fo2 b3d)
 #np.savetxt('RectanglePhantom.txt' ,All, delimiter=',')
-np.save('data.npy', All)
-new_num_arr = np.load('data.npy')
+np.save('Rectangle_phantom.npy', All)
+new_num_arr = np.load('Rectangle_phantom.npy')
 
 #
 #

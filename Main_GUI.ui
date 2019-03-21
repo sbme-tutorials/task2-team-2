@@ -66,7 +66,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QComboBox" name="comboBox">
+              <widget class="QComboBox" name="size_comboBox">
                <property name="currentText">
                 <string>Default</string>
                </property>
@@ -105,7 +105,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QComboBox" name="comboBox_2">
+              <widget class="QComboBox" name="properties_comboBox">
                <item>
                 <property name="text">
                  <string>T1</string>
@@ -205,7 +205,7 @@
          </widget>
         </item>
         <item row="4" column="1" colspan="2">
-         <widget class="QGraphicsView" name="graphicsView_2"/>
+         <widget class="QGraphicsView" name="recovery_gragh"/>
         </item>
         <item row="5" column="1">
          <widget class="QLabel" name="label_7">
@@ -218,7 +218,7 @@
          </widget>
         </item>
         <item row="6" column="1" colspan="2">
-         <widget class="QGraphicsView" name="graphicsView"/>
+         <widget class="QGraphicsView" name="decay_grapgh"/>
         </item>
         <item row="0" column="1">
          <widget class="QPushButton" name="browse_button">
@@ -228,7 +228,7 @@
          </widget>
         </item>
         <item row="1" column="0" rowspan="6">
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="show_phantom_label">
           <property name="frameShape">
            <enum>QFrame::Box</enum>
           </property>
