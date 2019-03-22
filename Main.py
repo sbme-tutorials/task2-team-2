@@ -5,9 +5,10 @@ Created on Wed Mar 20 19:34:52 2019
 
 @author: crow
 """
+from __future__ import division
 import sys
 import math
-
+import matplotlib.pyplot as pl
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
@@ -30,9 +31,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.default_width= self.ui.show_phantom_label.geometry().width()
         #connecting browsebutton with loading the file function
         self.ui.browse_button.clicked.connect(self.button_clicked)
+        #connecting sheppLogan button with its function
+        self.ui.pushButton_2.clicked.connect(self.sheppLogan)
         # Initializing Pixel clicked counter
         # Must not exceed 5
         self.ui.pixel_counter=0
+        
+        # shepp logan flag to check if clicked
+        
         
         self.ui.comboBox.currentIndexChanged.connect(self.on_size_change)
         self.ui.properties_comboBox.currentIndexChanged.connect(self.on_property_change)
@@ -69,16 +75,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           PropertyOfPhantom=self.ui.properties_comboBox.currentText()
           
            #show phantom according to chosen property      
-          if str(PropertyOfPhantom)== ("T1"):
+          if str(PropertyOfPhantom)== ("T1"):  
               phantom=qimage2ndarray.array2qimage(self.T1)
               self.pixmap_of_phantom=QPixmap.fromImage(phantom)
               self.getValueFromSize_ComboBox()
+              
               #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
           elif str(PropertyOfPhantom)== ("Proton Density"):
               phantom=qimage2ndarray.array2qimage(self.I)
               self.pixmap_of_phantom=QPixmap.fromImage(phantom)
               self.getValueFromSize_ComboBox()
-          else:
+          else:  
               phantom=qimage2ndarray.array2qimage(self.T2)
               self.pixmap_of_phantom=QPixmap.fromImage(phantom)
               self.getValueFromSize_ComboBox()
@@ -104,6 +111,27 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
               
 
+    def sheppLogan(self): 
+          self.ui.pushButton_2.toggle()
+          sheppLogan_file = np.load('sheppLogan_phantom.npy')
+          z=(len(sheppLogan_file )/3)
+
+          self.I=sheppLogan_file [1:int(z),:]
+          self.T1=sheppLogan_file [1+int(z):2*int(z),:]
+          self.T2=sheppLogan_file [1+2*int(z):3*int(z),:]
+          self.T2= (255*self.T2)/np.max(self.T2)
+          self.T1= (255*self.T1)/np.max(self.T1)
+          self.I= (255*self.I)/np.max(self.I)
+          self.size_of_matrix= np.size(self.T1)
+          self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
+          self.getValueFromProperties_ComboBox()          
+    
+    
+    
+    
+        #  Modified version of Shepp & Logan's head phantom,
+        #  adjusted to improve contrast.  Taken from Toft.
+          
         
         
     

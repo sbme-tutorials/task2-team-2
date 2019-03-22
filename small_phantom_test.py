@@ -111,15 +111,18 @@ class Menu(QMainWindow):
         self.T2= (255*self.T2)/np.max(self.T2)
         
         label = QLabel(self)
+        label.resize(800, 600)
         phantom=qimage2ndarray.array2qimage(self.T1)
         self.pixmap_of_phantom=QPixmap.fromImage(phantom)
         label.setPixmap(self.pixmap_of_phantom)
         #self.resize(self.pixmap_of_phantom.width(), self.pixmap_of_phantom.height())
         self.pixmap_of_phantom = self.pixmap_of_phantom.scaled(int(self.pixmap_of_phantom.height()), int(self.pixmap_of_phantom.width()), QtCore.Qt.KeepAspectRatio)
+        label.setMinimumSize(1, 1)
         self.show()
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Menu()
+    Menu.resize(800, 600)
     sys.exit(app.exec_())
