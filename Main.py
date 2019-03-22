@@ -10,7 +10,7 @@ import math
 
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QFileDialog
 import numpy as np
 from Main_GUI import Ui_MainWindow
@@ -30,11 +30,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.default_width= self.ui.show_phantom_label.geometry().width()
         #connecting browsebutton with loading the file function
         self.ui.browse_button.clicked.connect(self.button_clicked)
-        #calling the property from the combobox to display the phantom
-        
         # Initializing Pixel clicked counter
         # Must not exceed 5
         self.ui.pixel_counter=0
+        
+        self.ui.comboBox.currentIndexChanged.connect(self.on_size_change)
+        self.ui.properties_comboBox.currentIndexChanged.connect(self.on_property_change)
         
        
 
@@ -50,9 +51,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.I=Phantom_file[1:int(SeparatingArrays),:]
            self.T1=Phantom_file[1+int(SeparatingArrays):2*int(SeparatingArrays),:]
            self.T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
-           size_of_matrix= np.size(self.T1)
-           self.ui.show_phantom_label.setGeometry(0,0,math.sqrt(size_of_matrix),math.sqrt(size_of_matrix))
+           self.size_of_matrix= np.size(self.T1)
+           self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
            self.getValueFromProperties_ComboBox()
+           
            #show phantom according to chosen property        
            
         else:
@@ -69,18 +71,38 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            #show phantom according to chosen property      
           if str(PropertyOfPhantom)== ("T1"):
               phantom=qimage2ndarray.array2qimage(self.T1)
-              pixmap_of_phantom=QPixmap.fromImage(phantom)
-              self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
+              self.pixmap_of_phantom=QPixmap.fromImage(phantom)
+              self.getValueFromSize_ComboBox()
+              #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
           elif str(PropertyOfPhantom)== ("Proton Density"):
               phantom=qimage2ndarray.array2qimage(self.I)
-              pixmap_of_phantom=QPixmap.fromImage(phantom)
-              self.ui.show_phantom_label.setPixmap(pixmap_of_phantom) 
+              self.pixmap_of_phantom=QPixmap.fromImage(phantom)
+              self.getValueFromSize_ComboBox()
           else:
               phantom=qimage2ndarray.array2qimage(self.T2)
-              pixmap_of_phantom=QPixmap.fromImage(phantom)
-              self.ui.show_phantom_label.setPixmap(pixmap_of_phantom) 
+              self.pixmap_of_phantom=QPixmap.fromImage(phantom)
+              self.getValueFromSize_ComboBox()
               
-             
+    def getValueFromSize_ComboBox(self):
+          selected_size=self.ui.comboBox.currentText()
+          
+           #show phantom according to chosen property      
+          if str(selected_size)== ("Default"):
+              self.ui.show_phantom_label.setGeometry(0,0,math.sqrt(self.size_of_matrix),math.sqrt(self.size_of_matrix))
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom)
+          elif str(selected_size)== ("32x32"):
+              self.ui.show_phantom_label.setGeometry(0,0,32,32)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
+          elif str(selected_size)== ("128x128"):
+              self.ui.show_phantom_label.setGeometry(0,0,128,128)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(128,128,Qt.KeepAspectRatio,Qt.FastTransformation))
+          elif str(selected_size)== ("256x256"):
+              self.ui.show_phantom_label.setGeometry(0,0,256,256)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(256,256,Qt.KeepAspectRatio,Qt.FastTransformation))
+          elif str(selected_size)== ("512x512"):
+              self.ui.show_phantom_label.setGeometry(0,0,512,512)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+              
 
         
         
@@ -93,22 +115,30 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # checking whether the event is a mouse click and the target is the widget
         if event.type() == event.MouseButtonPress and source is self.ui.show_phantom_label:
             # Getting scaled height in case of resizing
-            #self.ui.scaled_height=self.ui.show_phantom_label.geometry().height()
+            self.ui.scaled_height=self.ui.show_phantom_label.geometry().height()
             # Getting scaled Width
-            #self.ui.scaled_width=self.ui.show_phantom_label.geometry().width()
+            self.ui.scaled_width=self.ui.show_phantom_label.geometry().width()
             # Calculating the ratio of scaling in both height and width
-            #self.ui.scaled_height_ratio=self.ui.scaled_height/self.ui.default_height
-            #self.ui.scaled_width_ratio=self.ui.scaled_width/self.ui.default_width
+            self.scaled_ratio=self.ui.scaled_height/self.size_of_matrix_root
             # Getting mouse position 
             self.ui.mouse_pos= event.pos()
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
-            self.ui.pixel_clicked_x= math.floor(self.ui.mouse_pos.x())#/self.ui.scaled_width_ratio)
-            self.ui.pixel_clicked_y= math.floor(self.ui.mouse_pos.y())#/self.ui.scaled_height_ratio)
+            self.ui.pixel_clicked_x= math.floor(self.ui.mouse_pos.x()/self.scaled_ratio)#/self.ui.scaled_width_ratio)
+            self.ui.pixel_clicked_y= math.floor(self.ui.mouse_pos.y()/self.scaled_ratio)#/self.ui.scaled_height_ratio)
+            self.ui.label.setText("Pixel Clicked"+"     "+"Row: "+str(self.ui.pixel_clicked_y)+"   "+"Column: "+str(self.ui.pixel_clicked_x))
             # Plotting
             self.plot()
             return super(ApplicationWindow, self).eventFilter(source, event)
+        
+    @pyqtSlot()
+    def on_size_change(self):
+        self.getValueFromSize_ComboBox()
+        
+    @pyqtSlot()
+    def on_property_change(self):
+        self.getValueFromProperties_ComboBox()
     
     # Plot function
     def plot(self):

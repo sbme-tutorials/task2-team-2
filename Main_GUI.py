@@ -6,7 +6,7 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 from pyqtgraph import PlotWidget
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -53,6 +53,10 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addLayout(self.horizontalLayout)
         spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout_5.addItem(spacerItem3)
+        self.label = QtWidgets.QLabel(self.tab)
+        self.label.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        self.label.setObjectName("label")
+        self.verticalLayout_5.addWidget(self.label)
         self.gridLayout_3.addLayout(self.verticalLayout_5, 0, 0, 1, 1)
         self.verticalLayout_4 = QtWidgets.QVBoxLayout()
         self.verticalLayout_4.setObjectName("verticalLayout_4")
@@ -86,7 +90,6 @@ class Ui_MainWindow(object):
         self.gridLayout_4.addWidget(self.size_label, 1, 0, 1, 1)
         self.comboBox = QtWidgets.QComboBox(self.groupBox)
         self.comboBox.setObjectName("comboBox")
-        self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
@@ -162,6 +165,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.label.setText(_translate("MainWindow", "Pixel clicked:"))
         self.browse_button.setText(_translate("MainWindow", "Browse"))
         self.pushButton_2.setText(_translate("MainWindow", "Shepp-Logan Phantom"))
         self.groupBox.setTitle(_translate("MainWindow", "Phantom Properties"))
@@ -175,7 +179,6 @@ class Ui_MainWindow(object):
         self.comboBox.setItemText(2, _translate("MainWindow", "128x128"))
         self.comboBox.setItemText(3, _translate("MainWindow", "256x256"))
         self.comboBox.setItemText(4, _translate("MainWindow", "512x512"))
-        self.comboBox.setItemText(5, _translate("MainWindow", "1024x1024"))
         self.groupBox_2.setTitle(_translate("MainWindow", "RF Properties"))
         self.label_4.setText(_translate("MainWindow", "Time to Echo"))
         self.lineEdit_2.setPlaceholderText(_translate("MainWindow", "milliseconds"))
