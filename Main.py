@@ -5,10 +5,9 @@ Created on Wed Mar 20 19:34:52 2019
 
 @author: crow
 """
-from __future__ import division
+
 import sys
 import math
-import matplotlib.pyplot as pl
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
@@ -36,9 +35,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Initializing Pixel clicked counter
         # Must not exceed 5
         self.ui.pixel_counter=0
-        
-        # shepp logan flag to check if clicked
-        
         
         self.ui.comboBox.currentIndexChanged.connect(self.on_size_change)
         self.ui.properties_comboBox.currentIndexChanged.connect(self.on_property_change)
@@ -112,7 +108,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               
 
     def sheppLogan(self): 
-          self.ui.pushButton_2.toggle()
+          
           sheppLogan_file = np.load('sheppLogan_phantom.npy')
           z=(len(sheppLogan_file )/3)
 
