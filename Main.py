@@ -5,9 +5,9 @@ Created on Wed Mar 20 19:34:52 2019
 
 @author: crow
 """
+
 import sys
 import math
-
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
@@ -30,6 +30,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.default_width= self.ui.show_phantom_label.geometry().width()
         #connecting browsebutton with loading the file function
         self.ui.browse_button.clicked.connect(self.button_clicked)
+        #connecting sheppLogan button with its function
+        self.ui.pushButton_2.clicked.connect(self.sheppLogan)
         # Initializing Pixel clicked counter
         # Must not exceed 5
         self.ui.pixel_counter=0
@@ -69,21 +71,23 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           PropertyOfPhantom=self.ui.properties_comboBox.currentText()
           
            #show phantom according to chosen property      
-          if str(PropertyOfPhantom)== ("T1"):
+          if str(PropertyOfPhantom)== ("T1"):  
               phantom=qimage2ndarray.array2qimage(self.T1)
               self.pixmap_of_phantom=QPixmap.fromImage(phantom)
               self.getValueFromSize_ComboBox()
+              
               #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
           elif str(PropertyOfPhantom)== ("Proton Density"):
               phantom=qimage2ndarray.array2qimage(self.I)
               self.pixmap_of_phantom=QPixmap.fromImage(phantom)
               self.getValueFromSize_ComboBox()
-          else:
+          else:  
               phantom=qimage2ndarray.array2qimage(self.T2)
               self.pixmap_of_phantom=QPixmap.fromImage(phantom)
               self.getValueFromSize_ComboBox()
               
     def getValueFromSize_ComboBox(self):
+          
           selected_size=self.ui.comboBox.currentText()
           
            #show phantom according to chosen property      
@@ -104,6 +108,27 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
               
 
+    def sheppLogan(self): 
+          
+          sheppLogan_file = np.load('sheppLogan_phantom.npy')
+          z=(len(sheppLogan_file )/3)
+
+          self.I=sheppLogan_file [1:int(z),:]
+          self.T1=sheppLogan_file [1+int(z):2*int(z),:]
+          self.T2=sheppLogan_file [1+2*int(z):3*int(z),:]
+          self.T2= (255*self.T2)/np.max(self.T2)
+          self.T1= (255*self.T1)/np.max(self.T1)
+          self.I= (255*self.I)/np.max(self.I)
+          self.size_of_matrix= np.size(self.T1)
+          self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
+          self.getValueFromProperties_ComboBox()          
+    
+    
+    
+    
+        #  Modified version of Shepp & Logan's head phantom,
+        #  adjusted to improve contrast.  Taken from Toft.
+          
         
         
     
@@ -114,20 +139,24 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def eventFilter(self, source, event):
         # checking whether the event is a mouse click and the target is the widget
         if event.type() == event.MouseButtonPress and source is self.ui.show_phantom_label:
+            
             # Getting scaled height in case of resizing
-            self.ui.scaled_height=self.ui.show_phantom_label.geometry().height()
+            self.label_height=self.ui.show_phantom_label.geometry().height()
             # Getting scaled Width
-            self.ui.scaled_width=self.ui.show_phantom_label.geometry().width()
+            self.label_width=self.ui.show_phantom_label.geometry().width()
             # Calculating the ratio of scaling in both height and width
-            self.scaled_ratio=self.ui.scaled_height/self.size_of_matrix_root
+            self.height_scale=self.label_height/self.size_of_matrix_root
+            self.width_scale=self.label_width/self.size_of_matrix_root
             # Getting mouse position 
             self.ui.mouse_pos= event.pos()
+            
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
-            self.ui.pixel_clicked_x= math.floor(self.ui.mouse_pos.x()/self.scaled_ratio)#/self.ui.scaled_width_ratio)
-            self.ui.pixel_clicked_y= math.floor(self.ui.mouse_pos.y()/self.scaled_ratio)#/self.ui.scaled_height_ratio)
-            self.ui.label.setText("Pixel Clicked"+"     "+"Row: "+str(self.ui.pixel_clicked_y)+"   "+"Column: "+str(self.ui.pixel_clicked_x))
+            self.ui.pixel_clicked_x= math.floor(self.ui.mouse_pos.x()/self.width_scale)#/self.ui.scaled_width_ratio)
+            self.ui.pixel_clicked_y= math.floor(self.ui.mouse_pos.y()/self.height_scale)#/self.ui.scaled_height_ratio)
+            self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_y)+","+str(self.ui.pixel_clicked_x)+")")
+            self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.ui.mouse_pos.x())+","+str(self.ui.mouse_pos.y())+")")
             # Plotting
             self.plot()
             return super(ApplicationWindow, self).eventFilter(source, event)
@@ -147,6 +176,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # starting by passing them to variables
         t1_plotWindow = self.ui.graphicsView
         t2_plotWindow = self.ui.graphicsView_2
+        
+        if self.ui.pixel_clicked_x >= self.size_of_matrix_root:
+            self.ui.pixel_clicked_x = self.size_of_matrix_root-2
+        if self.ui.pixel_clicked_y >= self.size_of_matrix_root:
+            self.ui.pixel_clicked_y = self.size_of_matrix_root-2
+            
         # A time array from 1 to 1000 seconds
         t= np.arange(1000)
         # T1 equation
