@@ -177,6 +177,27 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         t1_plotWindow = self.ui.graphicsView
         t2_plotWindow = self.ui.graphicsView_2
         
+        if self.ui.pixel_counter == 0:
+            x=255
+            y=0
+            z=0
+        elif self.ui.pixel_counter == 1:
+            x=0
+            y=255
+            z=0
+        elif self.ui.pixel_counter == 2:
+            x=0
+            y=0
+            z=255
+        elif self.ui.pixel_counter == 3:
+            x=255
+            y=255
+            z=0
+        elif self.ui.pixel_counter == 4:
+            x=255
+            y=0
+            z=255
+            
         if self.ui.pixel_clicked_x >= self.size_of_matrix_root:
             self.ui.pixel_clicked_x = self.size_of_matrix_root-2
         if self.ui.pixel_clicked_y >= self.size_of_matrix_root:
@@ -197,18 +218,25 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Checking if no more than 5 pixels are chosen
         if self.ui.pixel_counter<5:
             # Plotting T1
-            t1_plotWindow.plot(t1_plot)
+            t1_plotWindow.plot(t1_plot,pen=(x,y,z),name="T1")
+            t1_plotWindow.showGrid(x=True, y=True)
             # Plotting T2
-            t2_plotWindow.plot(t2_plot)
+            t2_plotWindow.plot(t2_plot,pen=(x,y,z),name="T2")
+            t2_plotWindow.showGrid(x=True, y=True)
             # Incrementing the pixel_counter
             self.ui.pixel_counter+=1
         else:
             # Now if more than 5 pixels are picked, clear both widgets and start over
             t1_plotWindow.clear()
             t2_plotWindow.clear()
+            x=255
+            y=0
+            z=0
             # Plotting
-            t1_plotWindow.plot(t1_plot)
-            t2_plotWindow.plot(t2_plot)
+            t1_plotWindow.plot(t1_plot,pen=(x,y,z),name="T1")
+            t1_plotWindow.showGrid(x=True, y=True)
+            t2_plotWindow.plot(t2_plot,pen=(x,y,z),name="T2")
+            t2_plotWindow.showGrid(x=True, y=True)
             # Reseting the counter to 1
             self.ui.pixel_counter=1
         
