@@ -9,6 +9,7 @@ Created on Wed Mar 20 19:34:52 2019
 import sys
 import math
 from PyQt5 import QtWidgets
+from PIL import Image, ImageEnhance 
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QFileDialog
@@ -38,6 +39,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         self.ui.comboBox.currentIndexChanged.connect(self.on_size_change)
         self.ui.properties_comboBox.currentIndexChanged.connect(self.on_property_change)
+        self.ui.show_phantom_label.mouseMoveEvent=self.brightness
+        self.ui.show_phantom_label.mousePressEvent=self.readCoordinates
+        self.ratio = 0
+#        self.ui.show_phantom_label.mouseDoubleEvent=self.readCoordinates
+#        
+        
+        
         
        
 
@@ -73,18 +81,18 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           
            #show phantom according to chosen property      
           if str(PropertyOfPhantom)== ("T1"):  
-              phantom=qimage2ndarray.array2qimage(self.T1)
-              self.pixmap_of_phantom=QPixmap.fromImage(phantom)
+              self.phantom=qimage2ndarray.array2qimage(self.T1)
+              self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
               self.getValueFromSize_ComboBox()
               
               #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
           elif str(PropertyOfPhantom)== ("Proton Density"):
-              phantom=qimage2ndarray.array2qimage(self.I)
-              self.pixmap_of_phantom=QPixmap.fromImage(phantom)
+              self.phantom=qimage2ndarray.array2qimage(self.I)
+              self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
               self.getValueFromSize_ComboBox()
           else:  
-              phantom=qimage2ndarray.array2qimage(self.T2)
-              self.pixmap_of_phantom=QPixmap.fromImage(phantom)
+              self.phantom=qimage2ndarray.array2qimage(self.T2)
+              self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
               self.getValueFromSize_ComboBox()
               
     def getValueFromSize_ComboBox(self):
@@ -237,6 +245,71 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             t2_plotWindow.showGrid(x=True, y=True)
             # Reseting the counter to 1
             self.ui.pixel_counter=1
+
+    def readCoordinates(self,event):
+            self.xx=event.pos().x()
+            self.yy=event.pos().y()
+            
+    def brightness(self,event):
+        PropertyOfPhantom=self.ui.properties_comboBox.currentText()
+        x = int(event.pos().x())
+        y = int(event.pos().y())
+        if str(PropertyOfPhantom)== ("T1"):  
+              self.im = Image.fromarray(self.T1)
+              #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
+        elif str(PropertyOfPhantom)== ("Proton Density"):
+              self.im = Image.fromarray(self.I)
+        else:  
+              self.im = Image.fromarray(self.T2)
+        
+        
+        self.im = self.im.convert("L")
+        bightness = ImageEnhance.Brightness(self.im)
+        contrast = ImageEnhance.Contrast(self.im)
+
+        if self.xx < x:
+            self.ratio += 0.2
+            enhanced_img = bightness.enhance(self.ratio)
+            enhanced_img.save('task.png')
+            self.im = Image.open('task.png')
+            pixmap = QPixmap('task.png')
+            image = pixmap.scaled(pixmap.width(), pixmap.height())
+            self.ui.show_phantom_label.setScaledContents(True)
+            self.ui.show_phantom_label.setPixmap(image)
+
+        elif self.xx > x:
+            self.ratio -= 0.2
+            enhanced_img = bightness.enhance(self.ratio)
+            enhanced_img.save('task.png')
+            self.im = Image.open('task.png')
+            pixmap = QPixmap('task.png')
+            image = pixmap.scaled(pixmap.width(), pixmap.height())
+            self.ui.show_phantom_label.setScaledContents(True)
+            self.ui.show_phantom_label.setPixmap(image)
+
+        elif self.yy < y:
+            self.ratio += 0.2
+            enhanced_img = contrast.enhance(self.ratio)
+            enhanced_img.save('task.png')
+            self.im = Image.open('task.png')
+            pixmap = QPixmap('task.png')
+            image = pixmap.scaled(pixmap.width(), pixmap.height())
+            self.ui.show_phantom_label.setScaledContents(True)
+            self.ui.show_phantom_label.setPixmap(image)
+
+        elif self.yy > y:
+            self.ratio -= 0.2
+            enhanced_img = contrast.enhance(self.ratio)
+            enhanced_img.save('task.png')
+            self.im = Image.open('task.png')
+            pixmap = QPixmap('task.png')
+            image = pixmap.scaled(pixmap.width(), pixmap.height())
+            self.ui.show_phantom_label.setScaledContents(True)
+            self.ui.show_phantom_label.setPixmap(image)
+       
+            
+            
+            
         
             
         
