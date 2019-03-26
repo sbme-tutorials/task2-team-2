@@ -14,8 +14,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QFileDialog
 import numpy as np
-import pyqtgraph as pg
-from Main_GUI import Ui_MainWindow
+from MRI_Simulator import Ui_MainWindow
 import qimage2ndarray
 
 
@@ -32,6 +31,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.default_width= self.ui.show_phantom_label.geometry().width()
         #connecting browsebutton with loading the file function
         self.ui.browse_button.clicked.connect(self.button_clicked)
+        #connecting generate button with generating the k-space
+        self.ui.generate_button.clicked.connect(self.generate_Kspace)
+        #connecting convert button with converting ifft
+        self.ui.convert_button.clicked.connect(self.inverseFourier)
+        self.ui.convert_button.setEnabled(False)
         #connecting sheppLogan button with its function
         self.ui.pushButton_2.clicked.connect(self.sheppLogan)
         # Initializing Pixel clicked counter
@@ -45,6 +49,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ratio = 0
 #        self.ui.show_phantom_label.mouseDoubleEvent=self.readCoordinates
 #        
+        self.tr_entry_flag=False
+        self.te_entry_flag=False
+        self.flipAngle_entry_flag=False
         
         
         
@@ -54,16 +61,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.t1_plotWindow = self.ui.graphicsView
         self.t2_plotWindow = self.ui.graphicsView_2
         
-        self.ui.lineEdit_2.textChanged.connect(self.on_lineEdit_change)
-        self.ui.lineEdit_3.textChanged.connect(self.on_lineEdit_change_2)
+        self.ui.lineEdit_2.textChanged.connect(self.on_lineEdit_change_te)
+        self.ui.lineEdit_3.textChanged.connect(self.on_lineEdit_change_tr)
+        self.ui.lineEdit_4.textChanged.connect(self.on_lineEdit_change_flipAngle)
         
-        self.te_flag= False
-        self.tr_flag= False
         
        
 
-        
-        
+    ##########################################################################################################################################    
+    ##########################################################################################################################################    
         
 
     def  button_clicked(self):
@@ -76,7 +82,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.T1=Phantom_file[1+int(SeparatingArrays):2*int(SeparatingArrays),:]
            self.T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
            self.size_of_matrix= np.size(self.T1)
-           self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
+           self.size_of_matrix_root= math.floor(math.sqrt(self.size_of_matrix))
            self.t1_plotWindow.clear()
            self.t2_plotWindow.clear()
            self.getValueFromProperties_ComboBox()
@@ -91,6 +97,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 msg.setWindowTitle("Error")
                 msg.exec_()   
   
+    
+    ##########################################################################################################################################
+    ##########################################################################################################################################
+    
     def getValueFromProperties_ComboBox(self):
           PropertyOfPhantom=self.ui.properties_comboBox.currentText()
           
@@ -109,6 +119,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               self.phantom=qimage2ndarray.array2qimage(self.T2)
               self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
               self.getValueFromSize_ComboBox()
+              
+   ##########################################################################################################################################           
+   ##########################################################################################################################################          
               
     def getValueFromSize_ComboBox(self):
           
@@ -132,18 +145,26 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
               
 
+ ##########################################################################################################################################
+ ##########################################################################################################################################
+    
 
     def getValueFromLine_edit_te(self):
         self.te=int(self.ui.lineEdit_2.text())
-        self.te_flag= True
-        
+        self.te_entry_flag=True
         
     def getValueFromLine_edit_tr(self):
         self.tr=int(self.ui.lineEdit_3.text())
-        self.tr_flag= True
+        self.tr_entry_flag=True
+        
+    def getValueFromLine_edit_flipAngle(self):
+        self.flipAngle=int(self.ui.lineEdit_4.text())
+        self.flipAngle_entry_flag=True
     
     
     
+  ########################################################################################################################################## 
+  ##########################################################################################################################################  
     
     def sheppLogan(self): 
           
@@ -162,8 +183,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
     
     
-          
-        
+   ##########################################################################################################################################       
+   ##########################################################################################################################################     
         
     
     # This is the filter used to catch mouse events exculesivly on label
@@ -172,7 +193,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
     def eventFilter(self, source, event):
         # checking whether the event is a mouse click and the target is the widget
-        if event.type() == event.MouseButtonPress and source is self.ui.show_phantom_label:
+        if event.type() == event.MouseButtonDblClick and source is self.ui.show_phantom_label:
             
             # Getting scaled height in case of resizing
             self.label_height=self.ui.show_phantom_label.geometry().height()
@@ -195,6 +216,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.plot()
             return super(ApplicationWindow, self).eventFilter(source, event)
         
+        
+        
+        
+ ##########################################################################################################################################      
+ ##########################################################################################################################################       
+        
+        
     @pyqtSlot()
     def on_size_change(self):
         self.getValueFromSize_ComboBox()
@@ -204,12 +232,21 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.getValueFromProperties_ComboBox()
         
     @pyqtSlot()
-    def on_lineEdit_change(self):
+    def on_lineEdit_change_te(self):
         self.getValueFromLine_edit_te()
         
     @pyqtSlot()
-    def on_lineEdit_change_2(self):
+    def on_lineEdit_change_tr(self):
         self.getValueFromLine_edit_tr()
+    
+    @pyqtSlot()
+    def on_lineEdit_change_flipAngle(self):
+        self.getValueFromLine_edit_flipAngle()
+    
+    
+    
+ ##########################################################################################################################################
+ ##########################################################################################################################################
     
     # Plot function
     def plot(self):
@@ -217,32 +254,25 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         # Coloring the curve
         if self.ui.pixel_counter == 0:
-            x=255
-            y=0
-            z=0
-            if self.te_flag and self.tr_flag:
-                lr1 = pg.LinearRegionItem([self.te,self.tr])
-                lr2 = pg.LinearRegionItem([self.te,self.tr])
-                lr1.setZValue(-10)
-                lr2.setZValue(-10)
-                self.t1_plotWindow.addItem(lr1)
-                self.t2_plotWindow.addItem(lr2)
+            red=255
+            green=0
+            blue=0
         elif self.ui.pixel_counter == 1:
-            x=0
-            y=255
-            z=0
+            red=0
+            green=255
+            blue=0
         elif self.ui.pixel_counter == 2:
-            x=0
-            y=0
-            z=255
+            red=0
+            green=0
+            blue=255
         elif self.ui.pixel_counter == 3:
-            x=255
-            y=255
-            z=0
+            red=255
+            green=255
+            blue=0
         elif self.ui.pixel_counter == 4:
-            x=255
-            y=0
-            z=255
+            red=255
+            green=0
+            blue=255
         # Sanity checking 
         if self.ui.pixel_clicked_x >= self.size_of_matrix_root:
             self.ui.pixel_clicked_x = self.size_of_matrix_root-2
@@ -264,11 +294,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Checking if no more than 5 pixels are chosen
         if self.ui.pixel_counter<5:
             # Plotting T1
-            self.t1_plotWindow.plot(t1_plot,pen=(x,y,z),name="T1")
+            self.t1_plotWindow.plot(t1_plot,pen=(red,green,blue),name="T1")
             self.t1_plotWindow.showGrid(x=True, y=True)
             self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             # Plotting T2
-            self.t2_plotWindow.plot(t2_plot,pen=(x,y,z),name="T2")
+            self.t2_plotWindow.plot(t2_plot,pen=(red,green,blue),name="T2")
             self.t2_plotWindow.showGrid(x=True, y=True)
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             # Incrementing the pixel_counter
@@ -277,30 +307,31 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # Now if more than 5 pixels are picked, clear both widgets and start over
             self.t1_plotWindow.clear()
             self.t2_plotWindow.clear()
-            x=255
-            y=0
-            z=0
+            red=255
+            green=0
+            blue=0
             # Plotting
-            self.t1_plotWindow.plot(t1_plot,pen=(x,y,z),name="T1")
+            self.t1_plotWindow.plot(t1_plot,pen=(red,green,blue),name="T1")
             self.t1_plotWindow.showGrid(x=True, y=True)
             self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
-            self.t2_plotWindow.plot(t2_plot,pen=(x,y,z),name="T2")
+            self.t2_plotWindow.plot(t2_plot,pen=(red,green,blue),name="T2")
             self.t2_plotWindow.showGrid(x=True, y=True)
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
-            if self.te_flag and self.tr_flag:
-                lr1 = pg.LinearRegionItem([self.te,self.tr])
-                lr2 = pg.LinearRegionItem([self.te,self.tr])
-                lr1.setZValue(-10)
-                lr2.setZValue(-10)
-                self.t1_plotWindow.addItem(lr1)
-                self.t2_plotWindow.addItem(lr2)
             
             # Reseting the counter to 1
             self.ui.pixel_counter=1
+            
+            
+  ##########################################################################################################################################          
+  ##########################################################################################################################################          
 
     def readCoordinates(self,event):
             self.xx=event.pos().x()
             self.yy=event.pos().y()
+            
+  ##########################################################################################################################################         
+  ##########################################################################################################################################          
+            
             
     def brightness(self,event):
         PropertyOfPhantom=self.ui.properties_comboBox.currentText()
@@ -340,7 +371,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.setPixmap(image)
 
         elif self.yy < y:
-            self.ratio += 0.2
+            self.ratio += 0.01
             enhanced_img = contrast.enhance(self.ratio)
             enhanced_img.save('task.png')
             self.im = Image.open('task.png')
@@ -350,7 +381,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.setPixmap(image)
 
         elif self.yy > y:
-            self.ratio -= 0.2
+            self.ratio -= 0.01
             enhanced_img = contrast.enhance(self.ratio)
             enhanced_img.save('task.png')
             self.im = Image.open('task.png')
@@ -360,10 +391,111 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.setPixmap(image)
        
             
+##########################################################################################################################################
+##########################################################################################################################################     
+            
+    def generate_Kspace(self):
+        if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag:
+            self.ui.generate_button.setEnabled(False)
+            phantomSize = self.size_of_matrix_root
+
+            T1 = self.T1
+            T2 = self.T2
+
+            flipAngle = self.flipAngle
+
+            TE = self.te
+            TR = self.tr
+            
+            magneticVector = np.zeros((phantomSize, phantomSize, 3))
+
+            magneticVector[0:phantomSize, 0:phantomSize, 0] = np.zeros((phantomSize, phantomSize))
+            magneticVector[0:phantomSize, 0:phantomSize, 1] = np.zeros((phantomSize, phantomSize))
+            magneticVector[0:phantomSize, 0:phantomSize, 2] = np.ones((phantomSize, phantomSize))
             
             
-        
+            rotationAroundXMatrix = np.array([[1, 0, 0],
+                                              [0, np.cos(flipAngle), np.sin(flipAngle)],
+                                              [0, -np.sin(flipAngle), np.cos(flipAngle)]])
     
+    
+            self.kSpace = np.zeros((phantomSize, phantomSize), dtype=np.complex)
+            
+            for kSpaceRowIndex in range(phantomSize):    # Row Index for kSpace
+                for j in range(phantomSize):
+                    for k in range(phantomSize):
+                        
+                        #magnetic Vector haysawy {0, 0, 1}
+                        magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
+                        #magnetic Vector haysawy {0, 1, 0}
+                        
+                        if T2[j][k]==0:
+                            T2[j][k] = 0.00001
+                        if T1[j][k] == 0:
+                            T1[j][k] = 0.00001
+                            
+                        decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
+                                                 [0, np.exp(-TE / T2[j][k]), 0],
+                                                 [0, 0, np.exp(-TE / T1[j][k])]])
+            
+                        magneticVector[j][k] = np.matmul(decayMatrix, magneticVector[j][k])
+                        #magentic Vector {0, 0.5, 0}
+            
+                gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
+                
+                for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
+                    gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
+
+                    for j in range(phantomSize):
+                        for k in range(phantomSize):
+                            alpha = gxStep*j + gyStep*k
+                            magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
+                            self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+                            
+                self.kSpace = np.abs(self.kSpace)
+                self.kSpace = (255*self.kSpace)/(np.max(self.kSpace))
+                pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace)
+                pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
+                self.ui.kspace_label.setPixmap(pixmap_of_kspace)
+
+                # Spoiler
+
+                magneticVector[0:phantomSize][0:phantomSize][0] = 0
+                magneticVector[0:phantomSize][0:phantomSize][1] = 0
+                
+                for j in range(phantomSize):
+                    for k in range(phantomSize):
+                        magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
+    
+            self.ui.generate_button.setEnabled(True)
+            self.ui.generate_button.setText("Re-Generate")
+            self.ui.convert_button.setEnabled(True)
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("TE, TR or FlipAngle not entered!")
+            msg.setInformativeText('Please enter their values')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+        
+
+
+            
+            
+##########################################################################################################################################
+##########################################################################################################################################
+    
+    def inverseFourier(self):
+        
+        phantomFinal = np.fft.ifft2(self.kSpace)
+        phantomFinal = np.abs(phantomFinal)
+        phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
+        phantomFinal=QPixmap.fromImage(phantomFinal)
+        self.ui.inverseFourier_label.setPixmap(phantomFinal)
+        self.ui.convert_button.setEnabled(False)
+
+##########################################################################################################################################
+##########################################################################################################################################
         
         
 def main():

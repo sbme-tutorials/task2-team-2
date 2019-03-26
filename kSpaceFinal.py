@@ -51,13 +51,15 @@ from matplotlib import pyplot as plt
 #
 #T2 = (255*T2)/np.max(T2)
 
-phantomSize = 3
 #T1 = np.resize(T1, (phantomSize, phantomSize))
 #T2 = np.resize(T2, (phantomSize, phantomSize))
 
 
 #T1 = np.full((phantomSize,phantomSize), 1000)
 #T2 = np.full((phantomSize,phantomSize), 40)
+
+phantomSize = 3
+
 
 
 T1 = np.array([[1000,1280,2550],[1280,2550,1000],[2550,1000,1280]])
