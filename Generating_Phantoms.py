@@ -46,7 +46,7 @@ T2=np.full((512,512 ), 0)
 kidneyT2 =np.full((115,115 ), 60) 
 liverT2=np.full((250, 250), 100)
 spleenT2=np.full((100, 100), 115)
-fatT2=np.full((150, 150), 70)
+fatT2=np.full((150, 150), 20)
 intestineT2=np.full((70, 70), 135)
 
 T2 [50:165, 50:165]=kidneyT2
@@ -97,7 +97,7 @@ kidneyT2 =np.full((75,75),  60)
 liverT2=np.full((35, 35), 40)
 spleenT2=np.full((55, 55), 90)
 fatT2=np.full((100,100), 70)
-intestineT2=np.full((40,40), 50)
+intestineT2=np.full((40,40), 120)
 
 T2 [20:95, 20:95]=kidneyT2
 T2[ 20:55, 200:235]=liverT2
@@ -134,7 +134,7 @@ kidneyT1 =np.full((20,75 ), 700)
 liverT1=np.full((50, 35), 400)
 spleenT1=np.full((30, 55), 550)
 fatT1=np.full((10,60), 250)
-intestineT1=np.full((37,20), 700)
+intestineT1=np.full((37,20), 900)
 
 T1 [20:40, 10:85]=kidneyT1
 T1[ 45:95, 90:125]=liverT1
