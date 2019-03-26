@@ -126,9 +126,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
     
     
-    
-        #  Modified version of Shepp & Logan's head phantom,
-        #  adjusted to improve contrast.  Taken from Toft.
           
         
         
