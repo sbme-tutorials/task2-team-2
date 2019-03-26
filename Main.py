@@ -62,6 +62,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         fileName, _filter = QFileDialog.getOpenFileName(self, "Choose a phantom", "", "Filter -- ( *.npy)")
         if fileName:
            Phantom_file=np.load(fileName)
+           self.ui.lineEdit.setText(fileName)
            SeparatingArrays=(len(Phantom_file)/3)
            self.I=Phantom_file[1:int(SeparatingArrays),:]
            self.T1=Phantom_file[1+int(SeparatingArrays):2*int(SeparatingArrays),:]
