@@ -13,6 +13,7 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QFileDialog
 import numpy as np
+import pyqtgraph as pg
 from Main_GUI import Ui_MainWindow
 import qimage2ndarray
 
@@ -39,6 +40,18 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.comboBox.currentIndexChanged.connect(self.on_size_change)
         self.ui.properties_comboBox.currentIndexChanged.connect(self.on_property_change)
         
+        # self.ui.graphicsView and self.ui.graphicsView_2 aren't graphicsViews
+        # Instead, I changed them to PlotWidgets in the Main_GUI.py file 
+        # starting by passing them to variables
+        self.t1_plotWindow = self.ui.graphicsView
+        self.t2_plotWindow = self.ui.graphicsView_2
+        
+        self.ui.lineEdit_2.textChanged.connect(self.on_lineEdit_change)
+        self.ui.lineEdit_3.textChanged.connect(self.on_lineEdit_change_2)
+        
+        self.te_flag= False
+        self.tr_flag= False
+        
        
 
         
@@ -55,6 +68,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
            self.size_of_matrix= np.size(self.T1)
            self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
+           self.t1_plotWindow.clear()
+           self.t2_plotWindow.clear()
            self.getValueFromProperties_ComboBox()
            
            #show phantom according to chosen property        
@@ -108,6 +123,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
               
 
+
+    def getValueFromLine_edit_te(self):
+        self.te=int(self.ui.lineEdit_2.text())
+        self.te_flag= True
+        
+        
+    def getValueFromLine_edit_tr(self):
+        self.tr=int(self.ui.lineEdit_3.text())
+        self.tr_flag= True
+    
+    
+    
+    
     def sheppLogan(self): 
           
           sheppLogan_file = np.load('sheppLogan_phantom.npy')
@@ -168,19 +196,31 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def on_property_change(self):
         self.getValueFromProperties_ComboBox()
+        
+    @pyqtSlot()
+    def on_lineEdit_change(self):
+        self.getValueFromLine_edit_te()
+        
+    @pyqtSlot()
+    def on_lineEdit_change_2(self):
+        self.getValueFromLine_edit_tr()
     
     # Plot function
     def plot(self):
-        # self.ui.graphicsView and self.ui.graphicsView_2 aren't graphicsViews
-        # Instead, I changed them to PlotWidgets in the Main_GUI.py file 
-        # starting by passing them to variables
-        t1_plotWindow = self.ui.graphicsView
-        t2_plotWindow = self.ui.graphicsView_2
         
+        
+        # Coloring the curve
         if self.ui.pixel_counter == 0:
             x=255
             y=0
             z=0
+            if self.te_flag and self.tr_flag:
+                lr1 = pg.LinearRegionItem([self.te,self.tr])
+                lr2 = pg.LinearRegionItem([self.te,self.tr])
+                lr1.setZValue(-10)
+                lr2.setZValue(-10)
+                self.t1_plotWindow.addItem(lr1)
+                self.t2_plotWindow.addItem(lr2)
         elif self.ui.pixel_counter == 1:
             x=0
             y=255
@@ -197,7 +237,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             x=255
             y=0
             z=255
-            
+        # Sanity checking 
         if self.ui.pixel_clicked_x >= self.size_of_matrix_root:
             self.ui.pixel_clicked_x = self.size_of_matrix_root-2
         if self.ui.pixel_clicked_y >= self.size_of_matrix_root:
@@ -218,29 +258,41 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Checking if no more than 5 pixels are chosen
         if self.ui.pixel_counter<5:
             # Plotting T1
-            t1_plotWindow.plot(t1_plot,pen=(x,y,z),name="T1")
-            t1_plotWindow.showGrid(x=True, y=True)
+            self.t1_plotWindow.plot(t1_plot,pen=(x,y,z),name="T1")
+            self.t1_plotWindow.showGrid(x=True, y=True)
+            self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             # Plotting T2
-            t2_plotWindow.plot(t2_plot,pen=(x,y,z),name="T2")
-            t2_plotWindow.showGrid(x=True, y=True)
+            self.t2_plotWindow.plot(t2_plot,pen=(x,y,z),name="T2")
+            self.t2_plotWindow.showGrid(x=True, y=True)
+            self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             # Incrementing the pixel_counter
             self.ui.pixel_counter+=1
         else:
             # Now if more than 5 pixels are picked, clear both widgets and start over
-            t1_plotWindow.clear()
-            t2_plotWindow.clear()
+            self.t1_plotWindow.clear()
+            self.t2_plotWindow.clear()
             x=255
             y=0
             z=0
             # Plotting
-            t1_plotWindow.plot(t1_plot,pen=(x,y,z),name="T1")
-            t1_plotWindow.showGrid(x=True, y=True)
-            t2_plotWindow.plot(t2_plot,pen=(x,y,z),name="T2")
-            t2_plotWindow.showGrid(x=True, y=True)
+            self.t1_plotWindow.plot(t1_plot,pen=(x,y,z),name="T1")
+            self.t1_plotWindow.showGrid(x=True, y=True)
+            self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
+            self.t2_plotWindow.plot(t2_plot,pen=(x,y,z),name="T2")
+            self.t2_plotWindow.showGrid(x=True, y=True)
+            self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
+            if self.te_flag and self.tr_flag:
+                lr1 = pg.LinearRegionItem([self.te,self.tr])
+                lr2 = pg.LinearRegionItem([self.te,self.tr])
+                lr1.setZValue(-10)
+                lr2.setZValue(-10)
+                self.t1_plotWindow.addItem(lr1)
+                self.t2_plotWindow.addItem(lr2)
+            
             # Reseting the counter to 1
             self.ui.pixel_counter=1
         
-            
+    
         
         
 def main():
