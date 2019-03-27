@@ -354,6 +354,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.t2_plotWindow.showGrid(x=True, y=True)
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             
+            if self.te_entry_flag:
+                self.vLine5 = pg.InfiniteLine(angle=90, movable=False)
+                self.vLine5.setPos(self.te)
+                self.vLine6 = pg.InfiniteLine(angle=90, movable=False)
+                self.vLine6.setPos(self.te)
+                self.t1_plotWindow.addItem(self.vLine5,ignoreBounds=True)
+                self.t2_plotWindow.addItem(self.vLine6,ignoreBounds=True)
+                
+            if self.tr_entry_flag:
+                self.vLine7 = pg.InfiniteLine(angle=90, movable=False)
+                self.vLine7.setPos(self.tr)
+                self.vLine8 = pg.InfiniteLine(angle=90, movable=False)
+                self.vLine8.setPos(self.tr)
+                self.t1_plotWindow.addItem(self.vLine7,ignoreBounds=True)
+                self.t2_plotWindow.addItem(self.vLine8,ignoreBounds=True)
+            
             # Reseting the counter to 1
             self.ui.pixel_counter=1
             
@@ -521,7 +537,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
             pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
             pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-            self.ui.kspace_label.setPixmap(pixmap_of_kspace)
+            self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
     
             self.ui.generate_button.setEnabled(True)
             self.ui.generate_button.setText("Re-Generate")
@@ -548,7 +564,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         phantomFinal = (phantomFinal-np.min(phantomFinal))*255/(np.max(phantomFinal)-np.min(phantomFinal))
         phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
         phantomFinal=QPixmap.fromImage(phantomFinal)
-        self.ui.inverseFourier_label.setPixmap(phantomFinal)
+        self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
         self.ui.convert_button.setEnabled(False)
 
 ##########################################################################################################################################
