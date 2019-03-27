@@ -87,6 +87,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.t1_plotWindow.clear()
            self.t2_plotWindow.clear()
            self.getValueFromProperties_ComboBox()
+           self.ui.show_phantom_label.point=[]
            
            #show phantom according to chosen property        
            
@@ -225,6 +226,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # Getting mouse position 
             self.ui.mouse_pos= event.pos()
             
+         
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
@@ -270,29 +272,58 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
     # Plot function
     def plot(self):
+#        self.colors=np.zeros((5,3))
         
         
         # Coloring the curve
-        if self.ui.pixel_counter == 0:
+        if self.ui.pixel_counter == 0:  
             red=255
             green=0
             blue=0
-        elif self.ui.pixel_counter == 1:
+#            self.colors[self.ui.pixel_counter,0]=red
+#            self.colors[self.ui.pixel_counter,1]=green
+#            self.colors[self.ui.pixel_counter,2]=blue
+            
+#            self.color = Qt.QColor.fromRgb (self.colors[self.ui.pixel_counter,0], self.colors[self.ui.pixel_counter,1], self.colors[self.ui.pixel_counter,2], int alpha = 255)
+
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
+            self.ui.show_phantom_label.paint=True
+        elif self.ui.pixel_counter == 1:  
             red=0
             green=255
             blue=0
+#            self.colors[self.ui.pixel_counter,0]=red
+#            self.colors[self.ui.pixel_counter,1]=green
+#            self.colors[self.ui.pixel_counter,2]=blue
+
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
         elif self.ui.pixel_counter == 2:
             red=0
             green=0
             blue=255
-        elif self.ui.pixel_counter == 3:
+#            self.colors[self.ui.pixel_counter,0]=red
+#            self.colors[self.ui.pixel_counter,1]=green
+#            self.colors[self.ui.pixel_counter,2]=blue
+
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
+        elif self.ui.pixel_counter == 3:      
             red=255
             green=255
             blue=0
+#            self.colors[self.ui.pixel_counter,0]=red
+#            self.colors[self.ui.pixel_counter,1]=green
+#            self.colors[self.ui.pixel_counter,2]=blue
+
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
         elif self.ui.pixel_counter == 4:
             red=255
             green=0
             blue=255
+#            self.colors[self.ui.pixel_counter,0]=red
+#            self.colors[self.ui.pixel_counter,1]=green
+#            self.colors[self.ui.pixel_counter,2]=blue
+
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
         # Sanity checking 
         if self.ui.pixel_clicked_x >= self.size_of_matrix_root:
             self.ui.pixel_clicked_x = self.size_of_matrix_root-2
@@ -337,10 +368,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
             
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
+            
+           
             # Incrementing the pixel_counter
             self.ui.pixel_counter+=1
         else:
             # Now if more than 5 pixels are picked, clear both widgets and start over
+            self.ui.show_phantom_label.point=[]
+           # self.ui.show_phantom_label.paint=False
             self.t1_plotWindow.clear()
             self.t2_plotWindow.clear()
             red=255

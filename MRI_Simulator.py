@@ -133,7 +133,7 @@ class Ui_MainWindow(object):
         self.lineEdit = QtWidgets.QLineEdit(self.tab)
         self.lineEdit.setObjectName("lineEdit")
         self.verticalLayout_4.addWidget(self.lineEdit)
-        self.show_phantom_label = QtWidgets.QLabel(self.tab)
+        self.show_phantom_label = Label(self.centralwidget)
         self.show_phantom_label.setMinimumSize(QtCore.QSize(0, 0))
         self.show_phantom_label.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.show_phantom_label.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -272,4 +272,21 @@ class Ui_MainWindow(object):
         self.label_13.setText(_translate("MainWindow", "K-Space representation"))
         self.label_12.setText(_translate("MainWindow", "Inverse Fourier"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "K-Space"))
-
+        
+class Label(QtWidgets.QLabel):
+    def __init__(self, parent=None):
+        super(Label, self).__init__(parent = parent)
+        self.x = 0
+        self.y = 0
+        self.point=[]
+        self.pixel=[]
+        self.paint=False
+    def paintEvent(self, e):
+        super().paintEvent(e)
+        painter = QtGui.QPainter(self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+        if  self.point: 
+            for self.pixel in self.point:     
+               painter.setPen(QtGui.QPen(QtCore.Qt.green))
+               painter.drawRect(self.pixel[0],self.pixel[1],4,4)
+   
