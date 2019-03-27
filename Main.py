@@ -517,9 +517,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                         magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
                         
             self.phantomFinal = self.kSpace
-            self.kSpace = np.abs(self.kSpace)
-            self.kSpace = (self.kSpace-np.min(self.kSpace))*400/(np.max(self.kSpace)-np.min(self.kSpace))
-            pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace)
+            self.kSpace1 = np.abs(self.kSpace)
+            self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
+            pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
             pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
             self.ui.kspace_label.setPixmap(pixmap_of_kspace)
     
@@ -543,9 +543,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
     def inverseFourier(self):
         phantomFinal= self.phantomFinal
-        phantomFinal = np.fft.ifft2(self.kSpace)
+        phantomFinal = np.fft.fft2(self.kSpace)
         phantomFinal = np.abs(phantomFinal)
-        phantomFinal = (phantomFinal-np.min(phantomFinal))*400/(np.max(phantomFinal)-np.min(phantomFinal))
+        phantomFinal = (phantomFinal-np.min(phantomFinal))*255/(np.max(phantomFinal)-np.min(phantomFinal))
         phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
         phantomFinal=QPixmap.fromImage(phantomFinal)
         self.ui.inverseFourier_label.setPixmap(phantomFinal)
