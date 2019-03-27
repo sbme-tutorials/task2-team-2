@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import QFileDialog
 import numpy as np
 from MRI_Simulator import Ui_MainWindow
 import qimage2ndarray
+import pyqtgraph as pg
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):
@@ -61,9 +62,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.t1_plotWindow = self.ui.graphicsView
         self.t2_plotWindow = self.ui.graphicsView_2
         
-        self.ui.lineEdit_2.textChanged.connect(self.on_lineEdit_change_te)
-        self.ui.lineEdit_3.textChanged.connect(self.on_lineEdit_change_tr)
-        self.ui.lineEdit_4.textChanged.connect(self.on_lineEdit_change_flipAngle)
+        self.ui.lineEdit_2.editingFinished.connect(self.on_lineEdit_change_te)
+        self.ui.lineEdit_3.editingFinished.connect(self.on_lineEdit_change_tr)
+        self.ui.lineEdit_4.editingFinished.connect(self.on_lineEdit_change_flipAngle)
         
         
        
@@ -131,18 +132,23 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           if str(selected_size)== ("Default"):
               self.ui.show_phantom_label.setGeometry(0,0,math.sqrt(self.size_of_matrix),math.sqrt(self.size_of_matrix))
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom)
+              self.ui.label_11.setPixmap(self.pixmap_of_phantom)
           elif str(selected_size)== ("32x32"):
               self.ui.show_phantom_label.setGeometry(0,0,32,32)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
+              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
           elif str(selected_size)== ("128x128"):
               self.ui.show_phantom_label.setGeometry(0,0,128,128)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(128,128,Qt.KeepAspectRatio,Qt.FastTransformation))
+              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(128,128,Qt.KeepAspectRatio,Qt.FastTransformation))
           elif str(selected_size)== ("256x256"):
               self.ui.show_phantom_label.setGeometry(0,0,256,256)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(256,256,Qt.KeepAspectRatio,Qt.FastTransformation))
+              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(256,256,Qt.KeepAspectRatio,Qt.FastTransformation))
           elif str(selected_size)== ("512x512"):
               self.ui.show_phantom_label.setGeometry(0,0,512,512)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
               
 
  ##########################################################################################################################################
@@ -152,10 +158,24 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def getValueFromLine_edit_te(self):
         self.te=int(self.ui.lineEdit_2.text())
         self.te_entry_flag=True
+        self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine1.setPos(self.te)
+        self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine2.setPos(self.te)
+        self.t1_plotWindow.addItem(self.vLine1,ignoreBounds=True)
+        self.t2_plotWindow.addItem(self.vLine2,ignoreBounds=True)
+        
         
     def getValueFromLine_edit_tr(self):
         self.tr=int(self.ui.lineEdit_3.text())
         self.tr_entry_flag=True
+        self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine3.setPos(self.tr)
+        self.vLine4 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine4.setPos(self.tr)
+        self.t1_plotWindow.addItem(self.vLine3,ignoreBounds=True)
+        self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
+        
         
     def getValueFromLine_edit_flipAngle(self):
         self.flipAngle=int(self.ui.lineEdit_4.text())
@@ -300,6 +320,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # Plotting T2
             self.t2_plotWindow.plot(t2_plot,pen=(red,green,blue),name="T2")
             self.t2_plotWindow.showGrid(x=True, y=True)
+            if self.te_entry_flag:
+                self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
+                self.vLine1.setPos(self.te)
+                self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
+                self.vLine2.setPos(self.te)
+                self.t1_plotWindow.addItem(self.vLine1,ignoreBounds=True)
+                self.t2_plotWindow.addItem(self.vLine2,ignoreBounds=True)
+                
+            if self.tr_entry_flag:
+                self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
+                self.vLine3.setPos(self.tr)
+                self.vLine4 = pg.InfiniteLine(angle=90, movable=False)
+                self.vLine4.setPos(self.tr)
+                self.t1_plotWindow.addItem(self.vLine3,ignoreBounds=True)
+                self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
+            
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             # Incrementing the pixel_counter
             self.ui.pixel_counter+=1
@@ -359,6 +395,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             image = pixmap.scaled(pixmap.width(), pixmap.height())
             self.ui.show_phantom_label.setScaledContents(True)
             self.ui.show_phantom_label.setPixmap(image)
+            if self.xx > x:
+                self.ratio -= 0.2
+                enhanced_img = bightness.enhance(self.ratio)
+                enhanced_img.save('task.png')
+                self.im = Image.open('task.png')
+                pixmap = QPixmap('task.png')
+                image = pixmap.scaled(pixmap.width(), pixmap.height())
+                self.ui.show_phantom_label.setScaledContents(True)
+                self.ui.show_phantom_label.setPixmap(image)
 
         elif self.xx > x:
             self.ratio -= 0.2
@@ -369,9 +414,18 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             image = pixmap.scaled(pixmap.width(), pixmap.height())
             self.ui.show_phantom_label.setScaledContents(True)
             self.ui.show_phantom_label.setPixmap(image)
+            if self.xx < x:
+                self.ratio += 0.2
+                enhanced_img = bightness.enhance(self.ratio)
+                enhanced_img.save('task.png')
+                self.im = Image.open('task.png')
+                pixmap = QPixmap('task.png')
+                image = pixmap.scaled(pixmap.width(), pixmap.height())
+                self.ui.show_phantom_label.setScaledContents(True)
+                self.ui.show_phantom_label.setPixmap(image)
 
         elif self.yy < y:
-            self.ratio += 0.01
+            self.ratio += 0.2
             enhanced_img = contrast.enhance(self.ratio)
             enhanced_img.save('task.png')
             self.im = Image.open('task.png')
@@ -381,7 +435,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.setPixmap(image)
 
         elif self.yy > y:
-            self.ratio -= 0.01
+            self.ratio -= 0.2
             enhanced_img = contrast.enhance(self.ratio)
             enhanced_img.save('task.png')
             self.im = Image.open('task.png')
@@ -402,7 +456,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             T1 = self.T1
             T2 = self.T2
 
-            flipAngle = self.flipAngle
+            flipAngle = self.flipAngle*np.pi/180
 
             TE = self.te
             TR = self.tr
@@ -430,13 +484,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                         #magnetic Vector haysawy {0, 1, 0}
                         
                         if T2[j][k]==0:
-                            T2[j][k] = 0.00001
+                            T2[j][k] = 0.00000000000000000000001
                         if T1[j][k] == 0:
-                            T1[j][k] = 0.00001
+                            T1[j][k] = 0.00000000000000000000001
                             
                         decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
-                                                 [0, np.exp(-TE / T2[j][k]), 0],
-                                                 [0, 0, np.exp(-TE / T1[j][k])]])
+                                                [0, np.exp(-TE / T2[j][k]), 0],
+                                                [0, 0, np.exp(-TE / T1[j][k])]])
             
                         magneticVector[j][k] = np.matmul(decayMatrix, magneticVector[j][k])
                         #magentic Vector {0, 0.5, 0}
@@ -451,12 +505,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                             alpha = gxStep*j + gyStep*k
                             magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
                             self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
-                            
-                self.kSpace = np.abs(self.kSpace)
-                self.kSpace = (255*self.kSpace)/(np.max(self.kSpace))
-                pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace)
-                pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-                self.ui.kspace_label.setPixmap(pixmap_of_kspace)
+                
 
                 # Spoiler
 
@@ -466,6 +515,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 for j in range(phantomSize):
                     for k in range(phantomSize):
                         magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
+                        
+            self.phantomFinal = self.kSpace
+            self.kSpace = np.abs(self.kSpace)
+            self.kSpace = (self.kSpace-np.min(self.kSpace))*400/(np.max(self.kSpace)-np.min(self.kSpace))
+            pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace)
+            pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
+            self.ui.kspace_label.setPixmap(pixmap_of_kspace)
     
             self.ui.generate_button.setEnabled(True)
             self.ui.generate_button.setText("Re-Generate")
@@ -486,9 +542,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 ##########################################################################################################################################
     
     def inverseFourier(self):
-        
+        phantomFinal= self.phantomFinal
         phantomFinal = np.fft.ifft2(self.kSpace)
         phantomFinal = np.abs(phantomFinal)
+        phantomFinal = (phantomFinal-np.min(phantomFinal))*400/(np.max(phantomFinal)-np.min(phantomFinal))
         phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
         phantomFinal=QPixmap.fromImage(phantomFinal)
         self.ui.inverseFourier_label.setPixmap(phantomFinal)
