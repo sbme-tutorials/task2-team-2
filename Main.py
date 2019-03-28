@@ -10,13 +10,15 @@ import sys
 import math
 from PyQt5 import QtWidgets, QtCore
 from PIL import Image, ImageEnhance 
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QMouseEvent
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QFileDialog
 import numpy as np
 from MRI_Simulator import Ui_MainWindow
 import qimage2ndarray
 import pyqtgraph as pg
+import threading
+
 
 
 class ApplicationWindow(QtWidgets.QMainWindow):
@@ -43,6 +45,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Must not exceed 5
         self.ui.pixel_counter=0
         
+        self.ui.label_10.hide()
+        self.ui.label_9.hide()
+    
+        
         self.ui.comboBox.currentIndexChanged.connect(self.on_size_change)
         self.ui.properties_comboBox.currentIndexChanged.connect(self.on_property_change)
         self.ui.show_phantom_label.mouseMoveEvent=self.brightness
@@ -65,6 +71,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.lineEdit_2.editingFinished.connect(self.on_lineEdit_change_te)
         self.ui.lineEdit_3.editingFinished.connect(self.on_lineEdit_change_tr)
         self.ui.lineEdit_4.editingFinished.connect(self.on_lineEdit_change_flipAngle)
+        
+        self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
         
         
        
@@ -236,7 +244,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.ui.mouse_pos.x())+","+str(self.ui.mouse_pos.y())+")")
             # Plotting
             self.plot()
-            return super(ApplicationWindow, self).eventFilter(source, event)
+        
+        elif event.type() == event.MouseButtonPress and QMouseEvent.button(event) == Qt.RightButton and source is self.ui.show_phantom_label:
+            self.getValueFromSize_ComboBox()
+        
+        return super(ApplicationWindow, self).eventFilter(source, event)
         
         
         
@@ -422,8 +434,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         bightness = ImageEnhance.Brightness(self.im)
         contrast = ImageEnhance.Contrast(self.im)
 
-        if self.xx < x:
-            self.ratio += 0.2
+        if self.xx < x and y<y+5 and y>y-5:
+            self.ratio += 0.01
             enhanced_img = bightness.enhance(self.ratio)
             enhanced_img.save('task.png')
             self.im = Image.open('task.png')
@@ -431,18 +443,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             image = pixmap.scaled(pixmap.width(), pixmap.height())
             self.ui.show_phantom_label.setScaledContents(True)
             self.ui.show_phantom_label.setPixmap(image)
-            if self.xx > x:
-                self.ratio -= 0.2
-                enhanced_img = bightness.enhance(self.ratio)
-                enhanced_img.save('task.png')
-                self.im = Image.open('task.png')
-                pixmap = QPixmap('task.png')
-                image = pixmap.scaled(pixmap.width(), pixmap.height())
-                self.ui.show_phantom_label.setScaledContents(True)
-                self.ui.show_phantom_label.setPixmap(image)
 
-        elif self.xx > x:
-            self.ratio -= 0.2
+        elif self.xx > x and y<y+5 and y>y-5:
+            self.ratio -= 0.01
             enhanced_img = bightness.enhance(self.ratio)
             enhanced_img.save('task.png')
             self.im = Image.open('task.png')
@@ -450,18 +453,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             image = pixmap.scaled(pixmap.width(), pixmap.height())
             self.ui.show_phantom_label.setScaledContents(True)
             self.ui.show_phantom_label.setPixmap(image)
-            if self.xx < x:
-                self.ratio += 0.2
-                enhanced_img = bightness.enhance(self.ratio)
-                enhanced_img.save('task.png')
-                self.im = Image.open('task.png')
-                pixmap = QPixmap('task.png')
-                image = pixmap.scaled(pixmap.width(), pixmap.height())
-                self.ui.show_phantom_label.setScaledContents(True)
-                self.ui.show_phantom_label.setPixmap(image)
 
-        elif self.yy < y:
-            self.ratio += 0.2
+        elif self.yy < y and x< x+5 and x> x-5:
+            self.ratio += 0.01
             enhanced_img = contrast.enhance(self.ratio)
             enhanced_img.save('task.png')
             self.im = Image.open('task.png')
@@ -470,8 +464,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.setScaledContents(True)
             self.ui.show_phantom_label.setPixmap(image)
 
-        elif self.yy > y:
-            self.ratio -= 0.2
+        elif self.yy > y and x<x+5 and x>x-5:
+            self.ratio -= 0.01
             enhanced_img = contrast.enhance(self.ratio)
             enhanced_img.save('task.png')
             self.im = Image.open('task.png')
@@ -484,7 +478,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 ##########################################################################################################################################
 ##########################################################################################################################################     
             
-    def generate_Kspace(self):
+    def kSpace_generation(self):
         if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag:
             self.ui.generate_button.setEnabled(False)
             phantomSize = self.size_of_matrix_root
@@ -542,7 +536,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                             alpha = gxStep*j + gyStep*k
                             magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
                             self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
-                
+                self.phantomFinal = self.kSpace
+                self.kSpace1 = np.abs(self.kSpace)
+                self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
+                pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
+                pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
+                self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
 
                 # Spoiler
 
@@ -553,13 +552,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     for k in range(phantomSize):
                         magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
                         
-            self.phantomFinal = self.kSpace
-            self.kSpace1 = np.abs(self.kSpace)
-            self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
-            pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
-            pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-            self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-    
+            
+            
+            
             self.ui.generate_button.setEnabled(True)
             self.ui.generate_button.setText("Re-Generate")
             self.ui.convert_button.setEnabled(True)
@@ -572,9 +567,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             msg.exec_()
         
 
-
-            
-            
+##########################################################################################################################################
+##########################################################################################################################################  
+      
+    def generate_Kspace(self):
+        self.kSpaceThread.start()
+        
+        
+        
+        
 ##########################################################################################################################################
 ##########################################################################################################################################
     
@@ -585,13 +586,31 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         phantomFinal = (phantomFinal-np.min(phantomFinal))*255/(np.max(phantomFinal)-np.min(phantomFinal))
         phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
         phantomFinal=QPixmap.fromImage(phantomFinal)
-        self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+        selected_size=self.ui.comboBox.currentText()
+          
+           #show phantom according to chosen property      
+        if str(selected_size)== ("Default"):
+            self.ui.inverseFourier_label.setPixmap(self.phantomFinal)
+        elif str(selected_size)== ("32x32"):
+            self.ui.inverseFourier_label.setGeometry(0,0,32,32)
+            self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
+        elif str(selected_size)== ("128x128"):
+            self.ui.inverseFourier_label.setGeometry(0,0,128,128)
+            self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(128,128,Qt.KeepAspectRatio,Qt.FastTransformation))
+        elif str(selected_size)== ("256x256"):
+            self.ui.inverseFourier_label.setGeometry(0,0,256,256)
+            self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(256,256,Qt.KeepAspectRatio,Qt.FastTransformation))
+        elif str(selected_size)== ("512x512"):
+            self.ui.inverseFourier_label.setGeometry(0,0,512,512)
+            self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
         self.ui.convert_button.setEnabled(False)
 
 ##########################################################################################################################################
 ##########################################################################################################################################
-        
-        
+   
+         
+##########################################################################################################################################
+##########################################################################################################################################
 def main():
     app = QtWidgets.QApplication(sys.argv)
     application = ApplicationWindow()
