@@ -333,6 +333,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # Plotting T2
             self.t2_plotWindow.plot(t2_plot,pen=(red,green,blue),name="T2")
             self.t2_plotWindow.showGrid(x=True, y=True)
+            
             if self.te_entry_flag:
                 self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
                 self.vLine1.setPos(self.te)
@@ -370,6 +371,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.t2_plotWindow.plot(t2_plot,pen=(red,green,blue),name="T2")
             self.t2_plotWindow.showGrid(x=True, y=True)
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.red])
+            self.ui.show_phantom_label.paint=True
             
             if self.te_entry_flag:
                 self.vLine5 = pg.InfiniteLine(angle=90, movable=False)
