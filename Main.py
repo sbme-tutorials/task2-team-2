@@ -512,6 +512,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 for j in range(phantomSize):
                     for k in range(phantomSize):
                         
+                        magneticVector[j][k] = np.array([0, 0, 1-np.exp(-TR/T1[j][k])])
                         #magnetic Vector haysawy {0, 0, 1}
                         magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
                         #magnetic Vector haysawy {0, 1, 0}
