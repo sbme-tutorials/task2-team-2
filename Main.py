@@ -8,7 +8,7 @@ Created on Wed Mar 20 19:34:52 2019
 
 import sys
 import math
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PIL import Image, ImageEnhance 
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt, pyqtSlot
@@ -272,7 +272,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
     # Plot function
     def plot(self):
-#        self.colors=np.zeros((5,3))
         
         
         # Coloring the curve
@@ -280,50 +279,33 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             red=255
             green=0
             blue=0
-#            self.colors[self.ui.pixel_counter,0]=red
-#            self.colors[self.ui.pixel_counter,1]=green
-#            self.colors[self.ui.pixel_counter,2]=blue
-            
-#            self.color = Qt.QColor.fromRgb (self.colors[self.ui.pixel_counter,0], self.colors[self.ui.pixel_counter,1], self.colors[self.ui.pixel_counter,2], int alpha = 255)
-
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
+           
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.red])
             self.ui.show_phantom_label.paint=True
         elif self.ui.pixel_counter == 1:  
             red=0
             green=255
             blue=0
-#            self.colors[self.ui.pixel_counter,0]=red
-#            self.colors[self.ui.pixel_counter,1]=green
-#            self.colors[self.ui.pixel_counter,2]=blue
 
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.green])
         elif self.ui.pixel_counter == 2:
             red=0
             green=0
             blue=255
-#            self.colors[self.ui.pixel_counter,0]=red
-#            self.colors[self.ui.pixel_counter,1]=green
-#            self.colors[self.ui.pixel_counter,2]=blue
 
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.blue])
         elif self.ui.pixel_counter == 3:      
             red=255
             green=255
             blue=0
-#            self.colors[self.ui.pixel_counter,0]=red
-#            self.colors[self.ui.pixel_counter,1]=green
-#            self.colors[self.ui.pixel_counter,2]=blue
 
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.yellow])
         elif self.ui.pixel_counter == 4:
             red=255
             green=0
             blue=255
-#            self.colors[self.ui.pixel_counter,0]=red
-#            self.colors[self.ui.pixel_counter,1]=green
-#            self.colors[self.ui.pixel_counter,2]=blue
 
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y()])
+            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.magenta])
         # Sanity checking 
         if self.ui.pixel_clicked_x >= self.size_of_matrix_root:
             self.ui.pixel_clicked_x = self.size_of_matrix_root-2

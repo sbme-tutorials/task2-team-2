@@ -287,6 +287,6 @@ class Label(QtWidgets.QLabel):
         painter.setRenderHint(QtGui.QPainter.Antialiasing)
         if  self.point: 
             for self.pixel in self.point:     
-               painter.setPen(QtGui.QPen(QtCore.Qt.green))
+               painter.setPen(QtGui.QPen(self.pixel[2]))
                painter.drawRect(self.pixel[0],self.pixel[1],4,4)
    
