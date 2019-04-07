@@ -21,6 +21,7 @@ import threading
 
 
 
+
 class ApplicationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(ApplicationWindow,self).__init__()
@@ -46,7 +47,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.pixel_counter=0
         
         self.ui.label_10.hide()
-        self.ui.label_9.hide()
+#        self.ui.label_9.hide()
+        
     
         
         self.ui.comboBox.currentIndexChanged.connect(self.on_size_change)
@@ -60,17 +62,32 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.te_entry_flag=False
         self.flipAngle_entry_flag=False
         
-        
-        
+        self.tr=0
+        self.te=0
+        self.flipAngle=0
         # self.ui.graphicsView and self.ui.graphicsView_2 aren't graphicsViews
         # Instead, I changed them to PlotWidgets in the Main_GUI.py file 
         # starting by passing them to variables
         self.t1_plotWindow = self.ui.graphicsView
         self.t2_plotWindow = self.ui.graphicsView_2
         
+        self.size_default_label_width= self.ui.show_phantom_label.geometry().width()
+        self.size_default_label_height= self.ui.show_phantom_label.geometry().height()
+        
+        self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine4 = pg.InfiniteLine(angle=90, movable=False)
+        self.t1_plotWindow.addItem(self.vLine1,ignoreBounds=True)
+        self.t1_plotWindow.addItem(self.vLine2,ignoreBounds=True)
+        self.t2_plotWindow.addItem(self.vLine3,ignoreBounds=True)
+        self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
+        
         self.ui.lineEdit_2.editingFinished.connect(self.on_lineEdit_change_te)
         self.ui.lineEdit_3.editingFinished.connect(self.on_lineEdit_change_tr)
         self.ui.lineEdit_4.editingFinished.connect(self.on_lineEdit_change_flipAngle)
+        
+        self.ui.tabWidget.setCurrentIndex(0)
         
         self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
         
@@ -131,7 +148,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               self.getValueFromSize_ComboBox()
               
    ##########################################################################################################################################           
-   ##########################################################################################################################################          
+   ##########################################################################################################################################  
+   
+        
+        
+
+##########################################################################################################################################           
+   ##########################################################################################################################################                
               
     def getValueFromSize_ComboBox(self):
           
@@ -165,25 +188,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
 
     def getValueFromLine_edit_te(self):
-        self.te=int(self.ui.lineEdit_2.text())
-        self.te_entry_flag=True
-        self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
+        self.te= int(self.ui.lineEdit_2.text())
         self.vLine1.setPos(self.te)
-        self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
-        self.vLine2.setPos(self.te)
-        self.t1_plotWindow.addItem(self.vLine1,ignoreBounds=True)
-        self.t2_plotWindow.addItem(self.vLine2,ignoreBounds=True)
-        
+        self.vLine3.setPos(self.te)
+        self.te_entry_flag=True
+
         
     def getValueFromLine_edit_tr(self):
         self.tr=int(self.ui.lineEdit_3.text())
-        self.tr_entry_flag=True
-        self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
-        self.vLine3.setPos(self.tr)
-        self.vLine4 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine2.setPos(self.tr)
         self.vLine4.setPos(self.tr)
-        self.t1_plotWindow.addItem(self.vLine3,ignoreBounds=True)
-        self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
+        self.tr_entry_flag=True
+        
+        
         
         
     def getValueFromLine_edit_flipAngle(self):
@@ -228,20 +245,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.label_height=self.ui.show_phantom_label.geometry().height()
             # Getting scaled Width
             self.label_width=self.ui.show_phantom_label.geometry().width()
+            
             # Calculating the ratio of scaling in both height and width
             self.height_scale=self.label_height/self.size_of_matrix_root
             self.width_scale=self.label_width/self.size_of_matrix_root
             # Getting mouse position 
-            self.ui.mouse_pos= event.pos()
+            self.mouse_pos= event.pos()
             
          
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
-            self.ui.pixel_clicked_x= math.floor(self.ui.mouse_pos.x()/self.width_scale)#/self.ui.scaled_width_ratio)
-            self.ui.pixel_clicked_y= math.floor(self.ui.mouse_pos.y()/self.height_scale)#/self.ui.scaled_height_ratio)
+            self.ui.pixel_clicked_x= math.floor(self.mouse_pos.x()/self.width_scale)#/self.ui.scaled_width_ratio)
+            self.ui.pixel_clicked_y= math.floor(self.mouse_pos.y()/self.height_scale)#/self.ui.scaled_height_ratio)
             self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_y)+","+str(self.ui.pixel_clicked_x)+")")
-            self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.ui.mouse_pos.x())+","+str(self.ui.mouse_pos.y())+")")
+            self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
+            
             # Plotting
             self.plot()
         
@@ -292,32 +311,39 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             green=0
             blue=0
            
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.red])
+            self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
             self.ui.show_phantom_label.paint=True
         elif self.ui.pixel_counter == 1:  
             red=0
             green=255
             blue=0
 
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.green])
+            self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.green])
+            
         elif self.ui.pixel_counter == 2:
             red=0
             green=0
             blue=255
 
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.blue])
+            self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.blue])
+#            self.getValueFromLine_edit_te()
+#            self.getValueFromLine_edit_tr()
         elif self.ui.pixel_counter == 3:      
             red=255
             green=255
             blue=0
 
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.yellow])
+            self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.yellow])
+#            self.getValueFromLine_edit_te()
+#            self.getValueFromLine_edit_tr()
         elif self.ui.pixel_counter == 4:
             red=255
             green=0
             blue=255
 
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.magenta])
+            self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.magenta])
+#            self.getValueFromLine_edit_te()
+#            self.getValueFromLine_edit_tr()
         # Sanity checking 
         if self.ui.pixel_clicked_x >= self.size_of_matrix_root:
             self.ui.pixel_clicked_x = self.size_of_matrix_root-2
@@ -341,26 +367,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # Plotting T1
             self.t1_plotWindow.plot(t1_plot,pen=(red,green,blue),name="T1")
             self.t1_plotWindow.showGrid(x=True, y=True)
-            self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
+            
             # Plotting T2
             self.t2_plotWindow.plot(t2_plot,pen=(red,green,blue),name="T2")
             self.t2_plotWindow.showGrid(x=True, y=True)
             
-            if self.te_entry_flag:
-                self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
-                self.vLine1.setPos(self.te)
-                self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
-                self.vLine2.setPos(self.te)
-                self.t1_plotWindow.addItem(self.vLine1,ignoreBounds=True)
-                self.t2_plotWindow.addItem(self.vLine2,ignoreBounds=True)
-                
-            if self.tr_entry_flag:
-                self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
-                self.vLine3.setPos(self.tr)
-                self.vLine4 = pg.InfiniteLine(angle=90, movable=False)
-                self.vLine4.setPos(self.tr)
-                self.t1_plotWindow.addItem(self.vLine3,ignoreBounds=True)
-                self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
             
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             
@@ -383,24 +394,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.t2_plotWindow.plot(t2_plot,pen=(red,green,blue),name="T2")
             self.t2_plotWindow.showGrid(x=True, y=True)
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
-            self.ui.show_phantom_label.point.append([self.ui.mouse_pos.x(),self.ui.mouse_pos.y(),QtCore.Qt.red])
+            self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
             self.ui.show_phantom_label.paint=True
             
-            if self.te_entry_flag:
-                self.vLine5 = pg.InfiniteLine(angle=90, movable=False)
-                self.vLine5.setPos(self.te)
-                self.vLine6 = pg.InfiniteLine(angle=90, movable=False)
-                self.vLine6.setPos(self.te)
-                self.t1_plotWindow.addItem(self.vLine5,ignoreBounds=True)
-                self.t2_plotWindow.addItem(self.vLine6,ignoreBounds=True)
-                
-            if self.tr_entry_flag:
-                self.vLine7 = pg.InfiniteLine(angle=90, movable=False)
-                self.vLine7.setPos(self.tr)
-                self.vLine8 = pg.InfiniteLine(angle=90, movable=False)
-                self.vLine8.setPos(self.tr)
-                self.t1_plotWindow.addItem(self.vLine7,ignoreBounds=True)
-                self.t2_plotWindow.addItem(self.vLine8,ignoreBounds=True)
+#            self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
+#            self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
+#            self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
+#            self.vLine4 = pg.InfiniteLine(angle=90, movable=False)
+#            self.t1_plotWindow.addItem(self.vLine1,ignoreBounds=True)
+#            self.t1_plotWindow.addItem(self.vLine2,ignoreBounds=True)
+#            self.t2_plotWindow.addItem(self.vLine3,ignoreBounds=True)
+#            self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
+            
+#            self.getValueFromLine_edit_te()
+#            self.getValueFromLine_edit_tr()
+            
+            
             
             # Reseting the counter to 1
             self.ui.pixel_counter=1
@@ -550,13 +559,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 
                 for j in range(phantomSize):
                     for k in range(phantomSize):
-                        magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
+                        if T1[j][k] == 0:
+                            magneticVector[j][k][2] = 1
+                        else:
+                            magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
                         
-            
-            
-            
-            self.ui.generate_button.setEnabled(True)
-            self.ui.generate_button.setText("Re-Generate")
             self.ui.convert_button.setEnabled(True)
         else:
             msg = QtWidgets.QMessageBox()
@@ -586,28 +593,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         phantomFinal = (phantomFinal-np.min(phantomFinal))*255/(np.max(phantomFinal)-np.min(phantomFinal))
         phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
         phantomFinal=QPixmap.fromImage(phantomFinal)
-        selected_size=self.ui.comboBox.currentText()
-          
-           #show phantom according to chosen property      
-        if str(selected_size)== ("Default"):
-            self.ui.inverseFourier_label.setPixmap(self.phantomFinal)
-        elif str(selected_size)== ("32x32"):
-            self.ui.inverseFourier_label.setGeometry(0,0,32,32)
-            self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
-        elif str(selected_size)== ("128x128"):
-            self.ui.inverseFourier_label.setGeometry(0,0,128,128)
-            self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(128,128,Qt.KeepAspectRatio,Qt.FastTransformation))
-        elif str(selected_size)== ("256x256"):
-            self.ui.inverseFourier_label.setGeometry(0,0,256,256)
-            self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(256,256,Qt.KeepAspectRatio,Qt.FastTransformation))
-        elif str(selected_size)== ("512x512"):
-            self.ui.inverseFourier_label.setGeometry(0,0,512,512)
-            self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+        self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+        
         self.ui.convert_button.setEnabled(False)
 
 ##########################################################################################################################################
 ##########################################################################################################################################
-   
+
          
 ##########################################################################################################################################
 ##########################################################################################################################################

@@ -233,7 +233,6 @@ class Ui_MainWindow(object):
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
-
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -289,4 +288,7 @@ class Label(QtWidgets.QLabel):
             for self.pixel in self.point:     
                painter.setPen(QtGui.QPen(self.pixel[2]))
                painter.drawRect(self.pixel[0],self.pixel[1],4,4)
+               
+
+
    
