@@ -266,6 +266,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         elif event.type() == event.MouseButtonPress and QMouseEvent.button(event) == Qt.RightButton and source is self.ui.show_phantom_label:
             self.getValueFromSize_ComboBox()
+        #elif event.type() == QtWidgets.resizeEvent():
+            ############### 3awz a7ot hena el resizing calculations 3alshan a7rk el points w el label a-scale-o
         
         return super(ApplicationWindow, self).eventFilter(source, event)
         
@@ -397,20 +399,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
             self.ui.show_phantom_label.paint=True
             
-#            self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
-#            self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
-#            self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
-#            self.vLine4 = pg.InfiniteLine(angle=90, movable=False)
-#            self.t1_plotWindow.addItem(self.vLine1,ignoreBounds=True)
-#            self.t1_plotWindow.addItem(self.vLine2,ignoreBounds=True)
-#            self.t2_plotWindow.addItem(self.vLine3,ignoreBounds=True)
-#            self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
+#            
             
-#            self.getValueFromLine_edit_te()
-#            self.getValueFromLine_edit_tr()
-            
-            
-            
+        
             # Reseting the counter to 1
             self.ui.pixel_counter=1
             
@@ -578,7 +569,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 ##########################################################################################################################################  
       
     def generate_Kspace(self):
-        self.kSpaceThread.start()
+        if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag:
+            self.kSpaceThread.start()
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("TE, TR or FlipAngle not entered!")
+            msg.setInformativeText('Please enter their values')
+            msg.setWindowTitle("Input Required!")
+            msg.exec_()
         
         
         
