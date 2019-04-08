@@ -46,7 +46,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Must not exceed 5
         self.ui.pixel_counter=0
         
-        self.ui.label_10.hide()
+        #self.ui.label_10.hide()
 #        self.ui.label_9.hide()
         
     
@@ -306,7 +306,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     # Plot function
     def plot(self):
         
-        
+        self.ui.show_phantom_label.paint=True
         # Coloring the curve
         if self.ui.pixel_counter == 0:  
             red=255
@@ -314,7 +314,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             blue=0
            
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
-            self.ui.show_phantom_label.paint=True
+            
         elif self.ui.pixel_counter == 1:  
             red=0
             green=255
@@ -375,6 +375,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.t2_plotWindow.showGrid(x=True, y=True)
             
             
+            self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             
            
@@ -397,7 +398,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.t2_plotWindow.showGrid(x=True, y=True)
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
-            self.ui.show_phantom_label.paint=True
             
 #            
             
@@ -479,7 +479,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 ##########################################################################################################################################     
             
     def kSpace_generation(self):
-        if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag:
             self.ui.generate_button.setEnabled(False)
             phantomSize = self.size_of_matrix_root
 
@@ -556,13 +555,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                             magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
                         
             self.ui.convert_button.setEnabled(True)
-        else:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("TE, TR or FlipAngle not entered!")
-            msg.setInformativeText('Please enter their values')
-            msg.setWindowTitle("Error")
-            msg.exec_()
+       
         
 
 ##########################################################################################################################################
@@ -578,8 +571,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             msg.setInformativeText('Please enter their values')
             msg.setWindowTitle("Input Required!")
             msg.exec_()
-        
-        
         
         
 ##########################################################################################################################################
