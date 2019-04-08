@@ -48,7 +48,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         #self.ui.label_10.hide()
 #        self.ui.label_9.hide()
-        
+        self.point1x = 0
+        self.point1y = 0
+        self.point2x = 0
+        self.point2y = 0
+        self.point3x = 0
+        self.point3y = 0
+        self.point4x = 0
+        self.point4y = 0
+        self.point5x = 0
+        self.point5y = 0
     
         
         self.ui.comboBox.currentIndexChanged.connect(self.on_size_change)
@@ -71,8 +80,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.t1_plotWindow = self.ui.graphicsView
         self.t2_plotWindow = self.ui.graphicsView_2
         
-        self.size_default_label_width= self.ui.show_phantom_label.geometry().width()
-        self.size_default_label_height= self.ui.show_phantom_label.geometry().height()
+        
         
         self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
         self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
@@ -109,11 +117,24 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
            self.size_of_matrix= np.size(self.T1)
            self.size_of_matrix_root= math.floor(math.sqrt(self.size_of_matrix))
+           self.default_width= self.ui.show_phantom_label.geometry().width()
+           self.default_height= self.ui.show_phantom_label.geometry().height()
            self.t1_plotWindow.clear()
            self.t2_plotWindow.clear()
-           self.getValueFromProperties_ComboBox()
+           self.point1x = 0
+           self.point1y = 0
+           self.point2x = 0
+           self.point2y = 0
+           self.point3x = 0
+           self.point3y = 0
+           self.point4x = 0
+           self.point4y = 0
+           self.point5x = 0
+           self.point5y = 0   
            self.ui.show_phantom_label.point=[]
+           self.getValueFromProperties_ComboBox()
            
+
            #show phantom according to chosen property        
            
         else:
@@ -213,7 +234,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
   ##########################################################################################################################################  
     
     def sheppLogan(self): 
-          
+          self.ui.show_phantom_label.point=[]
           sheppLogan_file = np.load('sheppLogan_phantom.npy')
           z=(len(sheppLogan_file )/3)
 
@@ -256,8 +277,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
-            self.ui.pixel_clicked_x= math.floor(self.mouse_pos.x()/self.width_scale)#/self.ui.scaled_width_ratio)
-            self.ui.pixel_clicked_y= math.floor(self.mouse_pos.y()/self.height_scale)#/self.ui.scaled_height_ratio)
+            self.ui.pixel_clicked_x= math.floor(self.mouse_pos.x()/self.width_scale)
+            self.ui.pixel_clicked_y= math.floor(self.mouse_pos.y()/self.height_scale)
             self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_y)+","+str(self.ui.pixel_clicked_x)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
             
@@ -265,9 +286,42 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.plot()
         
         elif event.type() == event.MouseButtonPress and QMouseEvent.button(event) == Qt.RightButton and source is self.ui.show_phantom_label:
+            self.t1_plotWindow.clear()
+            self.t2_plotWindow.clear()
+            self.point1x = 0
+            self.point1y = 0
+            self.point2x = 0
+            self.point2y = 0
+            self.point3x = 0
+            self.point3y = 0
+            self.point4x = 0
+            self.point4y = 0
+            self.point5x = 0
+            self.point5y = 0   
+            self.ui.show_phantom_label.point=[]
             self.getValueFromSize_ComboBox()
-        #elif event.type() == QtWidgets.resizeEvent():
+        elif event.type() == event.Resize:
             ############### 3awz a7ot hena el resizing calculations 3alshan a7rk el points w el label a-scale-o
+            # Getting scaled height in case of resizing
+            self.label_height=self.ui.show_phantom_label.geometry().height()
+            # Getting scaled Width
+            self.label_width=self.ui.show_phantom_label.geometry().width()
+            # Calculating the ratio of scaling in both height and width
+            self.height_scale=self.label_height/self.default_height
+            self.width_scale=self.label_width/self.default_width
+            
+            self.ui.show_phantom_label.point=[]
+            if self.point1x != 0 and self.point1y != 0:
+                self.ui.show_phantom_label.point.append([self.point1x*self.width_scale,self.point1y*self.height_scale,QtCore.Qt.red])
+            if self.point2x != 0 and self.point2y != 0:
+                self.ui.show_phantom_label.point.append([self.point2x*self.width_scale,self.point2y*self.height_scale,QtCore.Qt.green])
+            if self.point3x != 0 and self.point3y != 0:
+                self.ui.show_phantom_label.point.append([self.point3x*self.width_scale,self.point3y*self.height_scale,QtCore.Qt.blue])
+            if self.point4x != 0 and self.point4y != 0:
+                self.ui.show_phantom_label.point.append([self.point4x*self.width_scale,self.point4y*self.height_scale,QtCore.Qt.yellow])
+            if self.point5x != 0 and self.point5y != 0:
+                self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magneta])
+            
         
         return super(ApplicationWindow, self).eventFilter(source, event)
         
@@ -314,38 +368,40 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             blue=0
            
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
-            
+            self.point1x = self.mouse_pos.x()
+            self.point1y = self.mouse_pos.y()
         elif self.ui.pixel_counter == 1:  
             red=0
             green=255
             blue=0
 
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.green])
-            
+            self.point2x = self.mouse_pos.x()
+            self.point2y = self.mouse_pos.y()
         elif self.ui.pixel_counter == 2:
             red=0
             green=0
             blue=255
 
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.blue])
-#            self.getValueFromLine_edit_te()
-#            self.getValueFromLine_edit_tr()
+            self.point3x = self.mouse_pos.x()
+            self.point3y = self.mouse_pos.y()
         elif self.ui.pixel_counter == 3:      
             red=255
             green=255
             blue=0
 
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.yellow])
-#            self.getValueFromLine_edit_te()
-#            self.getValueFromLine_edit_tr()
+            self.point4x = self.mouse_pos.x()
+            self.point4y = self.mouse_pos.y()
         elif self.ui.pixel_counter == 4:
             red=255
             green=0
             blue=255
 
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.magenta])
-#            self.getValueFromLine_edit_te()
-#            self.getValueFromLine_edit_tr()
+            self.point5x = self.mouse_pos.x()
+            self.point5y = self.mouse_pos.y()
         # Sanity checking 
         if self.ui.pixel_clicked_x >= self.size_of_matrix_root:
             self.ui.pixel_clicked_x = self.size_of_matrix_root-2
@@ -390,6 +446,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             red=255
             green=0
             blue=0
+            
+            self.point1x = self.mouse_pos.x()
+            self.point1y = self.mouse_pos.y()
             # Plotting
             self.t1_plotWindow.plot(t1_plot,pen=(red,green,blue),name="T1")
             self.t1_plotWindow.showGrid(x=True, y=True)
