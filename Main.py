@@ -58,7 +58,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.point4y = 0
         self.point5x = 0
         self.point5y = 0
-    
+        self.ui.show_phantom_label.point=[]
         
         self.ui.comboBox.currentIndexChanged.connect(self.on_size_change)
         self.ui.properties_comboBox.currentIndexChanged.connect(self.on_property_change)
@@ -80,6 +80,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.t1_plotWindow = self.ui.graphicsView
         self.t2_plotWindow = self.ui.graphicsView_2
         
+        
+        self.default_width= self.ui.show_phantom_label.geometry().width()
+        self.default_height= self.ui.show_phantom_label.geometry().height()
         
         
         self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
@@ -133,6 +136,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.point5y = 0   
            self.ui.show_phantom_label.point=[]
            self.getValueFromProperties_ComboBox()
+
+           
            
 
            #show phantom according to chosen property        
@@ -246,7 +251,24 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           self.I= (255*self.I)/np.max(self.I)
           self.size_of_matrix= np.size(self.T1)
           self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
-          self.getValueFromProperties_ComboBox()          
+          self.default_width= self.ui.show_phantom_label.geometry().width()
+          self.default_height= self.ui.show_phantom_label.geometry().height()
+          self.t1_plotWindow.clear()
+          self.t2_plotWindow.clear()
+          self.point1x = 0
+          self.point1y = 0
+          self.point2x = 0
+          self.point2y = 0
+          self.point3x = 0
+          self.point3y = 0
+          self.point4x = 0
+          self.point4y = 0
+          self.point5x = 0
+          self.point5y = 0   
+          self.ui.show_phantom_label.point=[]
+          self.getValueFromProperties_ComboBox()
+          self.ui.show_phantom_label.point=[]
+          
     
     
     
@@ -301,7 +323,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.point=[]
             self.getValueFromSize_ComboBox()
         elif event.type() == event.Resize:
-            ############### 3awz a7ot hena el resizing calculations 3alshan a7rk el points w el label a-scale-o
             # Getting scaled height in case of resizing
             self.label_height=self.ui.show_phantom_label.geometry().height()
             # Getting scaled Width
@@ -320,7 +341,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             if self.point4x != 0 and self.point4y != 0:
                 self.ui.show_phantom_label.point.append([self.point4x*self.width_scale,self.point4y*self.height_scale,QtCore.Qt.yellow])
             if self.point5x != 0 and self.point5y != 0:
-                self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magneta])
+                self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magenta])
             
         
         return super(ApplicationWindow, self).eventFilter(source, event)
