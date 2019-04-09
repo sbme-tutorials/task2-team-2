@@ -125,6 +125,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.t1_plotWindow.clear()
            self.t2_plotWindow.clear()
            self.resetPainting()
+           self.resetPlot()
            self.getValueFromProperties_ComboBox()
            self.ui.generate_button.setEnabled(True)
            
@@ -237,8 +238,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
           self.default_width= self.ui.show_phantom_label.geometry().width()
           self.default_height= self.ui.show_phantom_label.geometry().height()
-          self.t1_plotWindow.clear()
-          self.t2_plotWindow.clear()
           self.resetPainting()
           self.resetPlot()
           self.getValueFromProperties_ComboBox()
@@ -297,14 +296,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_y)+","+str(self.ui.pixel_clicked_x)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
             
+            
             # Plotting
             self.plot()
         
         elif event.type() == event.MouseButtonPress and QMouseEvent.button(event) == Qt.RightButton and source is self.ui.show_phantom_label:
-            self.t1_plotWindow.clear()
-            self.t2_plotWindow.clear()
+            self.resetPlot()
             self.resetPainting()
             self.getValueFromSize_ComboBox()
+            
         elif event.type() == event.Resize:
             # Getting scaled height in case of resizing
             self.label_height=self.ui.show_phantom_label.geometry().height()
@@ -327,8 +327,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magenta])
             
         return super(ApplicationWindow, self).eventFilter(source, event)
-        
-        
         
         
      
@@ -444,6 +442,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.point=[]
            # self.ui.show_phantom_label.paint=False
             self.resetPlot()
+            self.resetPainting()
             red=255
             green=0
             blue=0
@@ -458,10 +457,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.t2_plotWindow.showGrid(x=True, y=True)
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
-            
-#            
-            
-        
+                      
             # Reseting the counter to 1
             self.ui.pixel_counter=1
             
