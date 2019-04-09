@@ -122,12 +122,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.size_of_matrix_root= math.floor(math.sqrt(self.size_of_matrix))
            self.default_width= self.ui.show_phantom_label.geometry().width()
            self.default_height= self.ui.show_phantom_label.geometry().height()
-           self.t1_plotWindow.clear()
-           self.t2_plotWindow.clear()
            self.resetPainting()
            self.resetPlot()
            self.getValueFromProperties_ComboBox()
            self.ui.generate_button.setEnabled(True)
+           self.ui.inverseFourier_label.setText(" ")
+           self.ui.kspace_label.setText(" ")
            
            
 
@@ -262,6 +262,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def resetPlot(self):
         self.t1_plotWindow.clear()
         self.t2_plotWindow.clear()
+        self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine4 = pg.InfiniteLine(angle=90, movable=False)
+        self.t1_plotWindow.addItem(self.vLine1,ignoreBounds=True)
+        self.t1_plotWindow.addItem(self.vLine2,ignoreBounds=True)
+        self.t2_plotWindow.addItem(self.vLine3,ignoreBounds=True)
+        self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
 
 
    ##########################################################################################################################################       
@@ -343,14 +351,20 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def on_lineEdit_change_te(self):
         self.getValueFromLine_edit_te()
+        self.ui.generate_button.setEnabled(True)
+        self.ui.inverseFourier_label.setText(" ")
         
     @pyqtSlot()
     def on_lineEdit_change_tr(self):
         self.getValueFromLine_edit_tr()
+        self.ui.generate_button.setEnabled(True)
+        self.ui.inverseFourier_label.setText(" ")
     
     @pyqtSlot()
     def on_lineEdit_change_flipAngle(self):
         self.getValueFromLine_edit_flipAngle()
+        self.ui.generate_button.setEnabled(True)
+        self.ui.inverseFourier_label.setText(" ")
     
     
     
@@ -641,7 +655,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
         phantomFinal=QPixmap.fromImage(phantomFinal)
         self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-        
         self.ui.convert_button.setEnabled(False)
 
 ##########################################################################################################################################
