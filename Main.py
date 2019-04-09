@@ -262,6 +262,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def resetPlot(self):
         self.t1_plotWindow.clear()
         self.t2_plotWindow.clear()
+        self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
+        self.vLine4 = pg.InfiniteLine(angle=90, movable=False)
+        self.t1_plotWindow.addItem(self.vLine1,ignoreBounds=True)
+        self.t1_plotWindow.addItem(self.vLine2,ignoreBounds=True)
+        self.t2_plotWindow.addItem(self.vLine3,ignoreBounds=True)
+        self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
 
 
    ##########################################################################################################################################       
