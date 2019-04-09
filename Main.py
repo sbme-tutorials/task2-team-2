@@ -100,7 +100,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         self.ui.tabWidget.setCurrentIndex(0)
         
-        
+        self.SHEPPLOGAN_FLAG= False
         
         
        
@@ -112,22 +112,27 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def  button_clicked(self):
         fileName, _filter = QFileDialog.getOpenFileName(self, "Choose a phantom", "", "Filter -- ( *.npy)")
         if fileName:
+           self.SHEPPLOGAN_FLAG = False
            Phantom_file=np.load(fileName)
            self.ui.lineEdit.setText(fileName)
-           SeparatingArrays=(len(Phantom_file)/3)
+           SeparatingArrays=(len(Phantom_file)/6)
            self.I=Phantom_file[1:int(SeparatingArrays),:]
            self.T1=Phantom_file[1+int(SeparatingArrays):2*int(SeparatingArrays),:]
            self.T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
+           self.I_mapped=Phantom_file[1+3*int(SeparatingArrays):4*int(SeparatingArrays),:]
+           self.T1_mapped=Phantom_file[1+4*int(SeparatingArrays):5*int(SeparatingArrays),:]
+           self.T2_mapped=Phantom_file[1+5*int(SeparatingArrays):6*int(SeparatingArrays),:]          
            self.size_of_matrix= np.size(self.T1)
            self.size_of_matrix_root= math.floor(math.sqrt(self.size_of_matrix))
            self.default_width= self.ui.show_phantom_label.geometry().width()
            self.default_height= self.ui.show_phantom_label.geometry().height()
-           self.t1_plotWindow.clear()
-           self.t2_plotWindow.clear()
            self.resetPainting()
            self.resetPlot()
            self.getValueFromProperties_ComboBox()
            self.ui.generate_button.setEnabled(True)
+           self.ui.inverseFourier_label.setText(" ")
+           self.ui.kspace_label.setText(" ")
+           
            
            
 
@@ -149,23 +154,37 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
           PropertyOfPhantom=self.ui.properties_comboBox.currentText()
           
+          if self.SHEPPLOGAN_FLAG==False:
            #show phantom according to chosen property      
-          if str(PropertyOfPhantom)== ("T1"):  
-              self.phantom=qimage2ndarray.array2qimage(self.T1)
-              self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
-              self.getValueFromSize_ComboBox()
+              if str(PropertyOfPhantom)== ("T1"):  
+                  self.phantom=qimage2ndarray.array2qimage(self.T1_mapped)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
               
               #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
-          elif str(PropertyOfPhantom)== ("Proton Density"):
-              self.phantom=qimage2ndarray.array2qimage(self.I)
-              self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
-              self.getValueFromSize_ComboBox()
-          else:  
-              self.phantom=qimage2ndarray.array2qimage(self.T2)
-              self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
-              self.getValueFromSize_ComboBox()
-          self.resetPlot()   
-          self.resetPainting()
+              elif str(PropertyOfPhantom)== ("Proton Density"):
+                  self.phantom=qimage2ndarray.array2qimage(self.I_mapped)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              else:  
+                  self.phantom=qimage2ndarray.array2qimage(self.T2_mapped)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+          else:
+              if str(PropertyOfPhantom)== ("T1"):  
+                  self.phantom=qimage2ndarray.array2qimage(self.T1)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              
+              #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
+              elif str(PropertyOfPhantom)== ("Proton Density"):
+                  self.phantom=qimage2ndarray.array2qimage(self.I)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              else:  
+                  self.phantom=qimage2ndarray.array2qimage(self.T2)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
               
 
    
@@ -225,7 +244,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
   ##########################################################################################################################################  
     
     def sheppLogan(self): 
-          self.resetPainting()
+          self.SHEPPLOGAN_FLAG = True
           sheppLogan_file = np.load('sheppLogan_phantom.npy')
           z=(len(sheppLogan_file )/3)
           self.I=sheppLogan_file [1:int(z),:]
@@ -236,16 +255,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           self.I= (255*self.I)/np.max(self.I)
           self.size_of_matrix= np.size(self.T1)
           self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
+          self.getValueFromProperties_ComboBox()
           self.default_width= self.ui.show_phantom_label.geometry().width()
           self.default_height= self.ui.show_phantom_label.geometry().height()
-          self.resetPainting()
-          self.resetPlot()
-          self.getValueFromProperties_ComboBox()
 
           
    ##########################################################################################################################################       
    ########################################################################################################################################## 
     def resetPainting(self):
+       self.ui.pixel_counter == 0
        self.point1x = 0
        self.point1y = 0
        self.point2x = 0
@@ -260,6 +278,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
        
        
     def resetPlot(self):
+        self.ui.pixel_counter == 0
         self.t1_plotWindow.clear()
         self.t2_plotWindow.clear()
         self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
@@ -295,15 +314,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # Getting mouse position 
             self.mouse_pos= event.pos()
             
-         
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
             self.ui.pixel_clicked_x= math.floor(self.mouse_pos.x()/self.width_scale)
             self.ui.pixel_clicked_y= math.floor(self.mouse_pos.y()/self.height_scale)
-            self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_y)+","+str(self.ui.pixel_clicked_x)+")")
+            self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_x)+","+str(self.ui.pixel_clicked_y)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
-            
             
             # Plotting
             self.plot()
@@ -333,11 +350,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 self.ui.show_phantom_label.point.append([self.point4x*self.width_scale,self.point4y*self.height_scale,QtCore.Qt.yellow])
             if self.point5x != 0 and self.point5y != 0:
                 self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magenta])
+            else: pass
             
         return super(ApplicationWindow, self).eventFilter(source, event)
-        
-        
-     
         
         
     @pyqtSlot()
@@ -351,14 +366,20 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def on_lineEdit_change_te(self):
         self.getValueFromLine_edit_te()
+        self.ui.generate_button.setEnabled(True)
+        self.ui.inverseFourier_label.setText(" ")
         
     @pyqtSlot()
     def on_lineEdit_change_tr(self):
         self.getValueFromLine_edit_tr()
+        self.ui.generate_button.setEnabled(True)
+        self.ui.inverseFourier_label.setText(" ")
     
     @pyqtSlot()
     def on_lineEdit_change_flipAngle(self):
         self.getValueFromLine_edit_flipAngle()
+        self.ui.generate_button.setEnabled(True)
+        self.ui.inverseFourier_label.setText(" ")
     
     
     
@@ -420,14 +441,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         t= np.arange(1000)
         # T1 equation
         t1_plot=[]
-        if self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y] == 0:
-            self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= 0.00000000000001
-        t1_plot= 1 - np.exp(-t/self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y])   # Replace self.ui.t1 with the T1
+        if self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x] == 0:
+            self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= 0.00000000000001
+        t1_plot= 1 - np.exp(-t/self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x])   # Replace self.ui.t1 with the T1
         # T2 equation
         t2_plot=[]
-        if self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y] == 0:
-            self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= 0.00000000000001
-        t2_plot= np.exp(-t/self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y])   #Replace the self.ui.t2 with the T2
+        if self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x] == 0:
+            self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= 0.00000000000001
+        t2_plot= np.exp(-t/self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x])   #Replace the self.ui.t2 with the T2
         # Checking if no more than 5 pixels are chosen
         if self.ui.pixel_counter<5:
             # Plotting T1
@@ -439,8 +460,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.t2_plotWindow.showGrid(x=True, y=True)
             
             
-            self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
-            self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
+            self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]))
+            self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]))
             
            
             # Incrementing the pixel_counter
@@ -564,7 +585,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             rotationAroundXMatrix = np.array([[1, 0, 0],
                                               [0, np.cos(flipAngle), np.sin(flipAngle)],
                                               [0, -np.sin(flipAngle), np.cos(flipAngle)]])
-    
+            
+            
     
             self.kSpace = np.zeros((phantomSize, phantomSize), dtype=np.complex)
             
@@ -572,15 +594,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 for j in range(phantomSize):
                     for k in range(phantomSize):
                         
+                        if T2[j][k]==0:
+                            T2[j][k] = 0.00000000000000000000001
+                        if T1[j][k] == 0:
+                            T1[j][k] = 0.00000000000000000000001
+                        
                         magneticVector[j][k] = np.array([0, 0, 1-np.exp(-TR/T1[j][k])])
                         #magnetic Vector haysawy {0, 0, 1}
                         magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
                         #magnetic Vector haysawy {0, 1, 0}
                         
-                        if T2[j][k]==0:
-                            T2[j][k] = 0.00000000000000000000001
-                        if T1[j][k] == 0:
-                            T1[j][k] = 0.00000000000000000000001
+                        
                             
                         decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
                                                 [0, np.exp(-TE / T2[j][k]), 0],
@@ -649,7 +673,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
         phantomFinal=QPixmap.fromImage(phantomFinal)
         self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-        
         self.ui.convert_button.setEnabled(False)
 
 ##########################################################################################################################################
