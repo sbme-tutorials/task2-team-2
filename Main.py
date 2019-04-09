@@ -100,7 +100,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         self.ui.tabWidget.setCurrentIndex(0)
         
-        self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
+        
         
         
        
@@ -124,19 +124,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.default_height= self.ui.show_phantom_label.geometry().height()
            self.t1_plotWindow.clear()
            self.t2_plotWindow.clear()
-           self.point1x = 0
-           self.point1y = 0
-           self.point2x = 0
-           self.point2y = 0
-           self.point3x = 0
-           self.point3y = 0
-           self.point4x = 0
-           self.point4y = 0
-           self.point5x = 0
-           self.point5y = 0   
-           self.ui.show_phantom_label.point=[]
+           self.resetPainting()
            self.getValueFromProperties_ComboBox()
-
+           self.ui.generate_button.setEnabled(True)
            
            
 
@@ -155,6 +145,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     ##########################################################################################################################################
     
     def getValueFromProperties_ComboBox(self):
+        
           PropertyOfPhantom=self.ui.properties_comboBox.currentText()
           
            #show phantom according to chosen property      
@@ -172,16 +163,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               self.phantom=qimage2ndarray.array2qimage(self.T2)
               self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
               self.getValueFromSize_ComboBox()
+          self.resetPlot()   
+          self.resetPainting()
               
-   ##########################################################################################################################################           
-   ##########################################################################################################################################  
-   
-        
-        
 
-##########################################################################################################################################           
-   ##########################################################################################################################################                
-              
+   
     def getValueFromSize_ComboBox(self):
           
           selected_size=self.ui.comboBox.currentText()
@@ -207,7 +193,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               self.ui.show_phantom_label.setGeometry(0,0,512,512)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
               self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-              
+          self.resetPlot()
+          self.resetPainting()
 
  ##########################################################################################################################################
  ##########################################################################################################################################
@@ -227,8 +214,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.tr_entry_flag=True
         
         
-        
-        
     def getValueFromLine_edit_flipAngle(self):
         self.flipAngle=int(self.ui.lineEdit_4.text())
         self.flipAngle_entry_flag=True
@@ -239,10 +224,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
   ##########################################################################################################################################  
     
     def sheppLogan(self): 
-          self.ui.show_phantom_label.point=[]
+          self.resetPainting()
           sheppLogan_file = np.load('sheppLogan_phantom.npy')
           z=(len(sheppLogan_file )/3)
-
           self.I=sheppLogan_file [1:int(z),:]
           self.T1=sheppLogan_file [1+int(z):2*int(z),:]
           self.T2=sheppLogan_file [1+2*int(z):3*int(z),:]
@@ -255,25 +239,34 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           self.default_height= self.ui.show_phantom_label.geometry().height()
           self.t1_plotWindow.clear()
           self.t2_plotWindow.clear()
-          self.point1x = 0
-          self.point1y = 0
-          self.point2x = 0
-          self.point2y = 0
-          self.point3x = 0
-          self.point3y = 0
-          self.point4x = 0
-          self.point4y = 0
-          self.point5x = 0
-          self.point5y = 0   
-          self.ui.show_phantom_label.point=[]
+          self.resetPainting()
+          self.resetPlot()
           self.getValueFromProperties_ComboBox()
-          self.ui.show_phantom_label.point=[]
+
           
-    
-    
-    
    ##########################################################################################################################################       
-   ##########################################################################################################################################     
+   ########################################################################################################################################## 
+    def resetPainting(self):
+       self.point1x = 0
+       self.point1y = 0
+       self.point2x = 0
+       self.point2y = 0
+       self.point3x = 0
+       self.point3y = 0
+       self.point4x = 0
+       self.point4y = 0
+       self.point5x = 0
+       self.point5y = 0   
+       self.ui.show_phantom_label.point=[]
+       
+       
+    def resetPlot(self):
+        self.t1_plotWindow.clear()
+        self.t2_plotWindow.clear()
+
+
+   ##########################################################################################################################################       
+   ##########################################################################################################################################      
         
     
     # This is the filter used to catch mouse events exculesivly on label
@@ -310,17 +303,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         elif event.type() == event.MouseButtonPress and QMouseEvent.button(event) == Qt.RightButton and source is self.ui.show_phantom_label:
             self.t1_plotWindow.clear()
             self.t2_plotWindow.clear()
-            self.point1x = 0
-            self.point1y = 0
-            self.point2x = 0
-            self.point2y = 0
-            self.point3x = 0
-            self.point3y = 0
-            self.point4x = 0
-            self.point4y = 0
-            self.point5x = 0
-            self.point5y = 0   
-            self.ui.show_phantom_label.point=[]
+            self.resetPainting()
             self.getValueFromSize_ComboBox()
         elif event.type() == event.Resize:
             # Getting scaled height in case of resizing
@@ -343,14 +326,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             if self.point5x != 0 and self.point5y != 0:
                 self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magenta])
             
-        
         return super(ApplicationWindow, self).eventFilter(source, event)
         
         
         
         
- ##########################################################################################################################################      
- ##########################################################################################################################################       
+     
         
         
     @pyqtSlot()
@@ -391,6 +372,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
             self.point1x = self.mouse_pos.x()
             self.point1y = self.mouse_pos.y()
+            
         elif self.ui.pixel_counter == 1:  
             red=0
             green=255
@@ -399,6 +381,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.green])
             self.point2x = self.mouse_pos.x()
             self.point2y = self.mouse_pos.y()
+            
         elif self.ui.pixel_counter == 2:
             red=0
             green=0
@@ -407,6 +390,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.blue])
             self.point3x = self.mouse_pos.x()
             self.point3y = self.mouse_pos.y()
+            
         elif self.ui.pixel_counter == 3:      
             red=255
             green=255
@@ -415,6 +399,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.yellow])
             self.point4x = self.mouse_pos.x()
             self.point4y = self.mouse_pos.y()
+            
         elif self.ui.pixel_counter == 4:
             red=255
             green=0
@@ -423,11 +408,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.magenta])
             self.point5x = self.mouse_pos.x()
             self.point5y = self.mouse_pos.y()
-        # Sanity checking 
-        if self.ui.pixel_clicked_x >= self.size_of_matrix_root:
-            self.ui.pixel_clicked_x = self.size_of_matrix_root-2
-        if self.ui.pixel_clicked_y >= self.size_of_matrix_root:
-            self.ui.pixel_clicked_y = self.size_of_matrix_root-2
+
             
         # A time array from 1 to 1000 seconds
         t= np.arange(1000)
@@ -462,8 +443,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # Now if more than 5 pixels are picked, clear both widgets and start over
             self.ui.show_phantom_label.point=[]
            # self.ui.show_phantom_label.paint=False
-            self.t1_plotWindow.clear()
-            self.t2_plotWindow.clear()
+            self.resetPlot()
             red=255
             green=0
             blue=0
@@ -643,6 +623,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
       
     def generate_Kspace(self):
         if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag:
+            self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
             self.kSpaceThread.start()
         else:
             msg = QtWidgets.QMessageBox()
@@ -671,8 +652,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 ##########################################################################################################################################
 
          
-##########################################################################################################################################
-##########################################################################################################################################
 def main():
     app = QtWidgets.QApplication(sys.argv)
     application = ApplicationWindow()
