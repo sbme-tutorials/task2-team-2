@@ -255,14 +255,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           self.I= (255*self.I)/np.max(self.I)
           self.size_of_matrix= np.size(self.T1)
           self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
+          self.getValueFromProperties_ComboBox()
           self.default_width= self.ui.show_phantom_label.geometry().width()
           self.default_height= self.ui.show_phantom_label.geometry().height()
-          self.getValueFromProperties_ComboBox()
 
           
    ##########################################################################################################################################       
    ########################################################################################################################################## 
     def resetPainting(self):
+       self.ui.pixel_counter == 0
        self.point1x = 0
        self.point1y = 0
        self.point2x = 0
@@ -277,6 +278,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
        
        
     def resetPlot(self):
+        self.ui.pixel_counter == 0
         self.t1_plotWindow.clear()
         self.t2_plotWindow.clear()
         self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
@@ -312,7 +314,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # Getting mouse position 
             self.mouse_pos= event.pos()
             
-         
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
@@ -320,7 +321,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.pixel_clicked_y= math.floor(self.mouse_pos.y()/self.height_scale)
             self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_x)+","+str(self.ui.pixel_clicked_y)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
-            
             
             # Plotting
             self.plot()
@@ -350,11 +350,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 self.ui.show_phantom_label.point.append([self.point4x*self.width_scale,self.point4y*self.height_scale,QtCore.Qt.yellow])
             if self.point5x != 0 and self.point5y != 0:
                 self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magenta])
+            else: pass
             
         return super(ApplicationWindow, self).eventFilter(source, event)
-        
-        
-     
         
         
     @pyqtSlot()
@@ -587,7 +585,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             rotationAroundXMatrix = np.array([[1, 0, 0],
                                               [0, np.cos(flipAngle), np.sin(flipAngle)],
                                               [0, -np.sin(flipAngle), np.cos(flipAngle)]])
-    
+            
+            
     
             self.kSpace = np.zeros((phantomSize, phantomSize), dtype=np.complex)
             
@@ -595,15 +594,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 for j in range(phantomSize):
                     for k in range(phantomSize):
                         
+                        if T2[j][k]==0:
+                            T2[j][k] = 0.00000000000000000000001
+                        if T1[j][k] == 0:
+                            T1[j][k] = 0.00000000000000000000001
+                        
                         magneticVector[j][k] = np.array([0, 0, 1-np.exp(-TR/T1[j][k])])
                         #magnetic Vector haysawy {0, 0, 1}
                         magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
                         #magnetic Vector haysawy {0, 1, 0}
                         
-                        if T2[j][k]==0:
-                            T2[j][k] = 0.00000000000000000000001
-                        if T1[j][k] == 0:
-                            T1[j][k] = 0.00000000000000000000001
+                        
                             
                         decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
                                                 [0, np.exp(-TE / T2[j][k]), 0],
