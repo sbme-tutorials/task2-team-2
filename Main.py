@@ -100,7 +100,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
         self.ui.tabWidget.setCurrentIndex(0)
         
-        
+        self.SHEPPLOGAN_FLAG= False
         
         
        
@@ -112,6 +112,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def  button_clicked(self):
         fileName, _filter = QFileDialog.getOpenFileName(self, "Choose a phantom", "", "Filter -- ( *.npy)")
         if fileName:
+           self.SHEPPLOGAN_FLAG = False
            Phantom_file=np.load(fileName)
            self.ui.lineEdit.setText(fileName)
            SeparatingArrays=(len(Phantom_file)/6)
@@ -133,6 +134,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.ui.kspace_label.setText(" ")
            
            
+           
 
            #show phantom according to chosen property        
            
@@ -152,23 +154,37 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         
           PropertyOfPhantom=self.ui.properties_comboBox.currentText()
           
+          if self.SHEPPLOGAN_FLAG==False:
            #show phantom according to chosen property      
-          if str(PropertyOfPhantom)== ("T1"):  
-              self.phantom=qimage2ndarray.array2qimage(self.T1_mapped)
-              self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
-              self.getValueFromSize_ComboBox()
+              if str(PropertyOfPhantom)== ("T1"):  
+                  self.phantom=qimage2ndarray.array2qimage(self.T1_mapped)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
               
               #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
-          elif str(PropertyOfPhantom)== ("Proton Density"):
-              self.phantom=qimage2ndarray.array2qimage(self.I_mapped)
-              self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
-              self.getValueFromSize_ComboBox()
-          else:  
-              self.phantom=qimage2ndarray.array2qimage(self.T2_mapped)
-              self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
-              self.getValueFromSize_ComboBox()
-          self.resetPlot()   
-          self.resetPainting()
+              elif str(PropertyOfPhantom)== ("Proton Density"):
+                  self.phantom=qimage2ndarray.array2qimage(self.I_mapped)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              else:  
+                  self.phantom=qimage2ndarray.array2qimage(self.T2_mapped)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+          else:
+              if str(PropertyOfPhantom)== ("T1"):  
+                  self.phantom=qimage2ndarray.array2qimage(self.T1)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              
+              #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
+              elif str(PropertyOfPhantom)== ("Proton Density"):
+                  self.phantom=qimage2ndarray.array2qimage(self.I)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              else:  
+                  self.phantom=qimage2ndarray.array2qimage(self.T2)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
               
 
    
@@ -228,7 +244,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
   ##########################################################################################################################################  
     
     def sheppLogan(self): 
-          self.resetPainting()
+          self.SHEPPLOGAN_FLAG = True
           sheppLogan_file = np.load('sheppLogan_phantom.npy')
           z=(len(sheppLogan_file )/3)
           self.I=sheppLogan_file [1:int(z),:]
@@ -241,8 +257,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           self.size_of_matrix_root= math.sqrt(self.size_of_matrix)
           self.default_width= self.ui.show_phantom_label.geometry().width()
           self.default_height= self.ui.show_phantom_label.geometry().height()
-          self.resetPainting()
-          self.resetPlot()
           self.getValueFromProperties_ComboBox()
 
           
@@ -429,14 +443,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         t= np.arange(1000)
         # T1 equation
         t1_plot=[]
-        if self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y] == 0:
-            self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= 0.00000000000001
-        t1_plot= 1 - np.exp(-t/self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y])   # Replace self.ui.t1 with the T1
+        if self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x] == 0:
+            self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= 0.00000000000001
+        t1_plot= 1 - np.exp(-t/self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x])   # Replace self.ui.t1 with the T1
         # T2 equation
         t2_plot=[]
-        if self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y] == 0:
-            self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= 0.00000000000001
-        t2_plot= np.exp(-t/self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y])   #Replace the self.ui.t2 with the T2
+        if self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x] == 0:
+            self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= 0.00000000000001
+        t2_plot= np.exp(-t/self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x])   #Replace the self.ui.t2 with the T2
         # Checking if no more than 5 pixels are chosen
         if self.ui.pixel_counter<5:
             # Plotting T1
@@ -448,8 +462,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.t2_plotWindow.showGrid(x=True, y=True)
             
             
-            self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
-            self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]))
+            self.ui.label_9.setText("T1= "+str(self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]))
+            self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]))
             
            
             # Incrementing the pixel_counter
