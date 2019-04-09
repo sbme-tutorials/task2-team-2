@@ -114,10 +114,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         if fileName:
            Phantom_file=np.load(fileName)
            self.ui.lineEdit.setText(fileName)
-           SeparatingArrays=(len(Phantom_file)/3)
+           SeparatingArrays=(len(Phantom_file)/6)
            self.I=Phantom_file[1:int(SeparatingArrays),:]
            self.T1=Phantom_file[1+int(SeparatingArrays):2*int(SeparatingArrays),:]
            self.T2=Phantom_file[1+2*int(SeparatingArrays):3*int(SeparatingArrays),:]
+           self.I_mapped=Phantom_file[1+3*int(SeparatingArrays):4*int(SeparatingArrays),:]
+           self.T1_mapped=Phantom_file[1+4*int(SeparatingArrays):5*int(SeparatingArrays),:]
+           self.T2_mapped=Phantom_file[1+5*int(SeparatingArrays):6*int(SeparatingArrays),:]          
            self.size_of_matrix= np.size(self.T1)
            self.size_of_matrix_root= math.floor(math.sqrt(self.size_of_matrix))
            self.default_width= self.ui.show_phantom_label.geometry().width()
@@ -151,17 +154,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           
            #show phantom according to chosen property      
           if str(PropertyOfPhantom)== ("T1"):  
-              self.phantom=qimage2ndarray.array2qimage(self.T1)
+              self.phantom=qimage2ndarray.array2qimage(self.T1_mapped)
               self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
               self.getValueFromSize_ComboBox()
               
               #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)  
           elif str(PropertyOfPhantom)== ("Proton Density"):
-              self.phantom=qimage2ndarray.array2qimage(self.I)
+              self.phantom=qimage2ndarray.array2qimage(self.I_mapped)
               self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
               self.getValueFromSize_ComboBox()
           else:  
-              self.phantom=qimage2ndarray.array2qimage(self.T2)
+              self.phantom=qimage2ndarray.array2qimage(self.T2_mapped)
               self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
               self.getValueFromSize_ComboBox()
           self.resetPlot()   
@@ -301,7 +304,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # These 2 variables will be used to catch the intended pixel that the used clicked
             self.ui.pixel_clicked_x= math.floor(self.mouse_pos.x()/self.width_scale)
             self.ui.pixel_clicked_y= math.floor(self.mouse_pos.y()/self.height_scale)
-            self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_y)+","+str(self.ui.pixel_clicked_x)+")")
+            self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_x)+","+str(self.ui.pixel_clicked_y)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
             
             
