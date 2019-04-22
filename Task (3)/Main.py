@@ -601,17 +601,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 
                 
                 magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle,magneticVector)
-                        if T2[j][k]==0:
-                            T2[j][k] = self.epsilon
-                        if T1[j][k] == 0:
-                            T1[j][k] = self.epsilon
+#                        if T2[j][k]==0:
+#                            T2[j][k] = self.epsilon
+#                        if T1[j][k] == 0:
+#                            T1[j][k] = self.epsilon
                         
-                        magneticVector[j][k] = np.array([0, 0, 1-np.exp(-TR/T1[j][k])])
+#                magneticVector[j][k] = np.array([0, 0, 1-np.exp(-TR/T1[j][k])])
                         #magnetic Vector haysawy {0, 0, 1}
 #                        magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
                         #magnetic Vector haysawy {0, 1, 0}
                         
-                        magneticVector = functionsForTask3.decayFunction(phantomSize,T1,T2,TE,TR,magneticVector)
+                magneticVector = functionsForTask3.decayFunction(phantomSize,T1,T2,TE,TR,magneticVector)
                             
 #                        decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
 #                                                [0, np.exp(-TE / T2[j][k]), 0],
@@ -625,11 +625,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
                     gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
 
-                    for j in range(phantomSize):
-                        for k in range(phantomSize):
-                            alpha = gxStep*j + gyStep*k
-                            magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
-                            self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+
+
+                    functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, magneticVector, self.kSpace, kSpaceRowIndex, kSpaceColumnIndex)
+#                    for j in range(phantomSize):
+#                        for k in range(phantomSize):
+#                            alpha = gxStep*j + gyStep*k
+#                            magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
+#                            self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
                 self.phantomFinal = self.kSpace
                 self.kSpace1 = np.abs(self.kSpace)
                 self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
@@ -642,12 +645,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 magneticVector[0:phantomSize][0:phantomSize][0] = 0
                 magneticVector[0:phantomSize][0:phantomSize][1] = 0
                 
-                for j in range(phantomSize):
-                    for k in range(phantomSize):
-                        if T1[j][k] == 0:
-                            magneticVector[j][k][2] = 1
-                        else:
-                            magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
+                magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, T1, TR)
+                
+#                for j in range(phantomSize):
+#                    for k in range(phantomSize):
+#                        if T1[j][k] == 0:
+#                            magneticVector[j][k][2] = 1
+#                        else:
+#                            magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
                         
             self.ui.convert_button.setEnabled(True)
        
