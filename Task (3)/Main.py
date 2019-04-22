@@ -18,6 +18,7 @@ from MRI_Simulator import Ui_MainWindow
 import qimage2ndarray
 import pyqtgraph as pg
 import threading
+import functionsForTask3
 
 
 
@@ -581,23 +582,25 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             
             magneticVector = np.zeros((phantomSize, phantomSize, 3))
 
+
             magneticVector[0:phantomSize, 0:phantomSize, 0] = np.zeros((phantomSize, phantomSize))
             magneticVector[0:phantomSize, 0:phantomSize, 1] = np.zeros((phantomSize, phantomSize))
             magneticVector[0:phantomSize, 0:phantomSize, 2] = np.ones((phantomSize, phantomSize))
             
-            
-            rotationAroundXMatrix = np.array([[1, 0, 0],
-                                              [0, np.cos(flipAngle), np.sin(flipAngle)],
-                                              [0, -np.sin(flipAngle), np.cos(flipAngle)]])
+            magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize)
+
+#            rotationAroundXMatrix = np.array([[1, 0, 0],
+#                                              [0, np.cos(flipAngle), np.sin(flipAngle)],
+#                                              [0, -np.sin(flipAngle), np.cos(flipAngle)]])
             
             
     
             self.kSpace = np.zeros((phantomSize, phantomSize), dtype=np.complex)
             
             for kSpaceRowIndex in range(phantomSize):    # Row Index for kSpace
-                for j in range(phantomSize):
-                    for k in range(phantomSize):
-                        
+                
+                
+                magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle,magneticVector)
                         if T2[j][k]==0:
                             T2[j][k] = self.epsilon
                         if T1[j][k] == 0:
@@ -605,16 +608,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                         
                         magneticVector[j][k] = np.array([0, 0, 1-np.exp(-TR/T1[j][k])])
                         #magnetic Vector haysawy {0, 0, 1}
-                        magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
+#                        magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
                         #magnetic Vector haysawy {0, 1, 0}
                         
-                        
+                        magneticVector = functionsForTask3.decayFunction(phantomSize,T1,T2,TE,TR,magneticVector)
                             
-                        decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
-                                                [0, np.exp(-TE / T2[j][k]), 0],
-                                                [0, 0, np.exp(-TE / T1[j][k])]])
-            
-                        magneticVector[j][k] = np.matmul(decayMatrix, magneticVector[j][k])
+#                        decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
+#                                                [0, np.exp(-TE / T2[j][k]), 0],
+#                                                [0, 0, np.exp(-TE / T1[j][k])]])
+#            
+#                        magneticVector[j][k] = np.matmul(decayMatrix, magneticVector[j][k])
                         #magentic Vector {0, 0.5, 0}
             
                 gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
