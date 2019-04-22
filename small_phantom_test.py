@@ -21,13 +21,14 @@ square_phantom [28:31, 9:12]=liver
 square_phantom [24:30, 14:20]=spleen
 square_phantom [ 21:28, 21:28]=fat
 
+square_map= (255*square_phantom)/np.max(square_phantom)
 # assign T1 and T2 to each tissue 
 T1=np.full((32,32), 0) 
 
-kidneyT1 =np.full((5,5  ), 100) 
-liverT1=np.full((3,3), 200)
-spleenT1=np.full((6,6), 300)
-fatT1=np.full((7,7), 400)
+kidneyT1 =np.full((5,5  ), 200) 
+liverT1=np.full((3,3), 400)
+spleenT1=np.full((6,6), 600)
+fatT1=np.full((7,7), 800)
 
 T1 [21:26, 2:7]=kidneyT1
 T1[28:31, 9:12]=liverT1
@@ -35,7 +36,7 @@ T1[24:30, 14:20]=spleenT1
 T1 [ 21:28, 21:28]=fatT1
 
 #to make it able to show as image
-T1= (255*T1)/np.max(T1)
+T1_map= (255*T1)/np.max(T1)
 
 T2=np.full((32,32 ), 0)  
 kidneyT2 =np.full((5,5  ), 50) 
@@ -50,8 +51,8 @@ T2[24:30, 14:20]=spleenT2
 T2  [21:28, 21:28]=fatT2
 
 
-T2= (255*T2)/np.max(T2)
+T2_map= (255*T2)/np.max(T2)
 #pl.imshow(T2 , cmap='gray', vmin=0, vmax=255)
 
-all=np.concatenate((square_phantom, T1,T2))
+all=np.concatenate((square_phantom, T1,T2,square_map,T1_map,T2_map))
 np.save('DrTamerNewPhantom.npy',all)
