@@ -331,12 +331,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # T1 equation
         t1_plot=[]
         if self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y] == 0:
-            self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= 0.00000000000001
+            self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= self.epsilon
         t1_plot= 1 - np.exp(-t/self.T1[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y])   # Replace self.ui.t1 with the T1
         # T2 equation
         t2_plot=[]
         if self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y] == 0:
-            self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= 0.00000000000001
+            self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y]= self.epsilon
         t2_plot= np.exp(-t/self.T2[self.ui.pixel_clicked_x,self.ui.pixel_clicked_y])   #Replace the self.ui.t2 with the T2
         # Checking if no more than 5 pixels are chosen
         if self.ui.pixel_counter<5:

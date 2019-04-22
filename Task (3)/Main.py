@@ -71,6 +71,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.te_entry_flag=False
         self.flipAngle_entry_flag=False
         
+        
+        self.epsilon = np.finfo(np.float32).eps
+        self.imaginaryNumber = np.exp(np.complex(0, 1))
+        
         self.tr=0
         self.te=0
         self.flipAngle=0
@@ -442,12 +446,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # T1 equation
         t1_plot=[]
         if self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x] == 0:
-            self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= 0.00000000000001
+            self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= self.epsilon
         t1_plot= 1 - np.exp(-t/self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x])   # Replace self.ui.t1 with the T1
         # T2 equation
         t2_plot=[]
         if self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x] == 0:
-            self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= 0.00000000000001
+            self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= self.epsilon
         t2_plot= np.exp(-t/self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x])   #Replace the self.ui.t2 with the T2
         # Checking if no more than 5 pixels are chosen
         if self.ui.pixel_counter<5:
@@ -595,9 +599,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     for k in range(phantomSize):
                         
                         if T2[j][k]==0:
-                            T2[j][k] = 0.00000000000000000000001
+                            T2[j][k] = self.epsilon
                         if T1[j][k] == 0:
-                            T1[j][k] = 0.00000000000000000000001
+                            T1[j][k] = self.epsilon
                         
                         magneticVector[j][k] = np.array([0, 0, 1-np.exp(-TR/T1[j][k])])
                         #magnetic Vector haysawy {0, 0, 1}
