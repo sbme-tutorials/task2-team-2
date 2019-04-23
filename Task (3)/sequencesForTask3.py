@@ -8,7 +8,11 @@ Created on Tue Apr 23 14:35:56 2019
 import numpy as np
 import functionsForTask3
 
-def GRESequence (functionsForTask3.rotationAroundXFunction,(phantomSize,flipAngle,magneticVector)):
-    
+def GRESequence (func):
+    func(phantomSize, flipAngle, magneticVector)
     for kSpaceRowIndex in range(phantomSize):
         
+        
+        
+        
+GRESeq(fum.rot)

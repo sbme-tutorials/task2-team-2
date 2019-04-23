@@ -572,6 +572,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.generate_button.setEnabled(False)
             phantomSize = self.size_of_matrix_root
 
+            self.sequenceChosen = 2             #Value coming from comboBox
+            
             T1 = self.T1
             T2 = self.T2
 
@@ -595,7 +597,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
             functionsForTask3.lookUpForDecay(phantomSize,T1,T2,TE,TR,exponentialOfT1AndTR,exponentialOfT1AndTE,exponentialOfT2AndTE,decayMatrices)
 
-            magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
+#            magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
 
 
             
@@ -607,10 +609,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     
             self.kSpace = np.zeros((phantomSize, phantomSize), dtype=np.complex)
             
-            for kSpaceRowIndex in range(phantomSize):    # Row Index for kSpace
+            if(self.sequenceChosen == 1 ):    #Value coming from comboBox indicating GRE
+                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
+
+                for kSpaceRowIndex in range(phantomSize):    # Row Index for kSpace
                 
                 
-                magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle,magneticVector)
+                    magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle,magneticVector)
 #                        if T2[j][k]==0:
 #                            T2[j][k] = self.epsilon
 #                        if T1[j][k] == 0:
@@ -621,7 +626,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 #                        magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
                         #magnetic Vector haysawy {0, 1, 0}
                         
-                magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
+                    magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
                             
 #                        decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
 #                                                [0, np.exp(-TE / T2[j][k]), 0],
@@ -630,32 +635,32 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 #                        magneticVector[j][k] = np.matmul(decayMatrix, magneticVector[j][k])
                         #magentic Vector {0, 0.5, 0}
             
-                gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
+#                    gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
                 
-                for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
-                    gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
+                    for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
+                        gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
+                        gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
 
 
-
-                    functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, magneticVector, self.kSpace, kSpaceRowIndex, kSpaceColumnIndex)
+                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, magneticVector, self.kSpace, kSpaceRowIndex, kSpaceColumnIndex)
 #                    for j in range(phantomSize):
 #                        for k in range(phantomSize):
 #                            alpha = gxStep*j + gyStep*k
 #                            magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
 #                            self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
-                self.phantomFinal = self.kSpace
-                self.kSpace1 = np.abs(self.kSpace)
-                self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
-                pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
-                pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-                self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                    self.phantomFinal = self.kSpace
+                    self.kSpace1 = np.abs(self.kSpace)
+                    self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
+                    pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
+                    pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
+                    self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
 
                 # Spoiler
 
-                magneticVector[0:phantomSize][0:phantomSize][0] = 0
-                magneticVector[0:phantomSize][0:phantomSize][1] = 0
+                    magneticVector[0:phantomSize][0:phantomSize][0] = 0
+                    magneticVector[0:phantomSize][0:phantomSize][1] = 0
                 
-                magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle)
+                    magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle)
                 
 #                for j in range(phantomSize):
 #                    for k in range(phantomSize):
@@ -664,6 +669,54 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 #                        else:
 #                            magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
                         
+                    
+                    
+            if(self.sequenceChosen == 2 ):      #Value coming from comboBox indicating GRE
+                
+                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle/2,exponentialOfT1AndTR)
+
+                
+                magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle/2,magneticVector)
+                magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
+                phaseEncodingMagneticVector = magneticVector
+                for kSpaceColumnIndex in range(1):        # Column Index for kSpace
+                    gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
+                    gxStep = 2 * np.pi / phantomSize * 0
+                    for j in range(phantomSize):
+                        for k in range(phantomSize):
+                            
+                            alpha = gxStep*j + gyStep*k
+                            magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
+                            self.kSpace[0][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+                
+                self.phantomFinal = self.kSpace
+                self.kSpace1 = np.abs(self.kSpace)
+                self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
+                pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
+                pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
+                self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle/2)
+
+                for kSpaceRowIndex in range(phantomSize-1):
+                    
+                    magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,((-1)**kSpaceRowIndex)*flipAngle,magneticVector)
+                    magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
+                    phaseEncodingMagneticVector = magneticVector
+                    for kSpaceColumnIndex in range(phantomSize-1):        # Column Index for kSpace
+                        gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
+                        gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
+                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, phaseEncodingMagneticVector, self.kSpace, kSpaceRowIndex+1, kSpaceColumnIndex+1)
+
+                    self.phantomFinal = self.kSpace
+                    self.kSpace1 = np.abs(self.kSpace)
+                    self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
+                    pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
+                    pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
+                    self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                
+                    magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle/2)
+
+
             self.ui.convert_button.setEnabled(True)
        
         
