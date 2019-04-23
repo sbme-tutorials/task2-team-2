@@ -586,9 +586,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             magneticVector[0:phantomSize, 0:phantomSize, 0] = np.zeros((phantomSize, phantomSize))
             magneticVector[0:phantomSize, 0:phantomSize, 1] = np.zeros((phantomSize, phantomSize))
             magneticVector[0:phantomSize, 0:phantomSize, 2] = np.ones((phantomSize, phantomSize))
-            
-            magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize)
 
+
+            exponentialOfT1AndTR = np.zeros((phantomSize,phantomSize))
+            exponentialOfT2AndTE = np.zeros((phantomSize,phantomSize))
+            exponentialOfT1AndTE = np.zeros((phantomSize,phantomSize))
+            decayMatrices = np.zeros((phantomSize,phantomSize,3,3))
+
+            functionsForTask3.lookUpForDecay(phantomSize,T1,T2,TE,TR,exponentialOfT1AndTR,exponentialOfT1AndTE,exponentialOfT2AndTE,decayMatrices)
+
+            magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
+
+
+            
 #            rotationAroundXMatrix = np.array([[1, 0, 0],
 #                                              [0, np.cos(flipAngle), np.sin(flipAngle)],
 #                                              [0, -np.sin(flipAngle), np.cos(flipAngle)]])
@@ -611,7 +621,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 #                        magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
                         #magnetic Vector haysawy {0, 1, 0}
                         
-                magneticVector = functionsForTask3.decayFunction(phantomSize,T1,T2,TE,TR,magneticVector)
+                magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
                             
 #                        decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
 #                                                [0, np.exp(-TE / T2[j][k]), 0],
@@ -645,7 +655,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 magneticVector[0:phantomSize][0:phantomSize][0] = 0
                 magneticVector[0:phantomSize][0:phantomSize][1] = 0
                 
-                magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, T1, TR)
+                magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle)
                 
 #                for j in range(phantomSize):
 #                    for k in range(phantomSize):
