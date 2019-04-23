@@ -673,13 +673,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     
             if(self.sequenceChosen == 2 ):      #Value coming from comboBox indicating GRE
                 
-                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle/2,exponentialOfT1AndTR)
+                magneticVector = functionsForTask3.startUpCycle (magneticVector, phantomSize, flipAngle, exponentialOfT1AndTR, 10)
 
                 
                 magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle/2,magneticVector)
                 magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
                 phaseEncodingMagneticVector = magneticVector
-                for kSpaceColumnIndex in range(1):        # Column Index for kSpace
+                for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
                     gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
                     gxStep = 2 * np.pi / phantomSize * 0
                     for j in range(phantomSize):
@@ -699,13 +699,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
                 for kSpaceRowIndex in range(phantomSize-1):
                     
-                    magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,((-1)**kSpaceRowIndex)*flipAngle,magneticVector)
+                    magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,((-1)**kSpaceRowIndex)*flipAngle/2,magneticVector)
                     magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
                     phaseEncodingMagneticVector = magneticVector
-                    for kSpaceColumnIndex in range(phantomSize-1):        # Column Index for kSpace
+                    for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
                         gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
                         gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
-                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, phaseEncodingMagneticVector, self.kSpace, kSpaceRowIndex+1, kSpaceColumnIndex+1)
+                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, phaseEncodingMagneticVector, self.kSpace, kSpaceRowIndex+1, kSpaceColumnIndex)
 
                     self.phantomFinal = self.kSpace
                     self.kSpace1 = np.abs(self.kSpace)
