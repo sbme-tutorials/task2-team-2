@@ -704,7 +704,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     phaseEncodingMagneticVector = magneticVector
                     for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
                         gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
-                        gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
+                        gxStep = 2 * np.pi / phantomSize * (kSpaceRowIndex+1)
                         functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, phaseEncodingMagneticVector, self.kSpace, kSpaceRowIndex+1, kSpaceColumnIndex)
 
                     self.phantomFinal = self.kSpace
