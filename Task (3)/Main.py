@@ -686,7 +686,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                         for k in range(phantomSize):
                             
                             alpha = gxStep*j + gyStep*k
-                            magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
+                            magnitude = np.sqrt(phaseEncodingMagneticVector[j][k][0]*phaseEncodingMagneticVector[j][k][0] + phaseEncodingMagneticVector[j][k][1]*phaseEncodingMagneticVector[j][k][1])
                             self.kSpace[0][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
                 
                 self.phantomFinal = self.kSpace

@@ -13,7 +13,7 @@ def multiplyingPD_ByMagneticVector (magneticVector, PD, phantomSize, flipAngle, 
             magneticVector[j][k][0] = 0
             magneticVector[j][k][1] = 0
             magneticVector[j][k][2] = np.cos(flipAngle) + 1 - exponentialOfT1AndTR[j][k]
-            
+    
     return magneticVector
 
 #############################################################################################
