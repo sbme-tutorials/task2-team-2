@@ -671,7 +671,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                         
                     
                     
-            if(self.sequenceChosen == 2 ):      #Value coming from comboBox indicating GRE
+            if(self.sequenceChosen == 2 ):      #Value coming from comboBox indicating SSFP
                 
                 magneticVector = functionsForTask3.startUpCycle (magneticVector, phantomSize, flipAngle, exponentialOfT1AndTR, 10)
 
