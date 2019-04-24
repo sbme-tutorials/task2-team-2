@@ -31,8 +31,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # Assigning a filter for the label to catch any mouse events
         self.ui.show_phantom_label.installEventFilter(self)
         # Getting Default size of the label on starting the application
-        self.ui.default_height= self.ui.show_phantom_label.geometry().height()
-        self.ui.default_width= self.ui.show_phantom_label.geometry().width()
+        self.default_height= self.ui.show_phantom_label.geometry().height()
+        self.default_width= self.ui.show_phantom_label.geometry().width()
         #connecting browsebutton with loading the file function
         self.ui.browse_button.clicked.connect(self.button_clicked)
         #connecting generate button with generating the k-space
@@ -65,8 +65,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.show_phantom_label.mouseMoveEvent=self.brightness
         self.ui.show_phantom_label.mousePressEvent=self.readCoordinates
         self.ratio = 0
-#        self.ui.show_phantom_label.mouseDoubleEvent=self.readCoordinates
-#        
+
         self.tr_entry_flag=False
         self.te_entry_flag=False
         self.flipAngle_entry_flag=False
@@ -79,10 +78,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # starting by passing them to variables
         self.t1_plotWindow = self.ui.graphicsView
         self.t2_plotWindow = self.ui.graphicsView_2
-        
-        
-        self.default_width= self.ui.show_phantom_label.geometry().width()
-        self.default_height= self.ui.show_phantom_label.geometry().height()
         
         
         self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
@@ -99,6 +94,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.lineEdit_4.editingFinished.connect(self.on_lineEdit_change_flipAngle)
         
         self.ui.tabWidget.setCurrentIndex(0)
+        
+        self.epsilon = np.finfo(np.float32).eps
+        self.imaginaryNumber = np.exp(np.complex(0, 1))
         
         self.SHEPPLOGAN_FLAG= False
         
@@ -124,20 +122,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.T2_mapped=Phantom_file[1+5*int(SeparatingArrays):6*int(SeparatingArrays),:]          
            self.size_of_matrix= np.size(self.T1)
            self.size_of_matrix_root= math.floor(math.sqrt(self.size_of_matrix))
-           self.default_width= self.ui.show_phantom_label.geometry().width()
-           self.default_height= self.ui.show_phantom_label.geometry().height()
            self.resetPainting()
            self.resetPlot()
            self.getValueFromProperties_ComboBox()
+           self.default_width= self.ui.show_phantom_label.geometry().width()
+           self.default_height= self.ui.show_phantom_label.geometry().height()
            self.ui.generate_button.setEnabled(True)
            self.ui.inverseFourier_label.setText(" ")
            self.ui.kspace_label.setText(" ")
-           
-           
-           
-
-           #show phantom according to chosen property        
-           
+            
         else:
                 msg = QtWidgets.QMessageBox()
                 msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -170,8 +163,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                   self.phantom=qimage2ndarray.array2qimage(self.T2_mapped)
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
-          else:
-              if str(PropertyOfPhantom)== ("T1"):  
+          elif self.SHEPPLOGAN_FLAG==True:
+              if str(PropertyOfPhantom)== ("T1"):
                   self.phantom=qimage2ndarray.array2qimage(self.T1)
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
@@ -309,8 +302,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.label_width=self.ui.show_phantom_label.geometry().width()
             
             # Calculating the ratio of scaling in both height and width
-            self.height_scale=self.label_height/self.size_of_matrix_root
-            self.width_scale=self.label_width/self.size_of_matrix_root
+            self.height_scale=self.label_height/self.default_height
+            self.width_scale=self.label_width/self.default_width
             # Getting mouse position 
             self.mouse_pos= event.pos()
             
@@ -319,7 +312,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             # These 2 variables will be used to catch the intended pixel that the used clicked
             self.ui.pixel_clicked_x= math.floor(self.mouse_pos.x()/self.width_scale)
             self.ui.pixel_clicked_y= math.floor(self.mouse_pos.y()/self.height_scale)
-            self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_x)+","+str(self.ui.pixel_clicked_y)+")")
+            self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_y)+","+str(self.ui.pixel_clicked_x)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
             
             # Plotting
@@ -442,12 +435,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # T1 equation
         t1_plot=[]
         if self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x] == 0:
-            self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= 0.00000000000001
+            self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= self.epsilon
         t1_plot= 1 - np.exp(-t/self.T1[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x])   # Replace self.ui.t1 with the T1
         # T2 equation
         t2_plot=[]
         if self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x] == 0:
-            self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= 0.00000000000001
+            self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= self.epsilon
         t2_plot= np.exp(-t/self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x])   #Replace the self.ui.t2 with the T2
         # Checking if no more than 5 pixels are chosen
         if self.ui.pixel_counter<5:
@@ -581,10 +574,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             magneticVector[0:phantomSize, 0:phantomSize, 1] = np.zeros((phantomSize, phantomSize))
             magneticVector[0:phantomSize, 0:phantomSize, 2] = np.ones((phantomSize, phantomSize))
             
+            cosine_flip_angle = np.cos(flipAngle)
+            sine_flip_angle=np.sin(flipAngle)
+            
             
             rotationAroundXMatrix = np.array([[1, 0, 0],
-                                              [0, np.cos(flipAngle), np.sin(flipAngle)],
-                                              [0, -np.sin(flipAngle), np.cos(flipAngle)]])
+                                              [0, cosine_flip_angle, sine_flip_angle],
+                                              [0, -sine_flip_angle, cosine_flip_angle]])
             
             
     
@@ -595,20 +591,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     for k in range(phantomSize):
                         
                         if T2[j][k]==0:
-                            T2[j][k] = 0.00000000000000000000001
+                            T2[j][k] = self.epsilon
                         if T1[j][k] == 0:
-                            T1[j][k] = 0.00000000000000000000001
+                            T1[j][k] = self.epsilon
                         
                         magneticVector[j][k] = np.array([0, 0, 1-np.exp(-TR/T1[j][k])])
                         #magnetic Vector haysawy {0, 0, 1}
                         magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
                         #magnetic Vector haysawy {0, 1, 0}
                         
+                        first_term = np.exp(-TE / T2[j][k])
+                        second_term = np.exp(-TE / T2[j][k])
+                        third_term = np.exp(-TE / T1[j][k])
                         
-                            
-                        decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
-                                                [0, np.exp(-TE / T2[j][k]), 0],
-                                                [0, 0, np.exp(-TE / T1[j][k])]])
+                        decayMatrix = np.array([[first_term, 0, 0],
+                                                [0, second_term, 0],
+                                                [0, 0, third_term]])
             
                         magneticVector[j][k] = np.matmul(decayMatrix, magneticVector[j][k])
                         #magentic Vector {0, 0.5, 0}
