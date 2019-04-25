@@ -737,8 +737,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 #                            magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
 
 
-
-            if(self.sequenceChosen == 2 ):      #Value coming from comboBox indicating GRE
+#
+ #           if(self.sequenceChosen == 2 ):      #Value coming from comboBox indicating GRE
 
 
 
