@@ -834,9 +834,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 ##########################################################################################################################################
 ##########################################################################################################################################
 
-##########################################################################################################################################
-##########################################################################################################################################
-
     def __init__Sequence(self):
 
         self.layout = pg.GraphicsLayout(border=(100,100,100))
@@ -847,31 +844,47 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout.nextRow()
         self.layout.addLabel('RF', angle=-90, rowspan=1)
         self.rf_plot = self.layout.addPlot()
+        self.rf_plot.showGrid(x=True, y=True)
 
         self.layout.nextRow()
         self.layout.addLabel('Gz', angle=-90, rowspan=1)
         self.gz_plot = self.layout.addPlot()
+        self.gz_plot.showGrid(x=True, y=True)
 
         self.layout.nextRow()
         self.layout.addLabel('Gx', angle=-90, rowspan=1)
         self.gx_plot = self.layout.addPlot()
+        self.gx_plot.showGrid(x=True, y=True)
 
         self.layout.nextRow()
         self.layout.addLabel('Gy', angle=-90, rowspan=1)
         self.gy_plot = self.layout.addPlot()
+        self.gy_plot.showGrid(x=True, y=True)
 
         self.layout.nextRow()
         self.layout.addLabel('Readout', angle=-90, rowspan=1)
         self.readout_plot = self.layout.addPlot()
+        self.readout_plot.showGrid(x=False, y=True)
 
         self.layout.nextRow()
-        self.layout.addLabel("Time", col=1, colspan=2)
+        self.layout.addLabel("Time (ms) ", col=1, colspan=2)
 
         ## hide axes on some plots
         self.rf_plot.hideAxis('bottom')
         self.gz_plot.hideAxis('bottom')
         self.gx_plot.hideAxis('bottom')
         self.gy_plot.hideAxis('bottom')
+
+##########################################################################################################################################
+##########################################################################################################################################
+
+
+    def updateSequence(self):
+        self.rf_plot.plot()
+        self.gz_plot.plot()
+        self.gx_plot.plot()
+        self.gy_plot.plot()
+        self.readout_plot.plot()
 
 
 ##########################################################################################################################################
