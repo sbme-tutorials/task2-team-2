@@ -8,6 +8,8 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from pyqtgraph import PlotWidget
+import pyqtgraph as pg
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -27,8 +29,8 @@ class Ui_MainWindow(object):
         self.gridLayout_6 = QtWidgets.QGridLayout(self.groupBox_3)
         self.gridLayout_6.setObjectName("gridLayout_6")
         self.tabWidget = QtWidgets.QTabWidget(self.groupBox_3)
-        self.tabWidget.setTabPosition(QtWidgets.QTabWidget.West)
-        self.tabWidget.setTabShape(QtWidgets.QTabWidget.Triangular)
+        self.tabWidget.setTabPosition(QtWidgets.QTabWidget.North)
+        self.tabWidget.setTabShape(QtWidgets.QTabWidget.Rounded)
         self.tabWidget.setMovable(True)
         self.tabWidget.setObjectName("tabWidget")
         self.tab = QtWidgets.QWidget()
@@ -197,6 +199,18 @@ class Ui_MainWindow(object):
         self.verticalLayout_5.addWidget(self.inverseFourier_label)
         self.gridLayout_5.addWidget(self.splitter_4, 0, 0, 1, 2)
         self.tabWidget.addTab(self.tab_2, "")
+        self.tab_3 = QtWidgets.QWidget()
+        self.tab_3.setAccessibleName("")
+        self.tab_3.setObjectName("tab_3")
+        self.gridLayout_7 = QtWidgets.QGridLayout(self.tab_3)
+        self.gridLayout_7.setObjectName("gridLayout_7")
+        self.graphicsView_3 = pg.GraphicsView(self.tab_3)
+        self.graphicsView_3.setObjectName("graphicsView_3")
+        self.gridLayout_7.addWidget(self.graphicsView_3, 0, 0, 1, 1)
+        self.tabWidget.addTab(self.tab_3, "")
+        self.tab_4 = QtWidgets.QWidget()
+        self.tab_4.setObjectName("tab_4")
+        self.tabWidget.addTab(self.tab_4, "")
         self.gridLayout_6.addWidget(self.tabWidget, 0, 0, 1, 1)
         self.groupBox_2 = QtWidgets.QGroupBox(self.groupBox_3)
         self.groupBox_2.setAlignment(QtCore.Qt.AlignCenter)
@@ -261,6 +275,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.preparation_label = QtWidgets.QLabel(self.groupBox_2)
+        self.preparation_label.setText("")
         self.preparation_label.setObjectName("preparation_label")
         self.horizontalLayout.addWidget(self.preparation_label)
         self.preparation_lineEdit = QtWidgets.QLineEdit(self.groupBox_2)
@@ -280,7 +295,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(1)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -311,6 +326,8 @@ class Ui_MainWindow(object):
         self.label_13.setText(_translate("MainWindow", "K-Space representation"))
         self.label_12.setText(_translate("MainWindow", "Inverse Fourier"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "K-Space"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "Sequence"))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "Artifacts"))
         self.groupBox_2.setTitle(_translate("MainWindow", "RF Properties"))
         self.label_4.setText(_translate("MainWindow", "Time to Echo"))
         self.lineEdit_2.setPlaceholderText(_translate("MainWindow", "milliseconds"))
@@ -326,7 +343,7 @@ class Ui_MainWindow(object):
         self.comboBox_3.setItemText(0, _translate("MainWindow", "Inversion Recovery"))
         self.comboBox_3.setItemText(1, _translate("MainWindow", "T2 Prep"))
         self.comboBox_3.setItemText(2, _translate("MainWindow", "Tagging"))
-        self.preparation_label.setText(_translate("MainWindow", " "))
+
 
 class Label(QtWidgets.QLabel):
     def _init_(self, parent=None):
@@ -344,3 +361,4 @@ class Label(QtWidgets.QLabel):
             for self.pixel in self.point:
                painter.setPen(QtGui.QPen(self.pixel[2]))
                painter.drawRect(self.pixel[0],self.pixel[1],4,4)
+

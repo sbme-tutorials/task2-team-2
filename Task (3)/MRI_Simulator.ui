@@ -36,13 +36,13 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget">
          <property name="tabPosition">
-          <enum>QTabWidget::West</enum>
+          <enum>QTabWidget::North</enum>
          </property>
          <property name="tabShape">
-          <enum>QTabWidget::Triangular</enum>
+          <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>1</number>
+          <number>2</number>
          </property>
          <property name="movable">
           <bool>true</bool>
@@ -417,6 +417,24 @@
            </item>
           </layout>
          </widget>
+         <widget class="QWidget" name="tab_3">
+          <property name="accessibleName">
+           <string/>
+          </property>
+          <attribute name="title">
+           <string>Sequence</string>
+          </attribute>
+          <layout class="QGridLayout" name="gridLayout_7">
+           <item row="0" column="0">
+            <widget class="QGraphicsView" name="graphicsView_3"/>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="tab_4">
+          <attribute name="title">
+           <string>Artifacts</string>
+          </attribute>
+         </widget>
         </widget>
        </item>
        <item row="1" column="0">
@@ -559,7 +577,7 @@
             <item>
              <widget class="QLabel" name="preparation_label">
               <property name="text">
-               <string> </string>
+               <string/>
               </property>
              </widget>
             </item>

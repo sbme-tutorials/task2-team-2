@@ -14,7 +14,7 @@ from PyQt5.QtGui import QPixmap, QMouseEvent
 from PyQt5.QtCore import Qt, pyqtSlot
 from PyQt5.QtWidgets import QFileDialog
 import numpy as np
-from MRI_Simulator import Ui_MainWindow
+from MRI_Simulator import Ui_MainWindow,Label
 import qimage2ndarray
 import pyqtgraph as pg
 import threading
@@ -120,6 +120,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.ui.preparation_lineEdit.setEnabled(True)
         self.ui.preparation_label.setText("Inversion Time (ms)")
+
+        self.__init__Sequence()
 
     ##########################################################################################################################################
     ##########################################################################################################################################
@@ -414,7 +416,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magenta])
             else: pass
 
-        return super(ApplicationWindow, self).eventFilter(source, event)
+        return super(Label, self.ui.show_phantom_label).eventFilter(source, event)
 
 
     @pyqtSlot()
@@ -636,6 +638,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 ##########################################################################################################################################
 
     def kSpace_generation(self):
+
+
             self.ui.generate_button.setEnabled(False)
             phantomSize = self.size_of_matrix_root
 
@@ -738,7 +742,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
 
-            if(self.sequenceChosen == 2 ):      #Value coming from comboBox indicating GRE
+            #if(self.sequenceChosen == 2 ):      #Value coming from comboBox indicating GRE
 
 
 
@@ -826,6 +830,49 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         phantomFinal=QPixmap.fromImage(phantomFinal)
         self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
         self.ui.convert_button.setEnabled(False)
+
+##########################################################################################################################################
+##########################################################################################################################################
+
+##########################################################################################################################################
+##########################################################################################################################################
+
+    def __init__Sequence(self):
+
+        self.layout = pg.GraphicsLayout(border=(100,100,100))
+        self.ui.graphicsView_3.setCentralItem(self.layout)
+        self.layout.setContentsMargins(10, 10, 10, 10)
+        self.layout.addLabel("Graphical Representation of used sequence", colspan=3)
+
+        self.layout.nextRow()
+        self.layout.addLabel('RF', angle=-90, rowspan=1)
+        self.rf_plot = self.layout.addPlot()
+
+        self.layout.nextRow()
+        self.layout.addLabel('Gz', angle=-90, rowspan=1)
+        self.gz_plot = self.layout.addPlot()
+
+        self.layout.nextRow()
+        self.layout.addLabel('Gx', angle=-90, rowspan=1)
+        self.gx_plot = self.layout.addPlot()
+
+        self.layout.nextRow()
+        self.layout.addLabel('Gy', angle=-90, rowspan=1)
+        self.gy_plot = self.layout.addPlot()
+
+        self.layout.nextRow()
+        self.layout.addLabel('Readout', angle=-90, rowspan=1)
+        self.readout_plot = self.layout.addPlot()
+
+        self.layout.nextRow()
+        self.layout.addLabel("Time", col=1, colspan=2)
+
+        ## hide axes on some plots
+        self.rf_plot.hideAxis('bottom')
+        self.gz_plot.hideAxis('bottom')
+        self.gx_plot.hideAxis('bottom')
+        self.gy_plot.hideAxis('bottom')
+
 
 ##########################################################################################################################################
 ##########################################################################################################################################
