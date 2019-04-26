@@ -117,6 +117,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.T2PREP=False
         self.TAGGING=False
 
+        self.ui.tabWidget.setTabEnabled(1,False)
+        self.ui.tabWidget.setTabEnabled(2,False)
+
 
         self.ui.preparation_lineEdit.setEnabled(True)
         self.ui.preparation_label.setText("Inversion Time (ms)")
@@ -150,6 +153,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.ui.generate_button.setEnabled(True)
            self.ui.inverseFourier_label.setText(" ")
            self.ui.kspace_label.setText(" ")
+           self.ui.tabWidget.setTabEnabled(1,True)
+
 
 
 
@@ -807,6 +812,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def generate_Kspace(self):
         if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag:
+            self.ui.tabWidget.setTabEnabled(2,True)
+            self.ui.tabWidget.setTabEnabled(3,True)
+            self.updateSequence()
             self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
             self.kSpaceThread.start()
         else:
@@ -839,12 +847,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout = pg.GraphicsLayout(border=(100,100,100))
         self.ui.graphicsView_3.setCentralItem(self.layout)
         self.layout.setContentsMargins(10, 10, 10, 10)
-        self.layout.addLabel("Graphical Representation of used sequence", colspan=3)
+        self.layout.addLabel("Graphical Representation", colspan=3)
 
         self.layout.nextRow()
         self.layout.addLabel('RF', angle=-90, rowspan=1)
         self.rf_plot = self.layout.addPlot()
         self.rf_plot.showGrid(x=True, y=True)
+        x = np.linspace(-5, 5, 41)
+        self.rf_plot.plot(np.sinc(x))
 
         self.layout.nextRow()
         self.layout.addLabel('Gz', angle=-90, rowspan=1)
@@ -880,11 +890,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
     def updateSequence(self):
-        self.rf_plot.plot()
-        self.gz_plot.plot()
-        self.gx_plot.plot()
-        self.gy_plot.plot()
-        self.readout_plot.plot()
+        self.rf_plot.setXRange(0,self.tr)
+        self.gz_plot.setXRange(0,self.tr)
+        self.gx_plot.setXRange(0,self.tr)
+        self.gy_plot.setXRange(0,self.tr)
+        self.readout_plot.setXRange(0,self.tr)
+#        self.rf_plot.plot()
+#        self.gz_plot.plot()
+#        self.gx_plot.plot()
+#        self.gy_plot.plot()
+#        self.readout_plot.plot()
 
 
 ##########################################################################################################################################
