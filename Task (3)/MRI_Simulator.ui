@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>986</width>
-    <height>743</height>
+    <height>747</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -33,166 +33,6 @@
        <string/>
       </property>
       <layout class="QGridLayout" name="gridLayout_6">
-       <item row="1" column="0">
-        <widget class="QGroupBox" name="groupBox_2">
-         <property name="title">
-          <string>RF Properties</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <item row="0" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_4">
-            <item>
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Time to Echo</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="lineEdit_2">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-              <property name="placeholderText">
-               <string>milliseconds</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="0" column="1" rowspan="3">
-           <layout class="QVBoxLayout" name="verticalLayout">
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_3">
-              <item>
-               <widget class="QLabel" name="label_16">
-                <property name="text">
-                 <string>Sequence</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="comboBox_2">
-                <item>
-                 <property name="text">
-                  <string>GRE</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>SSFP</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>SE</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_2">
-              <item>
-               <widget class="QLabel" name="label_15">
-                <property name="text">
-                 <string>Preparation</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="comboBox_3">
-                <item>
-                 <property name="text">
-                  <string>Inversion Recovery</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>T2 Prep</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Tagging</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout">
-              <item>
-               <widget class="QLabel" name="preparation_label">
-                <property name="text">
-                 <string>Inversion Time</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="preparation_lineEdit">
-                <property name="enabled">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item row="1" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
-            <item>
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Time to Repeat</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="lineEdit_3">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-              <property name="placeholderText">
-               <string>milliseconds</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item row="2" column="0">
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>Flipping Angel</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QLineEdit" name="lineEdit_4">
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-              <property name="placeholderText">
-               <string>Degrees</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget">
          <property name="tabPosition">
@@ -202,7 +42,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>2</number>
+          <number>1</number>
          </property>
          <property name="movable">
           <bool>true</bool>
@@ -305,58 +145,120 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <layout class="QVBoxLayout" name="verticalLayout_2">
+            <layout class="QVBoxLayout" name="verticalLayout_14">
              <item>
-              <widget class="QSplitter" name="splitter_2">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <widget class="QLabel" name="label_8">
-                <property name="text">
-                 <string>T1 Plot</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-               <widget class="QLabel" name="label_9">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </widget>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_12">
+                 <item>
+                  <widget class="QSplitter" name="splitter_2">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <widget class="QLabel" name="label_8">
+                    <property name="text">
+                     <string>T1 Plot</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                   <widget class="QLabel" name="label_9">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QGraphicsView" name="graphicsView"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_13">
+                 <item>
+                  <widget class="QSplitter" name="splitter_3">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <widget class="QLabel" name="label_7">
+                    <property name="text">
+                     <string>T2 Plot</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                   <widget class="QLabel" name="label_10">
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                    </property>
+                   </widget>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QGraphicsView" name="graphicsView_2"/>
+                 </item>
+                </layout>
+               </item>
+              </layout>
              </item>
              <item>
-              <widget class="QGraphicsView" name="graphicsView"/>
-             </item>
-             <item>
-              <widget class="QSplitter" name="splitter_3">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <widget class="QLabel" name="label_7">
-                <property name="text">
-                 <string>T2 Plot</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-               <widget class="QLabel" name="label_10">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                </property>
-               </widget>
-              </widget>
-             </item>
-             <item>
-              <widget class="QGraphicsView" name="graphicsView_2"/>
+              <layout class="QVBoxLayout" name="verticalLayout_2">
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_8">
+                 <item>
+                  <widget class="QLabel" name="label_21">
+                   <property name="text">
+                    <string>Ernst Angle</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="ernst_comboBox">
+                   <item>
+                    <property name="text">
+                     <string>Choose a tissue</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Fat</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>White Matter</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Gray Matter</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Blood</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <widget class="QGraphicsView" name="ernst_graphicView"/>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>
@@ -434,33 +336,19 @@
            <string>K-Space</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="1" column="0">
-            <widget class="QPushButton" name="generate_button">
-             <property name="text">
-              <string>Generate K-space</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QPushButton" name="convert_button">
-             <property name="text">
-              <string>Convert</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0" colspan="2">
-            <widget class="QSplitter" name="splitter_4">
+           <item row="0" column="0" colspan="3">
+            <widget class="QSplitter" name="splitter_6">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
-             <widget class="QWidget" name="layoutWidget">
+             <widget class="QWidget" name="">
               <layout class="QVBoxLayout" name="verticalLayout_7">
                <item>
                 <widget class="QLabel" name="label_14">
                  <property name="maximumSize">
                   <size>
                    <width>16777215</width>
-                   <height>32</height>
+                   <height>21</height>
                   </size>
                  </property>
                  <property name="frameShape">
@@ -501,8 +389,8 @@
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="layoutWidget">
-              <layout class="QVBoxLayout" name="verticalLayout_6">
+             <widget class="QWidget" name="">
+              <layout class="QVBoxLayout" name="verticalLayout_5">
                <item>
                 <widget class="QLabel" name="label_13">
                  <property name="maximumSize">
@@ -526,19 +414,29 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="kspace_label">
-                 <property name="text">
-                  <string/>
+                <widget class="QSplitter" name="splitter_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
                  </property>
-                 <property name="scaledContents">
-                  <bool>true</bool>
-                 </property>
+                 <widget class="QLabel" name="kspace_label">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                 <widget class="QLabel" name="kspace_label2">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
                 </widget>
                </item>
               </layout>
              </widget>
-             <widget class="QWidget" name="layoutWidget">
-              <layout class="QVBoxLayout" name="verticalLayout_5">
+             <widget class="QWidget" name="">
+              <layout class="QVBoxLayout" name="verticalLayout_6">
                <item>
                 <widget class="QLabel" name="label_12">
                  <property name="maximumSize">
@@ -554,7 +452,7 @@
                   <enum>QFrame::Raised</enum>
                  </property>
                  <property name="text">
-                  <string>Inverse Fourier</string>
+                  <string>Reconstruction</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -562,17 +460,55 @@
                 </widget>
                </item>
                <item>
-                <widget class="QLabel" name="inverseFourier_label">
-                 <property name="text">
-                  <string/>
+                <widget class="QSplitter" name="splitter_5">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
                  </property>
-                 <property name="scaledContents">
-                  <bool>true</bool>
-                 </property>
+                 <widget class="QLabel" name="inverseFourier_label">
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                 <widget class="QLabel" name="inverseFourier_label2">
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
                 </widget>
                </item>
               </layout>
              </widget>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QComboBox" name="port_comboBox">
+             <item>
+              <property name="text">
+               <string>Port1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Port2</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="generate_button">
+             <property name="text">
+              <string>Generate K-space</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="convert_button">
+             <property name="text">
+              <string>Convert</string>
+             </property>
             </widget>
            </item>
           </layout>
@@ -595,6 +531,191 @@
            <string>Artifacts</string>
           </attribute>
          </widget>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>RF Properties</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <layout class="QVBoxLayout" name="verticalLayout_8">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QLabel" name="label_4">
+                <property name="text">
+                 <string>Time to Echo</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_2">
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="placeholderText">
+                 <string>milliseconds</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_5">
+              <item>
+               <widget class="QLabel" name="label_5">
+                <property name="text">
+                 <string>Time to Repeat</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_3">
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="placeholderText">
+                 <string>milliseconds</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_6">
+              <item>
+               <widget class="QLabel" name="label_6">
+                <property name="text">
+                 <string>Flipping Angel</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit_4">
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="placeholderText">
+                 <string>Degrees</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="1">
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <item>
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>Sequence</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_2">
+                <item>
+                 <property name="text">
+                  <string>GRE</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>SSFP</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>SE</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_2">
+              <item>
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>Preparation</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="comboBox_3">
+                <item>
+                 <property name="text">
+                  <string>Inversion Recovery</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>T2 Prep</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Tagging</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QLabel" name="preparation_label">
+                <property name="text">
+                 <string>Inversion Time</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="preparation_lineEdit">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="2">
+           <layout class="QHBoxLayout" name="horizontalLayout_9">
+            <item>
+             <widget class="QLabel" name="label_22">
+              <property name="text">
+               <string>No. of Dummy runs</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="doubleSpinBox">
+              <property name="buttonSymbols">
+               <enum>QAbstractSpinBox::UpDownArrows</enum>
+              </property>
+              <property name="decimals">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>

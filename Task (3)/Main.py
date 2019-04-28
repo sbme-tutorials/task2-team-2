@@ -65,6 +65,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.properties_comboBox.currentIndexChanged.connect(self.on_property_change)
         self.ui.comboBox_2.currentIndexChanged.connect(self.on_sequence_change)
         self.ui.comboBox_3.currentIndexChanged.connect(self.on_preparation_change)
+        self.ui.port_comboBox.currentIndexChanged.connect(self.port_selection)
+        self.ui.ernst_comboBox.currentIndexChanged.connect(self.ernst_tissue_selection)
         self.ui.show_phantom_label.mouseMoveEvent=self.brightness
         self.ui.show_phantom_label.mousePressEvent=self.readCoordinates
         self.ratio = 0
@@ -104,6 +106,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.lineEdit_3.editingFinished.connect(self.on_lineEdit_change_tr)
         self.ui.lineEdit_4.editingFinished.connect(self.on_lineEdit_change_flipAngle)
         self.ui.preparation_lineEdit.editingFinished.connect(self.on_lineEdit_change_preparation)
+        self.ui.doubleSpinBox.valueChanged.connect(self.get_dumm_runs)
 
         self.ui.tabWidget.setCurrentIndex(0)
 
@@ -117,12 +120,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.T2PREP=False
         self.TAGGING=False
 
+        self.FAT = False
+        self.WHITE_MATTER = False
+        self.GRAY_MATTER = False
+        self.BLOOD = False
+
+
         self.ui.tabWidget.setTabEnabled(1,False)
         self.ui.tabWidget.setTabEnabled(2,False)
 
 
         self.ui.preparation_lineEdit.setEnabled(True)
         self.ui.preparation_label.setText("Inversion Time (ms)")
+
+        self.current_port = 1
+
+        self.numOfDumm = 0
 
         self.__init__Sequence()
 
@@ -441,6 +454,44 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.getValueFromPreparation_ComboBox()
 
     @pyqtSlot()
+    def port_selection(self):
+        current_port_string= self.ui.port_comboBox.currentText()
+        if(current_port_string == "Port1"):
+            self.current_port = 1
+        else: self.current_port = 2
+
+    @pyqtSlot()
+    def ernst_tissue_selection(self):
+        selected_tissue = self.ui.ernst_comboBox.currentText()
+        if (selected_tissue == "Fat"):
+            self.FAT = True
+            self.WHITE_MATTER = False
+            self.GRAY_MATTER = False
+            self.BLOOD = False
+        elif (selected_tissue == "White Matter"):
+            self.WHITE_MATTER = True
+            self.FAT = False
+            self.GRAY_MATTER = False
+            self.BLOOD = False
+        elif (selected_tissue == "Gray Matter"):
+            self.WHITE_MATTER = False
+            self.FAT = False
+            self.GRAY_MATTER = True
+            self.BLOOD = False
+        elif (selected_tissue == "Blood"):
+            self.WHITE_MATTER = False
+            self.FAT = False
+            self.GRAY_MATTER = False
+            self.BLOOD = True
+        else:
+            self.WHITE_MATTER = False
+            self.FAT = False
+            self.GRAY_MATTER = False
+            self.BLOOD = False
+            self.ui.ernst_graphicView.clear()
+
+
+    @pyqtSlot()
     def on_lineEdit_change_te(self):
         self.getValueFromLine_edit_te()
         self.ui.generate_button.setEnabled(True)
@@ -461,6 +512,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def on_lineEdit_change_preparation(self):
         self.getValueFromLine_edit_preparation()
+
+    @pyqtSlot()
+    def get_dumm_runs(self):
+        self.numOfDumm = self.ui.doubleSpinBox.value()
 
  ##########################################################################################################################################
  ##########################################################################################################################################
@@ -729,7 +784,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
                     pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
                     pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-                    self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                    if (self.current_port == 1):
+                        self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                    else: self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
 
                 # Spoiler
 
@@ -777,7 +834,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
                 pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
                 pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-                self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                if (self.current_port == 1):
+                    self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                else: self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
                 magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle/2)
 
                 for kSpaceRowIndex in range(phantomSize-1):
@@ -795,7 +854,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
                     pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
                     pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-                    self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                    if (self.current_port == 1):
+                        self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                    else: self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
 
                     magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle/2)
 
@@ -836,7 +897,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         phantomFinal = (phantomFinal-np.min(phantomFinal))*255/(np.max(phantomFinal)-np.min(phantomFinal))
         phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
         phantomFinal=QPixmap.fromImage(phantomFinal)
-        self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+        if (self.current_port == 1):
+            self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+        else: self.ui.inverseFourier_label2.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
         self.ui.convert_button.setEnabled(False)
 
 ##########################################################################################################################################
