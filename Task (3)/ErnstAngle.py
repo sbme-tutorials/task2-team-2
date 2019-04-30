@@ -25,7 +25,7 @@ for flipAngle in range (180): #for SSFP
     if signal> maximumSignal:
          maximumSignal=signal
          ErnstAngle=flipAngle
-         print ErnstAngle
+         print (ErnstAngle)
 
 ## for GRE #choosing tissue from combobox from tab1 to take its T! and T2
 signal[x][y][z]=np.sin(flipAngle)*(1-np.exp(-TR/T1))*np.exp(-TE/T2)/(1-np.cos(flipAngle)*np.exp(-TR/T1))            #using T2*=T2
