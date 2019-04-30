@@ -16,18 +16,20 @@ signalArray=0
 for flipAngle in range (180): #for SSFP
     flipAngleArray.append(flipAngle)
     for counter in range (10):
-       signal=functionsForTask3.rotationAroundXFunction(phantomSize, flipAngle, magneticVector)
-       signalArray.append(signal)
+       signal[x][y][z]=functionsForTask3.rotationAroundXFunction(phantomSize, flipAngle, magneticVector)
+      
        #signal+=signal we need the last magnetization vector not average
-    signalArray.append(signal)
+    signalArray.append(signal[z])
 
        
     if signal> maximumSignal:
          maximumSignal=signal
-         print(flipAngle) 
+         ErnstAngle=flipAngle
+         print ErnstAngle
 
 ## for GRE #choosing tissue from combobox from tab1 to take its T! and T2
-signal=np.sin(flipAngle)*(1-np.exp(-TR/T1))*np.exp(-TE/T2)/(1-np.cos(flipAngle)*np.exp(-TR/T1))            #using T2*=T2
+signal[x][y][z]=np.sin(flipAngle)*(1-np.exp(-TR/T1))*np.exp(-TE/T2)/(1-np.cos(flipAngle)*np.exp(-TR/T1))            #using T2*=T2
+## plot only signal[z] versus theta
          
          
        
