@@ -26,6 +26,7 @@ square_phantom [35:45,35:45]=liver
 square_phantom [15:30, 46:61]=spleen
 square_phantom [15:25,15:25]=fat
 
+squaremapped=(255*square_phantom)/np.max(square_phantom)
 ## assign T1 and T2 to each tissue 
 T1=np.full((64,64 ), 0) 
 
@@ -41,13 +42,13 @@ T1[15:30, 46:61]=spleenT1
 T1 [15:25,15:25]=fatT1
 
 #to make it able to show as image
-#T1= (255*T1)/np.max(T1)
+T1mapped= (255*T1)/np.max(T1)
 
 T2=np.full((64,64),0)  
-kidneyT2 =np.full((10,10 ), 100) 
-liverT2=np.full((10,10), 150)
-spleenT2=np.full((15,15),200)
-fatT2=np.full((10,10), 250)
+kidneyT2 =np.full((10,10 ), 50) 
+liverT2=np.full((10,10), 80)
+spleenT2=np.full((15,15),100)
+fatT2=np.full((10,10), 150)
 
 
 T2[2:12,2:12]=kidneyT2
@@ -56,10 +57,11 @@ T2[15:30, 46:61]=spleenT2
 T2 [15:25,15:25]=fatT2
 
 #print(size(square_phantom))
-#T2= (255*T2)/np.max(T2)
+T2mapped= (255*T2)/np.max(T2)
 
 #concatentaion of all properties to save in file
-All=np.concatenate ((square_phantom,T1,T2)) #concatentation row wise (fo2 b3d)
+All=np.concatenate ((square_phantom,T1,T2, squaremapped, T1mapped, T2mapped)) #concatentation row wise (fo2 b3d)
 np.save('FinalPhantom64.npy', All)
+print(np.size(All))
 pl.imshow(square_phantom      , cmap='gray', vmin=0, vmax=255)
 
