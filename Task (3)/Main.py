@@ -20,6 +20,7 @@ import pyqtgraph as pg
 import threading
 import functionsForTask3
 import preparationSequences
+import graphicalRepresentation
 
 
 
@@ -75,6 +76,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.tr_entry_flag=False
         self.te_entry_flag=False
         self.flipAngle_entry_flag=False
+        self.preparation_value_entry_flag=False
 
 
         self.epsilon = np.finfo(np.float32).eps
@@ -157,7 +159,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.T1_mapped=Phantom_file[1+4*int(SeparatingArrays):5*int(SeparatingArrays),:]
            self.T2_mapped=Phantom_file[1+5*int(SeparatingArrays):6*int(SeparatingArrays),:]
            self.size_of_matrix= np.size(self.T1)
-           print(len(self.T1))
            self.size_of_matrix_root= math.floor(math.sqrt(self.size_of_matrix))
            self.default_width= self.ui.show_phantom_label.geometry().width()
            self.default_height= self.ui.show_phantom_label.geometry().height()
@@ -298,27 +299,55 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     ##########################################################################################################################################
 
     def getValueFromLine_edit_te(self):
-        self.te= int(self.ui.lineEdit_2.text())
-        self.vLine1.setPos(self.te)
-        self.vLine3.setPos(self.te)
-        self.te_entry_flag=True
-
+        try:
+            self.te= int(self.ui.lineEdit_2.text())
+            self.vLine1.setPos(self.te)
+            self.vLine3.setPos(self.te)
+            self.te_entry_flag=True
+        except ValueError:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Only Integer")
+            msg.setWindowTitle("Value Error")
+            msg.exec_()
 
     def getValueFromLine_edit_tr(self):
-        self.tr=int(self.ui.lineEdit_3.text())
-        self.vLine2.setPos(self.tr)
-        self.vLine4.setPos(self.tr)
-        self.tr_entry_flag=True
+        try:
+            self.tr=int(self.ui.lineEdit_3.text())
+            self.vLine2.setPos(self.tr)
+            self.vLine4.setPos(self.tr)
+            self.tr_entry_flag=True
+        except ValueError:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Only Integer")
+            msg.setWindowTitle("Value Error")
+            msg.exec_()
 
 
     def getValueFromLine_edit_flipAngle(self):
-        self.flipAngle=int(self.ui.lineEdit_4.text())
-        self.flipAngle_entry_flag=True
+        try:
+            self.flipAngle=int(self.ui.lineEdit_4.text())
+            self.flipAngle_entry_flag=True
+        except ValueError:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Only Integer")
+            msg.setWindowTitle("Value Error")
+            msg.exec_()
 
 
 
     def getValueFromLine_edit_preparation(self):
-        self.preparation_value=int(self.ui.preparation_lineEdit.text())
+        try:
+            self.preparation_value=int(self.ui.preparation_lineEdit.text())
+            self.preparation_value_entry_flag=True
+        except ValueError:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Only Integer")
+            msg.setWindowTitle("Value Error")
+            msg.exec_()
 
 
 
@@ -929,7 +958,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 ##########################################################################################################################################
 
     def generate_Kspace(self):
-        if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag:
+        if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag and self.preparation_value_entry_flag:
             self.ui.tabWidget.setTabEnabled(2,True)
             self.ui.tabWidget.setTabEnabled(3,True)
             self.updateSequence()
@@ -938,7 +967,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         else:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("TE, TR or FlipAngle not entered!")
+            msg.setText("TE, TR, FlipAngle or Preparation Value not entered!")
             msg.setInformativeText('Please enter their values')
             msg.setWindowTitle("Input Required!")
             msg.exec_()
@@ -973,8 +1002,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout.addLabel('RF', angle=-90, rowspan=1)
         self.rf_plot = self.layout.addPlot()
         self.rf_plot.showGrid(x=True, y=True)
-        x = np.linspace(-5, 5, 41)
-        self.rf_plot.plot(np.sinc(x))
+        graphicalRepresentation.drawRF(self.rf_plot,2)
+
 
         self.layout.nextRow()
         self.layout.addLabel('Gz', angle=-90, rowspan=1)
