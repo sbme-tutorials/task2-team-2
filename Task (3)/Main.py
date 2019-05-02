@@ -20,7 +20,7 @@ import pyqtgraph as pg
 import threading
 import functionsForTask3
 import preparationSequences
-import graphicalRepresentation
+import graphicalRepresentation as gr
 
 
 
@@ -495,7 +495,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         current_port_string= self.ui.port_comboBox.currentText()
         if(current_port_string == "Port1"):
             self.current_port = 1
-        else: self.current_port = 2
+        elif (current_port_string == "Port2"):
+            self.current_port = 2
 
     @pyqtSlot()
     def ernst_tissue_selection(self):
@@ -1002,13 +1003,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout.addLabel('RF', angle=-90, rowspan=1)
         self.rf_plot = self.layout.addPlot()
         self.rf_plot.showGrid(x=True, y=True)
-        graphicalRepresentation.drawRF(self.rf_plot,2)
+        gr.drawRF(self.rf_plot,2)
+
 
 
         self.layout.nextRow()
         self.layout.addLabel('Gz', angle=-90, rowspan=1)
         self.gz_plot = self.layout.addPlot()
         self.gz_plot.showGrid(x=True, y=True)
+        gr.drawGZ(self.gz_plot,1)
 
         self.layout.nextRow()
         self.layout.addLabel('Gx', angle=-90, rowspan=1)
