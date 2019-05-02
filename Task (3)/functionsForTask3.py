@@ -48,10 +48,10 @@ def rotationInXYPlaneFunction(phantomSize, gxStep, gyStep, magneticVector):
     for j in range(phantomSize):
         for k in range(phantomSize):
             rotateX = np.array([[np.cos(gxStep*j), np.sin(gxStep*j), 0],
-                                [-np.sin(gxStep*j), np.cos(gxStep*j), 0]
+                                [-np.sin(gxStep*j), np.cos(gxStep*j), 0],
                                 [0, 0, 1]])
             rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*k), 0],
-                                [-np.sin(gyStep*k), np.cos(gyStep*k), 0]
+                                [-np.sin(gyStep*k), np.cos(gyStep*k), 0],
                                 [0, 0, 1]])
             magneticVector[j][k] = np.matmul(rotateX, magneticVector[j][k])
             magneticVector[j][k] = np.matmul(rotateY, magneticVector[j][k])
