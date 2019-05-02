@@ -157,6 +157,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.T1_mapped=Phantom_file[1+4*int(SeparatingArrays):5*int(SeparatingArrays),:]
            self.T2_mapped=Phantom_file[1+5*int(SeparatingArrays):6*int(SeparatingArrays),:]
            self.size_of_matrix= np.size(self.T1)
+           print(len(self.T1))
            self.size_of_matrix_root= math.floor(math.sqrt(self.size_of_matrix))
            self.default_width= self.ui.show_phantom_label.geometry().width()
            self.default_height= self.ui.show_phantom_label.geometry().height()
@@ -168,11 +169,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.ui.kspace_label.setText(" ")
            self.ui.tabWidget.setTabEnabled(1,True)
 
-
-
-
-
-           #show phantom according to chosen property
 
         else:
                 msg = QtWidgets.QMessageBox()
@@ -237,6 +233,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               self.ui.show_phantom_label.setGeometry(0,0,32,32)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
               self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
+          elif str(selected_size)== ("64x64"):
+              self.ui.show_phantom_label.setGeometry(0,0,64,64)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(64,64,Qt.KeepAspectRatio,Qt.FastTransformation))
+              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(64,64,Qt.KeepAspectRatio,Qt.FastTransformation))
           elif str(selected_size)== ("128x128"):
               self.ui.show_phantom_label.setGeometry(0,0,128,128)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(128,128,Qt.KeepAspectRatio,Qt.FastTransformation))
@@ -269,7 +269,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         elif str(selected_sequence) == ("SE"):
             self.GRE=False
             self.SSFP=False
-            self.SE=False
+            self.SE=True
 
 
 
@@ -385,22 +385,30 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # checking whether the event is a mouse click and the target is the widget
         if event.type() == event.MouseButtonDblClick and source is self.ui.show_phantom_label:
 
+            print("Default number of elements per row of the matrix: "+str(self.size_of_matrix_root))
             # Getting scaled height in case of resizing
             self.label_height=self.ui.show_phantom_label.geometry().height()
+            print("Height of the label upon clicking: "+str(self.label_height))
             # Getting scaled Width
             self.label_width=self.ui.show_phantom_label.geometry().width()
-
+            print("Width of the label upon clicking: "+str(self.label_width))
             # Calculating the ratio of scaling in both height and width
             self.height_scale=self.label_height/self.size_of_matrix_root
+            print("Height scale i.e. label height/number of rows: "+str(self.height_scale))
             self.width_scale=self.label_width/self.size_of_matrix_root
+            print("Width scale i.e. label width/number of columns: "+str(self.width_scale))
             # Getting mouse position
             self.mouse_pos= event.pos()
+            print("Mouse exact position upon clicking: "+str(self.mouse_pos))
 
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
             self.ui.pixel_clicked_x= math.floor(self.mouse_pos.x()/self.width_scale)
+            print("The Index of the column: "+str(self.ui.pixel_clicked_x))
             self.ui.pixel_clicked_y= math.floor(self.mouse_pos.y()/self.height_scale)
+            print("The Index of the row: "+str(self.ui.pixel_clicked_y))
+            print('\n')
             self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_x)+","+str(self.ui.pixel_clicked_y)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
 
@@ -743,15 +751,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
 
 #            if(self.INVERSTION_RECOVERY):
-#                
+#
 #                magneticVector = preparationSequences.inversionRecovery(magneticVector,phantomSize,T1,self.preparation_value,exponentialOfT1AndTR)
-#                
+#
 #            if(self.T2PREP):
-#                
+#
 #                magneticVector = preparationSequences.T2Prep(magneticVector, phantomSize, self.preparation_value, T2, T1)
-#                
+#
 #            if(self.TAGGING):
-#                
+#
 #                magneticVector = preparationSequences.Tagging(magneticVector, phantomSize, self.preparation_value)
 
 
@@ -877,7 +885,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
             if(self.SE):      #Value coming from comboBox indicating SE
-    
+
                 magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
                 for kSpaceRowIndex in range(phantomSize):
 
@@ -899,7 +907,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                         gyStep = 2 * np.pi / phantomSize * kSpaceColumnIndex
                         magneticVector = functionsForTask3.rotationInXYPlaneFunction(phantomSize, gxStep, gyStep, magneticVector)
                         summationX = np.sum(magneticVector[:][:][0])
-                        summationY = np.sum(magneticVector[:][:][1])              
+                        summationY = np.sum(magneticVector[:][:][1])
                         magnitude = np.complex(summationX,summationY)
                         self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += magnitude
 
