@@ -46,7 +46,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.pushButton_2.clicked.connect(self.sheppLogan)
         # Initializing Pixel clicked counter
         # Must not exceed 5
-        self.ui.pixel_counter=0
+        self.clicks_counter=0
 
         #self.ui.label_10.hide()
 #        self.ui.label_9.hide()
@@ -91,11 +91,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.t1_plotWindow = self.ui.graphicsView
         self.t2_plotWindow = self.ui.graphicsView_2
 
-
-        self.default_width= self.ui.show_phantom_label.geometry().width()
-        self.default_height= self.ui.show_phantom_label.geometry().height()
-
-
         self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
         self.vLine2 = pg.InfiniteLine(angle=90, movable=False)
         self.vLine3 = pg.InfiniteLine(angle=90, movable=False)
@@ -136,7 +131,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.tabWidget.setTabEnabled(2,False)
         self.ui.tabWidget.setTabEnabled(3,False)
 
-
+        self.PHANTOM_OPENED = False
         self.ui.preparation_lineEdit.setEnabled(True)
         self.ui.preparation_label.setText("Inversion Time (ms)")
 
@@ -178,6 +173,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.ui.tabWidget.setTabEnabled(1,True)
            self.ui.tabWidget.setTabEnabled(2,True)
            self.ui.tabWidget.setTabEnabled(3,True)
+           self.PHANTOM_OPENED = True
 
 
         else:
@@ -386,7 +382,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
    ##########################################################################################################################################
    ##########################################################################################################################################
     def resetPainting(self):
-       self.ui.pixel_counter == 0
+       self.clicks_counter = 0
        self.point1x = 0
        self.point1y = 0
        self.point2x = 0
@@ -401,7 +397,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
     def resetPlot(self):
-        self.ui.pixel_counter == 0
+        self.clicks_counter = 0
         self.t1_plotWindow.clear()
         self.t2_plotWindow.clear()
         self.vLine1 = pg.InfiniteLine(angle=90, movable=False)
@@ -424,7 +420,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def eventFilter(self, source, event):
         # checking whether the event is a mouse click and the target is the widget
-        if event.type() == event.MouseButtonDblClick and source is self.ui.show_phantom_label:
+        if event.type() == event.MouseButtonDblClick and source is self.ui.show_phantom_label and self.PHANTOM_OPENED:
 
             print("Default number of elements per row of the matrix: "+str(self.size_of_matrix_root))
             # Getting scaled height in case of resizing
@@ -453,45 +449,60 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_x)+","+str(self.ui.pixel_clicked_y)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
 
+
+
             # Plotting
             self.plot()
 
-        elif event.type() == event.MouseButtonPress and QMouseEvent.button(event) == Qt.RightButton and source is self.ui.show_phantom_label:
+        elif event.type() == event.MouseButtonPress and QMouseEvent.button(event) == Qt.RightButton and source is self.ui.show_phantom_label and self.PHANTOM_OPENED:
             self.resetPlot()
             self.resetPainting()
             self.getValueFromSize_ComboBox()
 
-        elif event.type() == event.Resize:
+        elif event.type() == event.Resize and source is self.ui.show_phantom_label and self.PHANTOM_OPENED:
             # Getting scaled height in case of resizing
-            self.label_height=self.ui.show_phantom_label.geometry().height()
+            #self.label_height=self.ui.show_phantom_label.geometry().height()
             # Getting scaled Width
-            self.label_width=self.ui.show_phantom_label.geometry().width()
+            #self.label_width=self.ui.show_phantom_label.geometry().width()
             # Calculating the ratio of scaling in both height and width
-            self.height_scale=self.label_height/self.default_height
-            self.width_scale=self.label_width/self.default_width
+            self.height_scale = event.size().height() / event.oldSize().height()
+            self.width_scale = event.size().width() / event.oldSize().width()
 
             self.ui.show_phantom_label.point=[]
             if self.point1x != 0 and self.point1y != 0:
                 self.ui.show_phantom_label.point.append([self.point1x*self.width_scale,self.point1y*self.height_scale,QtCore.Qt.red])
+                self.point1x = self.point1x*self.width_scale
+                self.point1y = self.point1y*self.height_scale
             if self.point2x != 0 and self.point2y != 0:
                 self.ui.show_phantom_label.point.append([self.point2x*self.width_scale,self.point2y*self.height_scale,QtCore.Qt.green])
+                self.point2x = self.point2x*self.width_scale
+                self.point2y = self.point2y*self.height_scale
             if self.point3x != 0 and self.point3y != 0:
                 self.ui.show_phantom_label.point.append([self.point3x*self.width_scale,self.point3y*self.height_scale,QtCore.Qt.blue])
+                self.point3x = self.point3x*self.width_scale
+                self.point3y = self.point3y*self.height_scale
             if self.point4x != 0 and self.point4y != 0:
                 self.ui.show_phantom_label.point.append([self.point4x*self.width_scale,self.point4y*self.height_scale,QtCore.Qt.yellow])
+                self.point4x = self.point4x*self.width_scale
+                self.point4y = self.point4y*self.height_scale
             if self.point5x != 0 and self.point5y != 0:
                 self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magenta])
+                self.point5x = self.point5x*self.width_scale
+                self.point5y = self.point5y*self.height_scale
             else: pass
+
 
         return super(Label, self.ui.show_phantom_label).eventFilter(source, event)
 
 
     @pyqtSlot()
     def on_size_change(self):
+        self.clicks_counter= 0
         self.getValueFromSize_ComboBox()
 
     @pyqtSlot()
     def on_property_change(self):
+        self.clicks_counter= 0
         self.getValueFromProperties_ComboBox()
 
     @pyqtSlot()
@@ -575,7 +586,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.ui.show_phantom_label.paint=True
         # Coloring the curve
-        if self.ui.pixel_counter == 0:
+        if self.clicks_counter == 0:
             red=255
             green=0
             blue=0
@@ -584,7 +595,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.point1x = self.mouse_pos.x()
             self.point1y = self.mouse_pos.y()
 
-        elif self.ui.pixel_counter == 1:
+
+        elif self.clicks_counter == 1:
             red=0
             green=255
             blue=0
@@ -593,7 +605,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.point2x = self.mouse_pos.x()
             self.point2y = self.mouse_pos.y()
 
-        elif self.ui.pixel_counter == 2:
+
+        elif self.clicks_counter == 2:
             red=0
             green=0
             blue=255
@@ -602,7 +615,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.point3x = self.mouse_pos.x()
             self.point3y = self.mouse_pos.y()
 
-        elif self.ui.pixel_counter == 3:
+        elif self.clicks_counter == 3:
             red=255
             green=255
             blue=0
@@ -611,7 +624,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.point4x = self.mouse_pos.x()
             self.point4y = self.mouse_pos.y()
 
-        elif self.ui.pixel_counter == 4:
+        elif self.clicks_counter == 4:
             red=255
             green=0
             blue=255
@@ -634,7 +647,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]= self.epsilon
         t2_plot= np.exp(-t/self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x])   #Replace the self.ui.t2 with the T2
         # Checking if no more than 5 pixels are chosen
-        if self.ui.pixel_counter<=4:
+        if self.clicks_counter<=4:
             # Plotting T1
             self.t1_plotWindow.plot(t1_plot,pen=(red,green,blue),name="T1")
             self.t1_plotWindow.showGrid(x=True, y=True)
@@ -648,8 +661,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.label_10.setText("T2= "+str(self.T2[self.ui.pixel_clicked_y,self.ui.pixel_clicked_x]))
 
 
-            # Incrementing the pixel_counter
-            self.ui.pixel_counter+=1
+            # Incrementing the clicks_counter
+            self.clicks_counter+=1
         else:
             # Now if more than 5 pixels are picked, clear both widgets and start over
             self.ui.show_phantom_label.point=[]
@@ -672,7 +685,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             #self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
 
             # Reseting the counter to 1
-            self.ui.pixel_counter=0
+            self.clicks_counter=0
+            self.plot()
 
 
   ##########################################################################################################################################
