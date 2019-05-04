@@ -68,6 +68,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.comboBox_3.currentIndexChanged.connect(self.on_preparation_change)
         self.ui.port_comboBox.currentIndexChanged.connect(self.port_selection)
         self.ui.ernst_comboBox.currentIndexChanged.connect(self.ernst_tissue_selection)
+        self.ui.comboBox_4.currentIndexChanged.connect(self.artifact_selection)
         self.ui.show_phantom_label.mouseMoveEvent=self.brightness
         self.ui.show_phantom_label.mousePressEvent=self.readCoordinates
         self.ratio = 0
@@ -102,6 +103,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.ui.lineEdit_2.setFocusPolicy(Qt.ClickFocus)
         self.ui.lineEdit_3.setFocusPolicy(Qt.ClickFocus)
         self.ui.lineEdit_4.setFocusPolicy(Qt.ClickFocus)
+        self.ui.preparation_lineEdit.setFocusPolicy(Qt.ClickFocus)
         self.ui.lineEdit_2.editingFinished.connect(self.on_lineEdit_change_te)
         self.ui.lineEdit_3.editingFinished.connect(self.on_lineEdit_change_tr)
         self.ui.lineEdit_4.editingFinished.connect(self.on_lineEdit_change_flipAngle)
@@ -550,6 +552,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.GRAY_MATTER = False
             self.BLOOD = False
             self.ui.ernst_graphicView.clear()
+
+    @pyqtSlot()
+    def artifact_selection(self):
+        current_artifact_string= self.ui.comboBox4.currentText()
+        if(current_artifact_string == "Artifact #1"):
+            self.ARTIFACT_1 = True
+            self.ARTIFACT_2 = False
+        elif (current_artifact_string == "Artifact #2"):
+            self.ARTIFACT_2 = True
+            self.ARTIFACT_1 = False
+        else:
+            self.ARTIFACT_1 = False
+            self.ARTIFACT_2 = False
 
 
     @pyqtSlot()
