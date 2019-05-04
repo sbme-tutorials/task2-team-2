@@ -139,7 +139,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.numOfDumm = 0
 
-        self.__init__Sequence()
+        self.mode = 1
+
+
 
     ##########################################################################################################################################
     ##########################################################################################################################################
@@ -962,7 +964,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag and self.preparation_value_entry_flag:
             self.ui.tabWidget.setTabEnabled(2,True)
             self.ui.tabWidget.setTabEnabled(3,True)
-            self.updateSequence()
+            self.__init__Sequence()
+#            gr.updateSequence(self.tr)
             self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
             self.kSpaceThread.start()
         else:
@@ -976,6 +979,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 ##########################################################################################################################################
 ##########################################################################################################################################
+
 
     def inverseFourier(self):
         phantomFinal= self.phantomFinal
@@ -1003,7 +1007,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout.addLabel('RF', angle=-90, rowspan=1)
         self.rf_plot = self.layout.addPlot()
         self.rf_plot.showGrid(x=True, y=True)
-        gr.drawRF(self.rf_plot,2)
+        gr.drawRF(self.rf_plot,self.tr)
 
 
 
@@ -1011,22 +1015,25 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout.addLabel('Gz', angle=-90, rowspan=1)
         self.gz_plot = self.layout.addPlot()
         self.gz_plot.showGrid(x=True, y=True)
-        gr.drawGZ(self.gz_plot,1)
+        gr.drawGZ(self.gz_plot,self.mode,self.tr)
 
         self.layout.nextRow()
         self.layout.addLabel('Gx', angle=-90, rowspan=1)
         self.gx_plot = self.layout.addPlot()
         self.gx_plot.showGrid(x=True, y=True)
+        gr.drawGX(self.gx_plot,self.mode,self.tr)
 
         self.layout.nextRow()
         self.layout.addLabel('Gy', angle=-90, rowspan=1)
         self.gy_plot = self.layout.addPlot()
         self.gy_plot.showGrid(x=True, y=True)
+        gr.drawGY(self.gy_plot,self.mode,self.tr)
 
         self.layout.nextRow()
         self.layout.addLabel('Readout', angle=-90, rowspan=1)
         self.readout_plot = self.layout.addPlot()
         self.readout_plot.showGrid(x=False, y=True)
+        gr.drawReadOut(self.readout_plot,self.mode,self.tr)
 
         self.layout.nextRow()
         self.layout.addLabel("Time (ms) ", col=1, colspan=2)
@@ -1039,8 +1046,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 ##########################################################################################################################################
 ##########################################################################################################################################
-
-
     def updateSequence(self):
         self.rf_plot.setXRange(0,self.tr)
         self.gz_plot.setXRange(0,self.tr)
