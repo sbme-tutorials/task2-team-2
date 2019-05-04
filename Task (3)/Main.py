@@ -104,6 +104,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.t1_plotWindow.addItem(self.vLine2,ignoreBounds=True)
         self.t2_plotWindow.addItem(self.vLine3,ignoreBounds=True)
         self.t2_plotWindow.addItem(self.vLine4,ignoreBounds=True)
+        self.ui.lineEdit_2.setFocusPolicy(Qt.ClickFocus)
+        self.ui.lineEdit_3.setFocusPolicy(Qt.ClickFocus)
+        self.ui.lineEdit_4.setFocusPolicy(Qt.ClickFocus)
         self.ui.lineEdit_2.editingFinished.connect(self.on_lineEdit_change_te)
         self.ui.lineEdit_3.editingFinished.connect(self.on_lineEdit_change_tr)
         self.ui.lineEdit_4.editingFinished.connect(self.on_lineEdit_change_flipAngle)
@@ -127,9 +130,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.GRAY_MATTER = False
         self.BLOOD = False
 
+        self.__init__Sequence()
 
         self.ui.tabWidget.setTabEnabled(1,False)
         self.ui.tabWidget.setTabEnabled(2,False)
+        self.ui.tabWidget.setTabEnabled(3,False)
 
 
         self.ui.preparation_lineEdit.setEnabled(True)
@@ -171,6 +176,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
            self.ui.inverseFourier_label.setText(" ")
            self.ui.kspace_label.setText(" ")
            self.ui.tabWidget.setTabEnabled(1,True)
+           self.ui.tabWidget.setTabEnabled(2,True)
+           self.ui.tabWidget.setTabEnabled(3,True)
 
 
         else:
@@ -231,27 +238,30 @@ class ApplicationWindow(QtWidgets.QMainWindow):
           if str(selected_size)== ("Default"):
               self.ui.show_phantom_label.setGeometry(0,0,math.sqrt(self.size_of_matrix),math.sqrt(self.size_of_matrix))
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom)
-              self.ui.label_11.setPixmap(self.pixmap_of_phantom)
+
           elif str(selected_size)== ("32x32"):
               self.ui.show_phantom_label.setGeometry(0,0,32,32)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
-              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
+
           elif str(selected_size)== ("64x64"):
               self.ui.show_phantom_label.setGeometry(0,0,64,64)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(64,64,Qt.KeepAspectRatio,Qt.FastTransformation))
-              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(64,64,Qt.KeepAspectRatio,Qt.FastTransformation))
+
           elif str(selected_size)== ("128x128"):
               self.ui.show_phantom_label.setGeometry(0,0,128,128)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(128,128,Qt.KeepAspectRatio,Qt.FastTransformation))
-              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(128,128,Qt.KeepAspectRatio,Qt.FastTransformation))
+
           elif str(selected_size)== ("256x256"):
               self.ui.show_phantom_label.setGeometry(0,0,256,256)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(256,256,Qt.KeepAspectRatio,Qt.FastTransformation))
-              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(256,256,Qt.KeepAspectRatio,Qt.FastTransformation))
+
           elif str(selected_size)== ("512x512"):
               self.ui.show_phantom_label.setGeometry(0,0,512,512)
               self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-              self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+
+
+          self.ui.label_25.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+          self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
           self.resetPlot()
           self.resetPainting()
 
@@ -535,19 +545,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def on_lineEdit_change_te(self):
         self.getValueFromLine_edit_te()
         self.ui.generate_button.setEnabled(True)
-        self.ui.inverseFourier_label.setText(" ")
+
 
     @pyqtSlot()
     def on_lineEdit_change_tr(self):
         self.getValueFromLine_edit_tr()
         self.ui.generate_button.setEnabled(True)
-        self.ui.inverseFourier_label.setText(" ")
+
 
     @pyqtSlot()
     def on_lineEdit_change_flipAngle(self):
         self.getValueFromLine_edit_flipAngle()
         self.ui.generate_button.setEnabled(True)
-        self.ui.inverseFourier_label.setText(" ")
+
 
     @pyqtSlot()
     def on_lineEdit_change_preparation(self):
@@ -841,7 +851,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
                     if (self.current_port == 1):
                         self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-                    else: self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                        self.ui.inverseFourier_label.setText(" ")
+                    else:
+                        self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                        self.ui.inverseFourier_label2.setText(" ")
 
                 # Spoiler
 
@@ -890,8 +903,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
                 pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
                 if (self.current_port == 1):
-                    self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-                else: self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                        self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                        self.ui.inverseFourier_label.setText(" ")
+                else:
+                        self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                        self.ui.inverseFourier_label2.setText(" ")
                 magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle/2)
 
                 for kSpaceRowIndex in range(phantomSize-1):
@@ -911,7 +927,10 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
                     if (self.current_port == 1):
                         self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-                    else: self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                        self.ui.inverseFourier_label.setText(" ")
+                    else:
+                        self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                        self.ui.inverseFourier_label2.setText(" ")
 
                     magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle/2)
 
@@ -948,10 +967,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                     self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
                     pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
                     pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-                    self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                    if (self.current_port == 1):
+                        self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                        self.ui.inverseFourier_label.setText(" ")
+                    else:
+                        self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                        self.ui.inverseFourier_label2.setText(" ")
+
                     magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, np.pi/2)
 
-
+            self.ui.label_18.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
 
             self.ui.convert_button.setEnabled(True)
 
@@ -962,10 +987,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def generate_Kspace(self):
         if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag and self.preparation_value_entry_flag:
-            self.ui.tabWidget.setTabEnabled(2,True)
-            self.ui.tabWidget.setTabEnabled(3,True)
-            self.__init__Sequence()
-#            gr.updateSequence(self.tr)
+            self.updateSequence()
             self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
             self.kSpaceThread.start()
         else:
@@ -992,6 +1014,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.inverseFourier_label.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
         else: self.ui.inverseFourier_label2.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
         self.ui.convert_button.setEnabled(False)
+        self.ui.label_19.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
 
 ##########################################################################################################################################
 ##########################################################################################################################################
@@ -1003,37 +1026,35 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout.setContentsMargins(10, 10, 10, 10)
         self.layout.addLabel("Graphical Representation", colspan=3)
 
+
         self.layout.nextRow()
         self.layout.addLabel('RF', angle=-90, rowspan=1)
         self.rf_plot = self.layout.addPlot()
         self.rf_plot.showGrid(x=True, y=True)
-        gr.drawRF(self.rf_plot,self.tr)
-
-
 
         self.layout.nextRow()
         self.layout.addLabel('Gz', angle=-90, rowspan=1)
         self.gz_plot = self.layout.addPlot()
         self.gz_plot.showGrid(x=True, y=True)
-        gr.drawGZ(self.gz_plot,self.mode,self.tr)
+
 
         self.layout.nextRow()
         self.layout.addLabel('Gx', angle=-90, rowspan=1)
         self.gx_plot = self.layout.addPlot()
         self.gx_plot.showGrid(x=True, y=True)
-        gr.drawGX(self.gx_plot,self.mode,self.tr)
+
 
         self.layout.nextRow()
         self.layout.addLabel('Gy', angle=-90, rowspan=1)
         self.gy_plot = self.layout.addPlot()
         self.gy_plot.showGrid(x=True, y=True)
-        gr.drawGY(self.gy_plot,self.mode,self.tr)
+
 
         self.layout.nextRow()
         self.layout.addLabel('Readout', angle=-90, rowspan=1)
         self.readout_plot = self.layout.addPlot()
         self.readout_plot.showGrid(x=False, y=True)
-        gr.drawReadOut(self.readout_plot,self.mode,self.tr)
+
 
         self.layout.nextRow()
         self.layout.addLabel("Time (ms) ", col=1, colspan=2)
@@ -1052,6 +1073,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.gx_plot.setXRange(0,self.tr)
         self.gy_plot.setXRange(0,self.tr)
         self.readout_plot.setXRange(0,self.tr)
+        gr.drawRF(self.rf_plot,self.tr)
+        gr.drawGZ(self.gz_plot,self.mode,self.tr)
+        gr.drawGX(self.gx_plot,self.mode,self.tr)
+        gr.drawGY(self.gy_plot,self.mode,self.tr)
+        gr.drawReadOut(self.readout_plot,self.mode,self.tr)
+
 #        self.rf_plot.plot()
 #        self.gz_plot.plot()
 #        self.gx_plot.plot()
