@@ -532,9 +532,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.GRAY_MATTER = False
             self.BLOOD = False
             if self.GRE:
-                ea.DrawErnstAngleGRE(self.tr,self.te,800,150,self.ui.ernst_graphicView)
+                ea.DrawErnstAngleGRE(self.tr,self.te,800,150,self.ui.ernst_graphicView,self.ui.label_21)
             elif self.SSFP:
-                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 800, 150,self.ui.ernst_graphicView)
+                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 800, 150,self.ui.ernst_graphicView,self.ui.label_21)
         elif (selected_tissue == "White Matter"):
             self.ui.ernst_graphicView.clear()
             self.WHITE_MATTER = True
@@ -542,9 +542,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.GRAY_MATTER = False
             self.BLOOD = False
             if self.GRE:
-                ea.DrawErnstAngleGRE(self.tr,self.te,200,50,self.ui.ernst_graphicView)
+                ea.DrawErnstAngleGRE(self.tr,self.te,200,50,self.ui.ernst_graphicView,self.ui.label_21)
             elif self.SSFP:
-                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 200, 50,self.ui.ernst_graphicView)
+                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 200, 50,self.ui.ernst_graphicView,self.ui.label_21)
         elif (selected_tissue == "Gray Matter"):
             self.ui.ernst_graphicView.clear()
             self.WHITE_MATTER = False
@@ -552,9 +552,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.GRAY_MATTER = True
             self.BLOOD = False
             if self.GRE:
-                ea.DrawErnstAngleGRE(self.tr,self.te,600,100,self.ui.ernst_graphicView)
+                ea.DrawErnstAngleGRE(self.tr,self.te,600,100,self.ui.ernst_graphicView,self.ui.label_21)
             elif self.SSFP:
-                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 600, 100,self.ui.ernst_graphicView)
+                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 600, 100,self.ui.ernst_graphicView,self.ui.label_21)
         elif (selected_tissue == "Blood"):
             self.ui.ernst_graphicView.clear()
             self.WHITE_MATTER = False
@@ -562,9 +562,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.GRAY_MATTER = False
             self.BLOOD = True
             if self.GRE:
-                ea.DrawErnstAngleGRE(self.tr,self.te,400,80,self.ui.ernst_graphicView)
+                ea.DrawErnstAngleGRE(self.tr,self.te,400,80,self.ui.ernst_graphicView,self.ui.label_21)
             elif self.SSFP:
-                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 400, 80,self.ui.ernst_graphicView)
+                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 400, 80,self.ui.ernst_graphicView,self.ui.label_21)
         else:
             self.WHITE_MATTER = False
             self.FAT = False

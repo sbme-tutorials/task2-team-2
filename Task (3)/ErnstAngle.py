@@ -14,7 +14,7 @@ import pyqtgraph as pg
 #signalArray=0
 
 
-def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot):
+def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot,label):
     flipAngleArray=[]
     signalArray=[]
     magneticVector = np.array([0,0,1])
@@ -54,16 +54,30 @@ def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot):
     #Plot signalArray vs flipAngle
     n = 180
     s1 = pg.ScatterPlotItem(size=10, pen=pg.mkPen(None), brush=pg.mkBrush(255, 255, 255, 120))
-    pos = np.random.normal(size=(2,n), scale=1e-5)
+    pos = np.random.normal(size=(2,n))
     spots = [{'pos': pos[:,i], 'data': 1} for i in range(n)] + [{'pos': [0,0], 'data': 1}]
     s1.addPoints(spots)
     ernst_plot.addItem(s1)
 
 ## for GRE #choosing tissue from combobox from tab1 to take its T! and
-def DrawErnstAngleGRE(TR,TE,T1,T2,ernst_plot):
+def DrawErnstAngleGRE(TR,TE,T1,T2,ernst_plot,label):
 #        signal[x][y][z]=np.sin(flipAngle)*(1-np.exp(-TR/T1))*np.exp(-TE/T2)/(1-np.cos(flipAngle)*np.exp(-TR/T1))            #using T2*=T2
 ## plot only signal[z] versus theta
-        theta = np.arange(180)
-        ernst_angle_plot= np.sin(theta)*(1-np.exp(-TR/T1))*np.exp(-TE/T2)/(1-np.cos(theta)*np.exp(-TR/T1))
-        ernst_plot.plot(ernst_angle_plot)
+        array_to_be_plotted=np.zeros((180,2))
+        theta_range = np.arange(0,180,1)
+        theta_range = np.reshape(theta_range,(180))
+        array_to_be_plotted[:,0] = theta_range
+        ernst_angle_equation= np.sin(theta_range*np.pi/180)*(1-np.exp(-TR/T1))*np.exp(-TE/T2)/(1-np.cos(theta_range*np.pi/180)*np.exp(-TR/T1))
+        array_to_be_plotted[:,1] = ernst_angle_equation
+        max_recovery_index = np.argmax(ernst_angle_equation)
+        vLine = pg.InfiniteLine(angle=90, movable=False)
+        vLine.setPos(theta_range[max_recovery_index])
+        hLine = pg.InfiniteLine(angle=0, movable=False)
+        hLine.setPos(ernst_angle_equation[max_recovery_index])
+        ernst_plot.plot(array_to_be_plotted, pen='r')
+        ernst_plot.addItem(vLine,ignoreBounds=True)
+        ernst_plot.addItem(hLine,ignoreBounds=True)
+        label.setText("Ernst Angle: "+str(theta_range[max_recovery_index])+"  In Degrees")
+
+
 
