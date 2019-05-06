@@ -5,7 +5,7 @@ Created on Wed Apr 24 09:11:30 2019
 @author: Gamila
 """
 import numpy as np
-import functionsForTask3
+#import functionsForTask3
 import pyqtgraph as pg
 
 #signal =0
@@ -14,7 +14,7 @@ import pyqtgraph as pg
 #signalArray=0
 
 
-def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot):
+def DrawErnstAngleSSFP(TR,TE,T1,T2,ernst_plot):
     flipAngleArray=[]
     signalArray=[]
     magneticVector = np.array([0,0,1])
@@ -40,7 +40,7 @@ def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot):
         for counter in range (10):
            magneticVector=np.matmul(rotationAroundXMatrix,magneticVector)
            magneticVector=np.matmul(decayExponential,magneticVector)
-           magneticVector=np.add(recoveryExponential,magneticVector)
+           magneticVector=recoveryExponential
 
 
 
