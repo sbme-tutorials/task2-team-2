@@ -19,8 +19,8 @@ import qimage2ndarray
 import pyqtgraph as pg
 import threading
 import functionsForTask3
-import preparationSequences
 import graphicalRepresentation as gr
+import ErnstAngle as ea
 
 
 
@@ -424,30 +424,29 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         # checking whether the event is a mouse click and the target is the widget
         if event.type() == event.MouseButtonDblClick and source is self.ui.show_phantom_label and self.PHANTOM_OPENED:
 
-            print("Default number of elements per row of the matrix: "+str(self.size_of_matrix_root))
+
             # Getting scaled height in case of resizing
             self.label_height=self.ui.show_phantom_label.geometry().height()
-            print("Height of the label upon clicking: "+str(self.label_height))
+
             # Getting scaled Width
             self.label_width=self.ui.show_phantom_label.geometry().width()
-            print("Width of the label upon clicking: "+str(self.label_width))
+
             # Calculating the ratio of scaling in both height and width
             self.height_scale=self.label_height/self.size_of_matrix_root
-            print("Height scale i.e. label height/number of rows: "+str(self.height_scale))
+
             self.width_scale=self.label_width/self.size_of_matrix_root
-            print("Width scale i.e. label width/number of columns: "+str(self.width_scale))
+
             # Getting mouse position
             self.mouse_pos= event.pos()
-            print("Mouse exact position upon clicking: "+str(self.mouse_pos))
+
 
             # Using the scaling ratio to retrieve the target pixel
             # Dividing and flooring the mouse position in X and Y coordinates by scaling factor
             # These 2 variables will be used to catch the intended pixel that the used clicked
             self.ui.pixel_clicked_x= math.floor(self.mouse_pos.x()/self.width_scale)
-            print("The Index of the column: "+str(self.ui.pixel_clicked_x))
+
             self.ui.pixel_clicked_y= math.floor(self.mouse_pos.y()/self.height_scale)
-            print("The Index of the row: "+str(self.ui.pixel_clicked_y))
-            print('\n')
+
             self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_x)+","+str(self.ui.pixel_clicked_y)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
 
@@ -527,25 +526,45 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def ernst_tissue_selection(self):
         selected_tissue = self.ui.ernst_comboBox.currentText()
         if (selected_tissue == "Fat"):
+            self.ui.ernst_graphicView.clear()
             self.FAT = True
             self.WHITE_MATTER = False
             self.GRAY_MATTER = False
             self.BLOOD = False
+            if self.GRE:
+                ea.DrawErnstAngleGRE(self.tr,self.te,800,150,self.ui.ernst_graphicView)
+            elif self.SSFP:
+                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 800, 150,self.ui.ernst_graphicView)
         elif (selected_tissue == "White Matter"):
+            self.ui.ernst_graphicView.clear()
             self.WHITE_MATTER = True
             self.FAT = False
             self.GRAY_MATTER = False
             self.BLOOD = False
+            if self.GRE:
+                ea.DrawErnstAngleGRE(self.tr,self.te,200,50,self.ui.ernst_graphicView)
+            elif self.SSFP:
+                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 200, 50,self.ui.ernst_graphicView)
         elif (selected_tissue == "Gray Matter"):
+            self.ui.ernst_graphicView.clear()
             self.WHITE_MATTER = False
             self.FAT = False
             self.GRAY_MATTER = True
             self.BLOOD = False
+            if self.GRE:
+                ea.DrawErnstAngleGRE(self.tr,self.te,600,100,self.ui.ernst_graphicView)
+            elif self.SSFP:
+                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 600, 100,self.ui.ernst_graphicView)
         elif (selected_tissue == "Blood"):
+            self.ui.ernst_graphicView.clear()
             self.WHITE_MATTER = False
             self.FAT = False
             self.GRAY_MATTER = False
             self.BLOOD = True
+            if self.GRE:
+                ea.DrawErnstAngleGRE(self.tr,self.te,400,80,self.ui.ernst_graphicView)
+            elif self.SSFP:
+                ea.DrawErnstAngleSSFP(self.size_of_matrix_root, self.tr, self.te, 400, 80,self.ui.ernst_graphicView)
         else:
             self.WHITE_MATTER = False
             self.FAT = False
@@ -1093,6 +1112,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.gz_plot.hideAxis('bottom')
         self.gx_plot.hideAxis('bottom')
         self.gy_plot.hideAxis('bottom')
+        self.readout_plot.hideAxis('bottom')
 
 ##########################################################################################################################################
 ##########################################################################################################################################
@@ -1102,11 +1122,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.gx_plot.setXRange(0,self.tr)
         self.gy_plot.setXRange(0,self.tr)
         self.readout_plot.setXRange(0,self.tr)
-        gr.drawRF(self.rf_plot,self.tr)
-        gr.drawGZ(self.gz_plot,self.mode,self.tr)
-        gr.drawGX(self.gx_plot,self.mode,self.tr)
-        gr.drawGY(self.gy_plot,self.mode,self.tr)
-        gr.drawReadOut(self.readout_plot,self.mode,self.tr)
+        gr.drawRF(self.rf_plot,self.tr,self.te)
+        gr.drawGZ(self.gz_plot,self.mode,self.tr,self.te)
+        gr.drawGX(self.gx_plot,self.mode,self.tr,self.te)
+        gr.drawGY(self.gy_plot,self.mode,self.tr,self.te)
+        gr.drawReadOut(self.readout_plot,self.mode,self.tr,self.te)
 
 #        self.rf_plot.plot()
 #        self.gz_plot.plot()

@@ -353,7 +353,7 @@ Created on Thu May  2 18:17:42 2019
 #                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, magneticVector, self.kSpace, kSpaceRowIndex, kSpaceColumnIndex)
                     for j in range(phantomSize):
                         for k in range(phantomSize):
-                                alpha= gxStep*j*3+ gyStep*(k*3)
+                                alpha= gxStep*(j+3)+ gyStep*(k+3)
                             magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
                             self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
                     self.phantomFinal = self.kSpace

@@ -227,7 +227,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>0</number>
+          <number>3</number>
          </property>
          <property name="movable">
           <bool>true</bool>
@@ -526,7 +526,21 @@
            <string>K-Space</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_5">
-           <item row="1" column="2">
+           <item row="1" column="0">
+            <widget class="QComboBox" name="port_comboBox">
+             <item>
+              <property name="text">
+               <string>Port1</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Port2</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="1" column="1">
             <spacer name="horizontalSpacer_2">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
@@ -539,12 +553,23 @@
              </property>
             </spacer>
            </item>
-           <item row="0" column="0" colspan="5">
-            <widget class="QSplitter" name="splitter_6">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="generate_button">
+             <property name="text">
+              <string>Generate K-space</string>
              </property>
-             <widget class="QWidget" name="">
+            </widget>
+           </item>
+           <item row="1" column="3">
+            <widget class="QPushButton" name="convert_button">
+             <property name="text">
+              <string>Convert</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="4">
+            <layout class="QHBoxLayout" name="horizontalLayout_10">
+             <item>
               <layout class="QVBoxLayout" name="verticalLayout_7">
                <item>
                 <widget class="QLabel" name="label_14">
@@ -603,8 +628,8 @@
                 </widget>
                </item>
               </layout>
-             </widget>
-             <widget class="QWidget" name="">
+             </item>
+             <item>
               <layout class="QVBoxLayout" name="verticalLayout_6">
                <item>
                 <widget class="QLabel" name="label_13">
@@ -635,40 +660,40 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSplitter" name="splitter_4">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                <widget class="QLabel" name="kspace_label">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
                  </property>
-                 <widget class="QLabel" name="kspace_label">
-                  <property name="frameShape">
-                   <enum>QFrame::Panel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="scaledContents">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="kspace_label2">
-                  <property name="frameShape">
-                   <enum>QFrame::Panel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="kspace_label2">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
               </layout>
-             </widget>
-             <widget class="QWidget" name="">
+             </item>
+             <item>
               <layout class="QVBoxLayout" name="verticalLayout_5">
                <item>
                 <widget class="QLabel" name="label_12">
@@ -699,68 +724,40 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSplitter" name="splitter_5">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
+                <widget class="QLabel" name="inverseFourier_label">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
                  </property>
-                 <widget class="QLabel" name="inverseFourier_label">
-                  <property name="frameShape">
-                   <enum>QFrame::Panel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="scaledContents">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                 <widget class="QLabel" name="inverseFourier_label2">
-                  <property name="frameShape">
-                   <enum>QFrame::Panel</enum>
-                  </property>
-                  <property name="frameShadow">
-                   <enum>QFrame::Raised</enum>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                 </widget>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="inverseFourier_label2">
+                 <property name="frameShape">
+                  <enum>QFrame::Panel</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
               </layout>
-             </widget>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QComboBox" name="port_comboBox">
-             <item>
-              <property name="text">
-               <string>Port1</string>
-              </property>
              </item>
-             <item>
-              <property name="text">
-               <string>Port2</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item row="1" column="4">
-            <widget class="QPushButton" name="convert_button">
-             <property name="text">
-              <string>Convert</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="3">
-            <widget class="QPushButton" name="generate_button">
-             <property name="text">
-              <string>Generate K-space</string>
-             </property>
-            </widget>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -783,11 +780,8 @@
           </attribute>
           <layout class="QGridLayout" name="gridLayout_8">
            <item row="0" column="0" colspan="2">
-            <widget class="QSplitter" name="splitter_7">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <widget class="QWidget" name="">
+            <layout class="QHBoxLayout" name="horizontalLayout_11">
+             <item>
               <layout class="QVBoxLayout" name="verticalLayout_9">
                <item>
                 <widget class="QLabel" name="label_25">
@@ -802,6 +796,9 @@
                  </property>
                  <property name="text">
                   <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -837,8 +834,8 @@
                 </widget>
                </item>
               </layout>
-             </widget>
-             <widget class="QWidget" name="">
+             </item>
+             <item>
               <layout class="QVBoxLayout" name="verticalLayout_10">
                <item>
                 <widget class="QLabel" name="label_18">
@@ -850,6 +847,9 @@
                  </property>
                  <property name="text">
                   <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -885,8 +885,8 @@
                 </widget>
                </item>
               </layout>
-             </widget>
-             <widget class="QWidget" name="">
+             </item>
+             <item>
               <layout class="QVBoxLayout" name="verticalLayout_11">
                <item>
                 <widget class="QLabel" name="label_19">
@@ -898,6 +898,9 @@
                  </property>
                  <property name="text">
                   <string/>
+                 </property>
+                 <property name="scaledContents">
+                  <bool>true</bool>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -933,8 +936,8 @@
                 </widget>
                </item>
               </layout>
-             </widget>
-            </widget>
+             </item>
+            </layout>
            </item>
            <item row="1" column="0">
             <widget class="QComboBox" name="comboBox_4">
