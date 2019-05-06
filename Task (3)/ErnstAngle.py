@@ -40,7 +40,7 @@ def DrawErnstAngleSSFP(TR,TE,T1,T2,ernst_plot):
         for counter in range (10):
            magneticVector=np.matmul(rotationAroundXMatrix,magneticVector)
            magneticVector=np.matmul(decayExponential,magneticVector)
-           magneticVector=recoveryExponential
+           magneticVector=np.add(magneticVector, recoveryExponential)
 
 
 
