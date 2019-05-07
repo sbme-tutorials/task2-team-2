@@ -143,6 +143,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
         self.mode = 1
 
+        self.ui.ernst_comboBox.setEnabled(False)
+
 
 
     ##########################################################################################################################################
@@ -273,14 +275,25 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.GRE=True
             self.SSFP=False
             self.SE=False
+            self.ui.ernst_graphicView.clear()
+            if self.tr_entry_flag==True and self.flipAngle_entry_flag==True and self.preparation_value_entry_flag==True and self.te_entry_flag==True:
+                self.ui.ernst_comboBox.setEnabled(True)
+                self.ui.ernst_comboBox.setCurrentIndex(0)
         elif str(selected_sequence) == ("SSFP"):
             self.GRE=False
             self.SSFP=True
             self.SE=False
+            self.ui.ernst_graphicView.clear()
+            if self.tr_entry_flag==True and self.flipAngle_entry_flag==True and self.preparation_value_entry_flag==True and self.te_entry_flag==True:
+                self.ui.ernst_comboBox.setEnabled(True)
+                self.ui.ernst_comboBox.setCurrentIndex(0)
         elif str(selected_sequence) == ("SE"):
             self.GRE=False
             self.SSFP=False
             self.SE=True
+            self.ui.ernst_graphicView.clear()
+            self.ui.ernst_comboBox.setEnabled(False)
+            self.ui.label_21.setText("Ernst Angle")
 
 
 
@@ -314,6 +327,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.vLine1.setPos(self.te)
             self.vLine3.setPos(self.te)
             self.te_entry_flag=True
+            if self.tr_entry_flag==True and self.flipAngle_entry_flag==True and self.preparation_value_entry_flag==True :
+                self.ui.ernst_comboBox.setEnabled(True)
         except ValueError:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -327,6 +342,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.vLine2.setPos(self.tr)
             self.vLine4.setPos(self.tr)
             self.tr_entry_flag=True
+            if self.te_entry_flag==True and self.flipAngle_entry_flag==True and self.preparation_value_entry_flag==True :
+                self.ui.ernst_comboBox.setEnabled(True)
         except ValueError:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -339,6 +356,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         try:
             self.flipAngle=int(self.ui.lineEdit_4.text())
             self.flipAngle_entry_flag=True
+            if self.tr_entry_flag==True and self.te_entry_flag==True and self.preparation_value_entry_flag==True :
+                self.ui.ernst_comboBox.setEnabled(True)
         except ValueError:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -352,6 +371,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         try:
             self.preparation_value=int(self.ui.preparation_lineEdit.text())
             self.preparation_value_entry_flag=True
+            if self.tr_entry_flag==True and self.flipAngle_entry_flag==True and self.te_entry_flag==True :
+                self.ui.ernst_comboBox.setEnabled(True)
         except ValueError:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)

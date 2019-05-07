@@ -15,6 +15,7 @@ import pyqtgraph as pg
 
 
 def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot,label):
+    array_to_be_plotted=np.zeros((180,2))
     flipAngleArray=[]
     signalArray=[]
     magneticVector = np.array([0,0,1])
@@ -27,11 +28,11 @@ def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot,label):
                                  [0,exponentialOfT2AndTE,0],
                                  [0,0,exponentialOfT1AndTE]])
     recoveryExponential = np.array([0,0,1-exponentialOfT1AndTR])
-    for flipAngle in range (181): #for SSFP,
+    for flipAngle in range (180): #for SSFP,
 
         rotationAroundXMatrix = np.array([[1, 0, 0],
-                                          [0, np.cos(flipAngle), np.sin(flipAngle)],
-                                          [0, -np.sin(flipAngle), np.cos(flipAngle)]])
+                                          [0, np.cos(flipAngle*np.pi/180), np.sin(flipAngle*np.pi/180)],
+                                          [0, -np.sin(flipAngle*np.pi/180), np.cos(flipAngle*np.pi/180)]])
 #        rotationAroundNegativeXMatrix = np.array([[1, 0, 0],
 #                                                  [0, np.cos(f-lipAngle), np.sin(-flipAngle)],
 #                                                  [0, -np.sin(-flipAngle), np.cos(-flipAngle)]])
@@ -51,13 +52,19 @@ def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot,label):
         if signalArray[flipAngle]> maximumSignal:
              maximumSignal=signalArray[flipAngle]
              ErnstAngle=flipAngle
+
+
     #Plot signalArray vs flipAngle
-    n = 180
-    s1 = pg.ScatterPlotItem(size=10, pen=pg.mkPen(None), brush=pg.mkBrush(255, 255, 255, 120))
-    pos = np.random.normal(size=(2,n))
-    spots = [{'pos': pos[:,i], 'data': 1} for i in range(n)] + [{'pos': [0,0], 'data': 1}]
-    s1.addPoints(spots)
-    ernst_plot.addItem(s1)
+    vLine = pg.InfiniteLine(angle=90, movable=False)
+    hLine = pg.InfiniteLine(angle=0, movable=False)
+    array_to_be_plotted[:,0] = flipAngleArray
+    array_to_be_plotted[:,1] = signalArray
+    ernst_plot.plot(array_to_be_plotted, pen='r')
+    vLine.setPos(ErnstAngle)
+    hLine.setPos(signalArray[ErnstAngle])
+    ernst_plot.addItem(vLine,ignoreBounds=True)
+    ernst_plot.addItem(hLine,ignoreBounds=True)
+    label.setText("Ernst Angle "+str(ErnstAngle)+"∘")
 
 ## for GRE #choosing tissue from combobox from tab1 to take its T! and
 def DrawErnstAngleGRE(TR,TE,T1,T2,ernst_plot,label):
@@ -77,7 +84,7 @@ def DrawErnstAngleGRE(TR,TE,T1,T2,ernst_plot,label):
         ernst_plot.plot(array_to_be_plotted, pen='r')
         ernst_plot.addItem(vLine,ignoreBounds=True)
         ernst_plot.addItem(hLine,ignoreBounds=True)
-        label.setText("Ernst Angle: "+str(theta_range[max_recovery_index])+"  In Degrees")
+        label.setText("Ernst Angle "+str(theta_range[max_recovery_index])+"∘")
 
 
 
