@@ -5,13 +5,10 @@ Created on Wed Apr 24 09:11:30 2019
 @author: Gamila
 """
 import numpy as np
-import functionsForTask3
+#import functionsForTask3
 import pyqtgraph as pg
 
-#signal =0
-#maximumSignal=0
-#flipAngleArray=0
-#signalArray=0
+
 
 
 def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot,label):
@@ -23,7 +20,7 @@ def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot,label):
     exponentialOfT1AndTR = np.exp(-TR/T1)
     exponentialOfT1AndTE = np.exp(-TE/T1)
     exponentialOfT2AndTE = np.exp(-TE/T2)
-#    ErnstAngle = 0
+
     decayExponential = np.array([[exponentialOfT2AndTE,0,0],
                                  [0,exponentialOfT2AndTE,0],
                                  [0,0,exponentialOfT1AndTE]])
@@ -33,15 +30,13 @@ def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot,label):
         rotationAroundXMatrix = np.array([[1, 0, 0],
                                           [0, np.cos(flipAngle*np.pi/180), np.sin(flipAngle*np.pi/180)],
                                           [0, -np.sin(flipAngle*np.pi/180), np.cos(flipAngle*np.pi/180)]])
-#        rotationAroundNegativeXMatrix = np.array([[1, 0, 0],
-#                                                  [0, np.cos(f-lipAngle), np.sin(-flipAngle)],
-#                                                  [0, -np.sin(-flipAngle), np.cos(-flipAngle)]])
+#
 #
         flipAngleArray.append(flipAngle)
         for counter in range (10):
            magneticVector=np.matmul(rotationAroundXMatrix,magneticVector)
            magneticVector=np.matmul(decayExponential,magneticVector)
-           magneticVector=np.add(recoveryExponential,magneticVector)
+           magneticVector=np.add(magneticVector, recoveryExponential)
 
 
 
@@ -68,7 +63,7 @@ def DrawErnstAngleSSFP(phantomSize,TR,TE,T1,T2,ernst_plot,label):
 
 ## for GRE #choosing tissue from combobox from tab1 to take its T! and
 def DrawErnstAngleGRE(TR,TE,T1,T2,ernst_plot,label):
-#        signal[x][y][z]=np.sin(flipAngle)*(1-np.exp(-TR/T1))*np.exp(-TE/T2)/(1-np.cos(flipAngle)*np.exp(-TR/T1))            #using T2*=T2
+
 ## plot only signal[z] versus theta
         array_to_be_plotted=np.zeros((180,2))
         theta_range = np.arange(0,180,1)

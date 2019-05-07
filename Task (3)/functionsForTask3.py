@@ -8,14 +8,11 @@ import numpy as np
 
 
 def startUpCycle (magneticVector, phantomSize, flipAngle, exponentialOfT1AndTR, x):
-    x = x-1
-    if x<0:
+    for counter in range(x):
         for j in range(phantomSize):
             for k in range(phantomSize):
                 magneticVector[j][k][2] = np.cos(flipAngle) + 1 - exponentialOfT1AndTR[j][k]
-        startUpCycle (magneticVector, phantomSize, flipAngle, exponentialOfT1AndTR, x)
-    else:
-        return magneticVector
+    return magneticVector
 
 
 def multiplyingPD_ByMagneticVector (magneticVector, PD, phantomSize, flipAngle, exponentialOfT1AndTR):
