@@ -1056,6 +1056,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def generate_Kspace(self):
         if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag and self.preparation_value_entry_flag:
+            self.clearSequence()
             self.updateSequence()
             self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
             self.kSpaceThread.start()
@@ -1093,7 +1094,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.layout = pg.GraphicsLayout(border=(100,100,100))
         self.ui.graphicsView_3.setCentralItem(self.layout)
         self.layout.setContentsMargins(10, 10, 10, 10)
-        self.layout.addLabel("Graphical Representation", colspan=3)
+        self.layout.addLabel("Acquisition Sequence", colspan=3)
 
 
         self.layout.nextRow()
@@ -1108,15 +1109,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
         self.layout.nextRow()
-        self.layout.addLabel('Gx', angle=-90, rowspan=1)
-        self.gx_plot = self.layout.addPlot()
-        self.gx_plot.showGrid(x=True, y=True)
-
-
-        self.layout.nextRow()
         self.layout.addLabel('Gy', angle=-90, rowspan=1)
         self.gy_plot = self.layout.addPlot()
         self.gy_plot.showGrid(x=True, y=True)
+
+
+        self.layout.nextRow()
+        self.layout.addLabel('Gx', angle=-90, rowspan=1)
+        self.gx_plot = self.layout.addPlot()
+        self.gx_plot.showGrid(x=True, y=True)
 
 
         self.layout.nextRow()
@@ -1143,11 +1144,20 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.gx_plot.setXRange(0,self.tr)
         self.gy_plot.setXRange(0,self.tr)
         self.readout_plot.setXRange(0,self.tr)
-        gr.drawRF(self.rf_plot,self.tr,self.te)
-        gr.drawGZ(self.gz_plot,self.mode,self.tr,self.te)
-        gr.drawGX(self.gx_plot,self.mode,self.tr,self.te)
-        gr.drawGY(self.gy_plot,self.mode,self.tr,self.te)
-        gr.drawReadOut(self.readout_plot,self.mode,self.tr,self.te)
+        gr.drawRF(self.rf_plot,self.tr,self.te,self.GRE,self.SSFP,self.SE)
+        gr.drawGZ(self.gz_plot,self.mode,self.tr,self.te,self.GRE,self.SSFP,self.SE)
+        gr.drawGX(self.gx_plot,self.mode,self.tr,self.te,self.GRE,self.SSFP,self.SE)
+        gr.drawGY(self.gy_plot,self.mode,self.tr,self.te,self.GRE,self.SSFP,self.SE)
+        gr.drawReadOut(self.readout_plot,self.mode,self.tr,self.te,self.GRE,self.SSFP,self.SE)
+        gr.drawIndicators(self.rf_plot,self.gz_plot,self.gy_plot,self.gx_plot,self.readout_plot,self.tr,self.te)
+
+
+    def clearSequence(self):
+        self.rf_plot.clear()
+        self.gz_plot.clear()
+        self.gx_plot.clear()
+        self.gy_plot.clear()
+        self.readout_plot.clear()
 
 #        self.rf_plot.plot()
 #        self.gz_plot.plot()
