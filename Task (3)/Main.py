@@ -21,6 +21,7 @@ import threading
 import functionsForTask3
 import graphicalRepresentation as gr
 import ErnstAngle as ea
+import Artifacts
 
 
 
@@ -595,11 +596,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     @pyqtSlot()
     def artifact_selection(self):
-        current_artifact_string= self.ui.comboBox4.currentText()
+        current_artifact_string= self.ui.comboBox_4.currentText()
         if(current_artifact_string == "Artifact #1"):
+            Artifacts.NonUnifromSampling_kspace(self)
             self.ARTIFACT_1 = True
             self.ARTIFACT_2 = False
         elif (current_artifact_string == "Artifact #2"):
+            Artifacts.Aliasing_kspace(self)
             self.ARTIFACT_2 = True
             self.ARTIFACT_1 = False
         else:
