@@ -145,6 +145,12 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.mode = 1
 
         self.ui.ernst_comboBox.setEnabled(False)
+        
+        
+        #zoom related variables
+        self.zoom=0
+        self.drag_x=0
+        self.drag_y=0
 
 
 
@@ -516,7 +522,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
         return super(Label, self.ui.show_phantom_label).eventFilter(source, event)
-
+#
 
     @pyqtSlot()
     def on_size_change(self):
@@ -1167,6 +1173,108 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 #        self.gx_plot.plot()
 #        self.gy_plot.plot()
 #        self.readout_plot.plot()
+
+
+##########################################################################################################################################
+######################################################################################################################################
+    def keyPressEvent(self, event):
+
+        if event.key() == QtCore.Qt.Key_I:
+            self.zoom=self.zoom-1
+            print('here in')
+            
+        if event.key() == QtCore.Qt.Key_O:
+            self.zoom=self.zoom+1
+            
+        if event.key() == QtCore.Qt.Key_W:
+            self.drag_x=self.drag_x+1
+            
+        if event.key() == QtCore.Qt.Key_S:
+            self.drag_x=self.drag_x+1
+            
+        if event.key() == QtCore.Qt.Key_D:
+            self.drag_y=self.drag_y+1
+            
+        if event.key() == QtCore.Qt.Key_A:
+            self.drag_y=self.drag_y-1 
+
+        PropertyOfPhantom=self.ui.properties_comboBox.currentText()
+        if self.SHEPPLOGAN_FLAG==False:
+           #show phantom according to chosen property
+              if str(PropertyOfPhantom)== ("T1"):
+                  self.ZOOMED=self.T1_mapped [self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ] 
+                  self.phantom=qimage2ndarray.array2qimage(self.ZOOMED)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+
+              #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)
+              elif str(PropertyOfPhantom)== ("Proton Density"):
+                  self.phantom=qimage2ndarray.array2qimage(self.I_mapped)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              else:
+                  self.phantom=qimage2ndarray.array2qimage(self.T2_mapped)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+        else:
+              if str(PropertyOfPhantom)== ("T1"):
+                  self.phantom=qimage2ndarray.array2qimage(self.T1)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+
+              #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)
+              elif str(PropertyOfPhantom)== ("Proton Density"):
+                  self.phantom=qimage2ndarray.array2qimage(self.I)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              else:
+                  self.phantom=qimage2ndarray.array2qimage(self.T2)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+                  
+                  
+        selected_size=self.ui.comboBox.currentText()
+
+           #show phantom according to chosen property
+        if str(selected_size)== ("Default"):
+              self.ui.show_phantom_label.setGeometry(0,0,math.sqrt(self.size_of_matrix),math.sqrt(self.size_of_matrix))
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom)
+
+        elif str(selected_size)== ("32x32"):
+              self.ui.show_phantom_label.setGeometry(0,0,32,32)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(32,32,Qt.KeepAspectRatio,Qt.FastTransformation))
+
+        elif str(selected_size)== ("64x64"):
+              self.ui.show_phantom_label.setGeometry(0,0,64,64)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(64,64,Qt.KeepAspectRatio,Qt.FastTransformation))
+
+        elif str(selected_size)== ("128x128"):
+              self.ui.show_phantom_label.setGeometry(0,0,128,128)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(128,128,Qt.KeepAspectRatio,Qt.FastTransformation))
+
+        elif str(selected_size)== ("256x256"):
+              self.ui.show_phantom_label.setGeometry(0,0,256,256)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(256,256,Qt.KeepAspectRatio,Qt.FastTransformation))
+
+        elif str(selected_size)== ("512x512"):
+              self.ui.show_phantom_label.setGeometry(0,0,512,512)
+              self.ui.show_phantom_label.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+
+
+        self.ui.label_25.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+        self.ui.label_11.setPixmap(self.pixmap_of_phantom.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+            
+            
+
+
+
+
+
+
+
+
+
+
 
 
 ##########################################################################################################################################

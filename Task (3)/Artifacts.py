@@ -72,14 +72,14 @@ def NonUnifromSampling_kspace(self):
 
 
 
-                    for j in range(phantomSize):
-                        for k in range(phantomSize):
-                            if (k%2==0):
-                                alpha = gxStep*j + gyStep*(k-1)
-                            else:
-                                alpha= gxStep*j + gyStep*(k)
-                            magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
-                            self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+                        for j in range(phantomSize):
+                            for k in range(phantomSize):
+                                if (k%2==1):
+                                    alpha = gxStep*(j-1) + gyStep*(k-1)
+                                else:
+                                    alpha= gxStep*j + gyStep*(k)
+                                magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
+                                self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
                     self.phantomFinal = self.kSpace
                     self.kSpace1 = np.abs(self.kSpace)
                     self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
@@ -135,7 +135,7 @@ def NonUnifromSampling_kspace(self):
                         for j in range(phantomSize):
                             for k in range(phantomSize):
                               if(k%2==0):
-                                 alpha = gxStep*j + gyStep*(k-1)
+                                 alpha = gxStep*(j-1) + gyStep*(k-1)
                               else:
                                  alpha=gxStep*j+gyStep*k
 
@@ -310,11 +310,11 @@ def Aliasing_kspace(self):
 
 
 #                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, magneticVector, self.kSpace, kSpaceRowIndex, kSpaceColumnIndex)
-                    for j in range(phantomSize):
-                        for k in range(phantomSize):
-                                alpha= gxStep*(j+3)+ gyStep*(k+3)
-                                magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
-                                self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+                        for j in range(phantomSize):
+                            for k in range(phantomSize):
+                                    alpha= gxStep*(j+3)+ gyStep*(k)
+                                    magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
+                                    self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
                     self.phantomFinal = self.kSpace
                     self.kSpace1 = np.abs(self.kSpace)
                     self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
