@@ -10,6 +10,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
 
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -180,6 +181,7 @@ class Ui_MainWindow(object):
         self.label_9.setObjectName("label_9")
         self.verticalLayout_12.addWidget(self.splitter_2)
         self.graphicsView = PlotWidget(self.tab)
+        self.graphicsView.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
         self.graphicsView.setObjectName("graphicsView")
         self.verticalLayout_12.addWidget(self.graphicsView)
         self.horizontalLayout_7.addLayout(self.verticalLayout_12)
@@ -197,6 +199,7 @@ class Ui_MainWindow(object):
         self.label_10.setObjectName("label_10")
         self.verticalLayout_13.addWidget(self.splitter_3)
         self.graphicsView_2 = PlotWidget(self.tab)
+        self.graphicsView_2.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
         self.graphicsView_2.setObjectName("graphicsView_2")
         self.verticalLayout_13.addWidget(self.graphicsView_2)
         self.horizontalLayout_7.addLayout(self.verticalLayout_13)
@@ -219,6 +222,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.addWidget(self.ernst_comboBox)
         self.verticalLayout_2.addLayout(self.horizontalLayout_8)
         self.ernst_graphicView = PlotWidget(self.tab)
+        self.ernst_graphicView.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
         self.ernst_graphicView.setObjectName("ernst_graphicView")
         self.verticalLayout_2.addWidget(self.ernst_graphicView)
         self.verticalLayout_14.addLayout(self.verticalLayout_2)
@@ -348,6 +352,7 @@ class Ui_MainWindow(object):
         self.gridLayout_7 = QtWidgets.QGridLayout(self.tab_3)
         self.gridLayout_7.setObjectName("gridLayout_7")
         self.graphicsView_3 = pg.GraphicsView(self.tab_3)
+        self.graphicsView_3.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
         self.graphicsView_3.setObjectName("graphicsView_3")
         self.gridLayout_7.addWidget(self.graphicsView_3, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
@@ -437,7 +442,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):

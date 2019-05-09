@@ -6,13 +6,22 @@ Created on Thu May  2 18:17:42 2019
 @author: crow
 """
 
-    def NonUnifromSampling_kspace(self):
+from PyQt5.QtCore import Qt
+import numpy as np
+import qimage2ndarray
+import functionsForTask3
+from PyQt5.QtGui import QPixmap
 
 
-            self.ui.generate_button.setEnabled(False)
+
+
+
+def NonUnifromSampling_kspace(self):
+
+
             phantomSize = self.size_of_matrix_root
 
-#            self.sequenceChosen = 2             #Value coming from comboBox
+
 
             T1 = self.T1
             T2 = self.T2
@@ -37,31 +46,11 @@ Created on Thu May  2 18:17:42 2019
 
             functionsForTask3.lookUpForDecay(phantomSize,T1,T2,TE,TR,exponentialOfT1AndTR,exponentialOfT1AndTE,exponentialOfT2AndTE,decayMatrices)
 
-#            magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
-
-
-
-#            rotationAroundXMatrix = np.array([[1, 0, 0],
-#                                              [0, np.cos(flipAngle), np.sin(flipAngle)],
-#                                              [0, -np.sin(flipAngle), np.cos(flipAngle)]])
-
-
 
             self.kSpace = np.zeros((phantomSize, phantomSize), dtype=np.complex)
 
             magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
 
-#            if(self.INVERSTION_RECOVERY):
-#
-#                magneticVector = preparationSequences.inversionRecovery(magneticVector,phantomSize,T1,self.preparation_value,exponentialOfT1AndTR)
-#
-#            if(self.T2PREP):
-#
-#                magneticVector = preparationSequences.T2Prep(magneticVector, phantomSize, self.preparation_value, T2, T1)
-#
-#            if(self.TAGGING):
-#
-#                magneticVector = preparationSequences.Tagging(magneticVector, phantomSize, self.preparation_value)
 
 
             if(self.GRE):    #Value coming from comboBox indicating GRE
@@ -71,33 +60,18 @@ Created on Thu May  2 18:17:42 2019
 
 
                     magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle,magneticVector)
-#                        if T2[j][k]==0:
-#                            T2[j][k] = self.epsilon
-#                        if T1[j][k] == 0:
-#                            T1[j][k] = self.epsilon
 
-#                magneticVector[j][k] = np.array([0, 0, 1-np.exp(-TR/T1[j][k])])
-                        #magnetic Vector haysawy {0, 0, 1}
-#                        magneticVector[j][k] = np.matmul(rotationAroundXMatrix, magneticVector[j][k])
-                        #magnetic Vector haysawy {0, 1, 0}
 
                     magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
 
-#                        decayMatrix = np.array([[np.exp(-TE / T2[j][k]), 0, 0],
-#                                                [0, np.exp(-TE / T2[j][k]), 0],
-#                                                [0, 0, np.exp(-TE / T1[j][k])]])
-#
-#                        magneticVector[j][k] = np.matmul(decayMatrix, magneticVector[j][k])
-                        #magentic Vector {0, 0.5, 0}
 
-#                    gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
 
                     for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
                         gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
                         gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
 
 
-#                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, magneticVector, self.kSpace, kSpaceRowIndex, kSpaceColumnIndex)
+
                     for j in range(phantomSize):
                         for k in range(phantomSize):
                             if (k%2==0):
@@ -115,25 +89,8 @@ Created on Thu May  2 18:17:42 2019
                         self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
                     else: self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
 
-                # Spoiler
-
-#                    magneticVector[0:phantomSize][0:phantomSize][0] = 0
-#                    magneticVector[0:phantomSize][0:phantomSize][1] = 0
 
                     magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle)
-
-#                for j in range(phantomSize):
-#                    for k in range(phantomSize):
-#                        if T1[j][k] == 0:
-#                            magneticVector[j][k][2] = 1
-#                        else:
-#                            magneticVector[j][k][2] =  1 - np.exp(-TR / T1[j][k])
-
-
-#
- #           if(self.sequenceChosen == 2 ):      #Value coming from comboBox indicating GRE
-
-
 
 
 
@@ -183,7 +140,7 @@ Created on Thu May  2 18:17:42 2019
                                  alpha=gxStep*j+gyStep*k
 
                     magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
-                    kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+                    self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
 
                     self.phantomFinal = self.kSpace
                     self.kSpace1 = np.abs(self.kSpace)
@@ -211,18 +168,17 @@ Created on Thu May  2 18:17:42 2019
                     for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
                         gyStep = 0
                         gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
-#                        magneticVector = functionsForTask3.rotationInXYPlaneFunction(phantomSize, gxStep, gyStep, magneticVector)
-                            for j in range(phantomSize):
+                        for j in range(phantomSize):
                                    for k in range(phantomSize):
                                        if(k%2==0):
                                            rotateX = np.array([[np.cos(gxStep*j), np.sin(gxStep*j), 0],
                                                                [-np.sin(gxStep*j), np.cos(gxStep*j), 0],
                                                                [0, 0, 1]])
-                                           rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*(k-1), 0],
-                                                               [-np.sin(gyStep*k), np.cos(gyStep*(k-1), 0],
+                                           rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*(k-1)), 0],
+                                                               [-np.sin(gyStep*k), np.cos(gyStep*(k-1)), 0],
                                                                [0, 0, 1]])
-                                          magneticVector[j][k] = np.matmul(rotateX, magneticVector[j][k])
-                                          magneticVector[j][k] = np.matmul(rotateY, magneticVector[j][k])
+                                           magneticVector[j][k] = np.matmul(rotateX, magneticVector[j][k])
+                                           magneticVector[j][k] = np.matmul(rotateY, magneticVector[j][k])
                                        else:
                                            rotateX = np.array([[np.cos(gxStep*j), np.sin(gxStep*j), 0],
                                                                [-np.sin(gxStep*j), np.cos(gxStep*j), 0],
@@ -230,8 +186,8 @@ Created on Thu May  2 18:17:42 2019
                                            rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*k), 0],
                                                                [-np.sin(gyStep*k), np.cos(gyStep*k), 0],
                                                                [0, 0, 1]])
-                                          magneticVector[j][k] = np.matmul(rotateX, magneticVector[j][k])
-                                          magneticVector[j][k] = np.matmul(rotateY, magneticVector[j][k])
+                                           magneticVector[j][k] = np.matmul(rotateX, magneticVector[j][k])
+                                           magneticVector[j][k] = np.matmul(rotateY, magneticVector[j][k])
 
 
                     magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,np.pi,magneticVector)
@@ -249,20 +205,23 @@ Created on Thu May  2 18:17:42 2019
                     self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
                     pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
                     pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-                    self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+                    self.ui.label_18.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
                     magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, np.pi/2)
 
-
-
-            self.ui.convert_button.setEnabled(True)
+            phantomFinal= self.phantomFinal
+            phantomFinal = np.fft.fft2(self.kSpace)
+            phantomFinal = np.abs(phantomFinal)
+            phantomFinal = (phantomFinal-np.min(phantomFinal))*255/(np.max(phantomFinal)-np.min(phantomFinal))
+            phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
+            phantomFinal=QPixmap.fromImage(phantomFinal)
+            self.ui.label_19.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
 
 
 ##########################################################################################################################################
 ##########################################################################################################################################
-    def Aliasing_kspace(self):
+def Aliasing_kspace(self):
 
 
-            self.ui.generate_button.setEnabled(False)
             phantomSize = self.size_of_matrix_root
 
 #            self.sequenceChosen = 2             #Value coming from comboBox
@@ -354,8 +313,8 @@ Created on Thu May  2 18:17:42 2019
                     for j in range(phantomSize):
                         for k in range(phantomSize):
                                 alpha= gxStep*(j+3)+ gyStep*(k+3)
-                            magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
-                            self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+                                magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
+                                self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
                     self.phantomFinal = self.kSpace
                     self.kSpace1 = np.abs(self.kSpace)
                     self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
@@ -430,7 +389,7 @@ Created on Thu May  2 18:17:42 2019
                                  alpha = gxStep*(3*j) + gyStep*(3*k)
 
                     magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
-                    kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+                    self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
 
                     self.phantomFinal = self.kSpace
                     self.kSpace1 = np.abs(self.kSpace)
@@ -465,11 +424,11 @@ Created on Thu May  2 18:17:42 2019
                                            rotateX = np.array([[np.cos(gxStep*j), np.sin(gxStep*j*3), 0],
                                                                [-np.sin(gxStep*j), np.cos(gxStep*j*3), 0],
                                                                [0, 0, 1]])
-                                           rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*(k*3), 0],
-                                                               [-np.sin(gyStep*k), np.cos(gyStep*(k*3), 0],
+                                           rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*(k*3)), 0],
+                                                               [-np.sin(gyStep*k), np.cos(gyStep*(k*3)), 0],
                                                                [0, 0, 1]])
-                                          magneticVector[j][k] = np.matmul(rotateX, magneticVector[j][k])
-                                          magneticVector[j][k] = np.matmul(rotateY, magneticVector[j][k])
+                                           magneticVector[j][k] = np.matmul(rotateX, magneticVector[j][k])
+                                           magneticVector[j][k] = np.matmul(rotateY, magneticVector[j][k])
 
 
                     magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,np.pi,magneticVector)
@@ -490,9 +449,14 @@ Created on Thu May  2 18:17:42 2019
                     self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
                     magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, np.pi/2)
 
+            phantomFinal= self.phantomFinal
+            phantomFinal = np.fft.fft2(self.kSpace)
+            phantomFinal = np.abs(phantomFinal)
+            phantomFinal = (phantomFinal-np.min(phantomFinal))*255/(np.max(phantomFinal)-np.min(phantomFinal))
+            phantomFinal=qimage2ndarray.array2qimage(phantomFinal)
+            phantomFinal=QPixmap.fromImage(phantomFinal)
+            self.ui.label_19.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
 
-
-            self.ui.convert_button.setEnabled(True)
 
 
 ##########################################################################################################################################

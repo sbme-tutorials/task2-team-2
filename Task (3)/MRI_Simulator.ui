@@ -227,7 +227,7 @@
           <enum>QTabWidget::Rounded</enum>
          </property>
          <property name="currentIndex">
-          <number>3</number>
+          <number>0</number>
          </property>
          <property name="movable">
           <bool>true</bool>
@@ -364,7 +364,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QGraphicsView" name="graphicsView"/>
+                  <widget class="QGraphicsView" name="graphicsView">
+                   <property name="sizeAdjustPolicy">
+                    <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -394,7 +398,11 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QGraphicsView" name="graphicsView_2"/>
+                  <widget class="QGraphicsView" name="graphicsView_2">
+                   <property name="sizeAdjustPolicy">
+                    <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+                   </property>
+                  </widget>
                  </item>
                 </layout>
                </item>
@@ -446,7 +454,11 @@
                 </layout>
                </item>
                <item>
-                <widget class="QGraphicsView" name="ernst_graphicView"/>
+                <widget class="QGraphicsView" name="ernst_graphicView">
+                 <property name="sizeAdjustPolicy">
+                  <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
@@ -770,7 +782,11 @@
           </attribute>
           <layout class="QGridLayout" name="gridLayout_7">
            <item row="0" column="0">
-            <widget class="QGraphicsView" name="graphicsView_3"/>
+            <widget class="QGraphicsView" name="graphicsView_3">
+             <property name="sizeAdjustPolicy">
+              <enum>QAbstractScrollArea::AdjustToContentsOnFirstShow</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
