@@ -139,8 +139,8 @@ def NonUnifromSampling_kspace(self):
                               else:
                                  alpha=gxStep*j+gyStep*k
 
-                    magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
-                    self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+                        magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
+                        self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
 
                     self.phantomFinal = self.kSpace
                     self.kSpace1 = np.abs(self.kSpace)
@@ -361,7 +361,7 @@ def Aliasing_kspace(self):
                     for j in range(phantomSize):
                         for k in range(phantomSize):
 
-                            alpha = gxStep*j + gyStep*k
+                            alpha = gxStep*(j+3) + gyStep*k
                             magnitude = np.sqrt(phaseEncodingMagneticVector[j][k][0]*phaseEncodingMagneticVector[j][k][0] + phaseEncodingMagneticVector[j][k][1]*phaseEncodingMagneticVector[j][k][1])
                             self.kSpace[0][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
 
@@ -386,7 +386,7 @@ def Aliasing_kspace(self):
 #                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, phaseEncodingMagneticVector, self.kSpace, kSpaceRowIndex+1, kSpaceColumnIndex)
                         for j in range(phantomSize):
                             for k in range(phantomSize):
-                                 alpha = gxStep*(3*j) + gyStep*(3*k)
+                                 alpha = gxStep*(3+j) + gyStep*(k)
 
                     magnitude = np.sqrt(magneticVector[j][k][0]*magneticVector[j][k][0] + magneticVector[j][k][1]*magneticVector[j][k][1])
                     self.kSpace[kSpaceRowIndex][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
@@ -421,11 +421,11 @@ def Aliasing_kspace(self):
                         for j in range(phantomSize):
                                    for k in range(phantomSize):
 
-                                           rotateX = np.array([[np.cos(gxStep*j), np.sin(gxStep*j*3), 0],
-                                                               [-np.sin(gxStep*j), np.cos(gxStep*j*3), 0],
+                                           rotateX = np.array([[np.cos(gxStep*(j+3)), np.sin(gxStep*(j+3)), 0],
+                                                               [-np.sin(gxStep*j), np.cos(gxStep*(j+3)), 0],
                                                                [0, 0, 1]])
-                                           rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*(k*3)), 0],
-                                                               [-np.sin(gyStep*k), np.cos(gyStep*(k*3)), 0],
+                                           rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*(k)), 0],
+                                                               [-np.sin(gyStep*k), np.cos(gyStep*(k)), 0],
                                                                [0, 0, 1]])
                                            magneticVector[j][k] = np.matmul(rotateX, magneticVector[j][k])
                                            magneticVector[j][k] = np.matmul(rotateY, magneticVector[j][k])

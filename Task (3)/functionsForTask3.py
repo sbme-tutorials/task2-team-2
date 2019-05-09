@@ -7,18 +7,25 @@ Created on Fri Apr 19 12:12:25 2019
 import numpy as np
 
 
-def startUpCycle (magneticVector, phantomSize, flipAngle, exponentialOfT1AndTR, x):
+def startUpCycle (magneticVector, phantomSize, flipAngle, T1, TR, x):
+    rotationMatrix = np.array([[1,0,0],
+                               [0,np.cos(flipAngle),np.sin(flipAngle)],
+                               [0,-np.sin(flipAngle),np.cos(flipAngle)]])
     for counter in range(x):
         for j in range(phantomSize):
             for k in range(phantomSize):
-                magneticVector[j][k][2] = np.cos(flipAngle) + 1 - exponentialOfT1AndTR[j][k]
+                magneticVector[j][k] = np.matmul(rotationMatrix,magneticVector[j][k])
+                magneticVector[j][k] = np.array([0,0,np.cos(flipAngle) + 1 - np.exp(-TR/T1[j][k])])
     return magneticVector
+
+#############################################################################################
+#############################################################################################
 
 
 def multiplyingPD_ByMagneticVector (magneticVector, PD, phantomSize, flipAngle, exponentialOfT1AndTR):
     for j in range(phantomSize):
         for k in range(phantomSize):
-            magneticVector[j][k] = magneticVector[j][k]**PD[j][k]
+#            magneticVector[j][k] = magneticVector[j][k]**PD[j][k]
             magneticVector[j][k][0] = 0
             magneticVector[j][k][1] = 0
             magneticVector[j][k][2] = np.cos(flipAngle) + 1 - exponentialOfT1AndTR[j][k]
