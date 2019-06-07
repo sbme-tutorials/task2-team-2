@@ -129,6 +129,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.BLOOD = False
 
         self.__init__Sequence()
+        self.__init__Preparation()
 
         self.ui.tabWidget.setTabEnabled(1,False)
         self.ui.tabWidget.setTabEnabled(2,False)
@@ -145,6 +146,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.mode = 1
 
         self.ui.ernst_comboBox.setEnabled(False)
+        self.prep_type = 1
 
 
 
@@ -307,16 +309,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.T2PREP=False
             self.TAGGING=False
             self.ui.preparation_label.setText("Inversion Time (ms)")
+            self.prep_type = 1
         elif str(selected_preparation) == ("T2 Prep"):
             self.INVERSTION_RECOVERY=False
             self.T2PREP=True
             self.TAGGING=False
             self.ui.preparation_label.setText("Time between Flips (ms)")
+            self.prep_type = 2
         elif str(selected_preparation) == ("Tagging"):
             self.INVERSTION_RECOVERY=False
             self.T2PREP=False
             self.TAGGING=True
             self.ui.preparation_label.setText("Spacing between Sine waves")
+            self.prep_type = 3
         self.ui.preparation_lineEdit.setEnabled(True)
 
     ##########################################################################################################################################
@@ -372,6 +377,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         try:
             self.preparation_value=int(self.ui.preparation_lineEdit.text())
             self.preparation_value_entry_flag=True
+            self.clearPreparation()
+            self.updatePreparation()
             if self.tr_entry_flag==True and self.flipAngle_entry_flag==True and self.te_entry_flag==True :
                 self.ui.ernst_comboBox.setEnabled(True)
         except ValueError:
@@ -531,10 +538,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def on_sequence_change(self):
         self.getValueFromSequence_ComboBox()
+        self.clearSequence()
+        self.updateSequence()
 
     @pyqtSlot()
     def on_preparation_change(self):
         self.getValueFromPreparation_ComboBox()
+        self.clearPreparation()
+        self.updatePreparation()
 
     @pyqtSlot()
     def port_selection(self):
@@ -631,6 +642,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     @pyqtSlot()
     def on_lineEdit_change_preparation(self):
         self.getValueFromLine_edit_preparation()
+
+
 
     @pyqtSlot()
     def get_dumm_runs(self):
@@ -1061,6 +1074,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag and self.preparation_value_entry_flag:
             self.clearSequence()
             self.updateSequence()
+            self.updatePreparation()
             self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
             self.kSpaceThread.start()
         else:
@@ -1130,7 +1144,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
         self.layout.nextRow()
-        self.layout.addLabel("Time (ms) ", col=1, colspan=2)
+        self.layout.addLabel("Time (Semi-log) ", col=1, colspan=2)
 
         ## hide axes on some plots
         self.rf_plot.hideAxis('bottom')
@@ -1138,6 +1152,54 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.gx_plot.hideAxis('bottom')
         self.gy_plot.hideAxis('bottom')
         self.readout_plot.hideAxis('bottom')
+
+    def __init__Preparation(self):
+
+        self.layout = pg.GraphicsLayout(border=(100,100,100))
+        self.ui.preparation_gv.setCentralItem(self.layout)
+        self.layout.setContentsMargins(10, 10, 10, 10)
+        self.layout.addLabel("Preparation Sequence", colspan=3)
+
+
+        self.layout.nextRow()
+        self.layout.addLabel('RF', angle=-90, rowspan=1)
+        self.rf_preparation_plot = self.layout.addPlot()
+        self.rf_preparation_plot.showGrid(x=True, y=True)
+
+        self.layout.nextRow()
+        self.layout.addLabel('Gz', angle=-90, rowspan=1)
+        self.gz_preparation_plot = self.layout.addPlot()
+        self.gz_preparation_plot.showGrid(x=True, y=True)
+
+
+        self.layout.nextRow()
+        self.layout.addLabel('Gy', angle=-90, rowspan=1)
+        self.gy_preparation_plot = self.layout.addPlot()
+        self.gy_preparation_plot.showGrid(x=True, y=True)
+
+
+        self.layout.nextRow()
+        self.layout.addLabel('Gx', angle=-90, rowspan=1)
+        self.gx_preparation_plot = self.layout.addPlot()
+        self.gx_preparation_plot.showGrid(x=True, y=True)
+
+
+        self.layout.nextRow()
+        self.layout.addLabel('Readout', angle=-90, rowspan=1)
+        self.readout_preparation_plot = self.layout.addPlot()
+        self.readout_preparation_plot.showGrid(x=False, y=True)
+
+
+        self.layout.nextRow()
+        self.layout.addLabel("Time (Semi-log) ", col=1, colspan=2)
+
+        ## hide axes on some plots
+        self.rf_preparation_plot.hideAxis('bottom')
+        self.gz_preparation_plot.hideAxis('bottom')
+        self.gx_preparation_plot.hideAxis('bottom')
+        self.gy_preparation_plot.hideAxis('bottom')
+        self.readout_preparation_plot.hideAxis('bottom')
+
 
 ##########################################################################################################################################
 ##########################################################################################################################################
@@ -1152,7 +1214,15 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         gr.drawGX(self.gx_plot,self.mode,self.tr,self.te,self.GRE,self.SSFP,self.SE)
         gr.drawGY(self.gy_plot,self.mode,self.tr,self.te,self.GRE,self.SSFP,self.SE)
         gr.drawReadOut(self.readout_plot,self.mode,self.tr,self.te,self.GRE,self.SSFP,self.SE)
-        gr.drawIndicators(self.rf_plot,self.gz_plot,self.gy_plot,self.gx_plot,self.readout_plot,self.tr,self.te)
+        gr.drawIndicators(self.rf_plot,self.gz_plot,self.gy_plot,self.gx_plot,self.readout_plot,self.tr,self.te,self.flipAngle)
+
+    def updatePreparation(self):
+        self.rf_preparation_plot.setXRange(0,self.tr)
+        self.gz_preparation_plot.setXRange(0,self.tr)
+        self.gx_preparation_plot.setXRange(0,self.tr)
+        self.gy_preparation_plot.setXRange(0,self.tr)
+        self.readout_preparation_plot.setXRange(0,self.tr)
+        gr.drawPreparation(self.rf_preparation_plot,self.gz_preparation_plot, self.gx_preparation_plot, self.gy_preparation_plot, self.tr, self.prep_type, self.preparation_value)
 
 
     def clearSequence(self):
@@ -1161,6 +1231,14 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.gx_plot.clear()
         self.gy_plot.clear()
         self.readout_plot.clear()
+
+
+    def clearPreparation(self):
+        self.rf_preparation_plot.clear()
+        self.gz_preparation_plot.clear()
+        self.gx_preparation_plot.clear()
+        self.gy_preparation_plot.clear()
+        self.readout_preparation_plot.clear()
 
 #        self.rf_plot.plot()
 #        self.gz_plot.plot()

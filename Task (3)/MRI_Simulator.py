@@ -10,7 +10,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from pyqtgraph import PlotWidget
 import pyqtgraph as pg
 
-
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -232,7 +231,7 @@ class Ui_MainWindow(object):
         self.lineEdit = QtWidgets.QLineEdit(self.tab)
         self.lineEdit.setObjectName("lineEdit")
         self.verticalLayout_4.addWidget(self.lineEdit)
-        self.show_phantom_label = Label(self.centralwidget)
+        self.show_phantom_label = QtWidgets.QLabel(self.tab)
         self.show_phantom_label.setMinimumSize(QtCore.QSize(0, 0))
         self.show_phantom_label.setFrameShape(QtWidgets.QFrame.Panel)
         self.show_phantom_label.setFrameShadow(QtWidgets.QFrame.Raised)
@@ -351,10 +350,18 @@ class Ui_MainWindow(object):
         self.tab_3.setObjectName("tab_3")
         self.gridLayout_7 = QtWidgets.QGridLayout(self.tab_3)
         self.gridLayout_7.setObjectName("gridLayout_7")
+        self.horizontalLayout_12 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_12.setObjectName("horizontalLayout_12")
+        self.preparation_gv = pg.GraphicsView(self.tab_3)
+        self.preparation_gv.setMaximumSize(QtCore.QSize(310, 16777215))
+        self.preparation_gv.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
+        self.preparation_gv.setObjectName("preparation_gv")
+        self.horizontalLayout_12.addWidget(self.preparation_gv)
         self.graphicsView_3 = pg.GraphicsView(self.tab_3)
         self.graphicsView_3.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContentsOnFirstShow)
         self.graphicsView_3.setObjectName("graphicsView_3")
-        self.gridLayout_7.addWidget(self.graphicsView_3, 0, 0, 1, 1)
+        self.horizontalLayout_12.addWidget(self.graphicsView_3)
+        self.gridLayout_7.addLayout(self.horizontalLayout_12, 0, 0, 1, 1)
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_4 = QtWidgets.QWidget()
         self.tab_4.setObjectName("tab_4")
@@ -442,7 +449,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -523,3 +530,4 @@ class Label(QtWidgets.QLabel):
             for self.pixel in self.point:
                painter.setPen(QtGui.QPen(self.pixel[2]))
                painter.drawRect(self.pixel[0],self.pixel[1],4,4)
+

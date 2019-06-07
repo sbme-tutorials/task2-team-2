@@ -22,11 +22,11 @@ def drawRF(rf_plot,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FLAG):
         x = np.linspace(-6,6,math.floor(recoveryTime*0.15))
         equation = np.sin(2*x)/x
         data[0:equation.size,] = equation
-        data[(recoveryTime - math.ceil(recoveryTime*0.075))+1 : recoveryTime + math.ceil(recoveryTime*0.075), ] = equation
+        data[(recoveryTime - math.ceil(recoveryTime*0.075))+1 : (recoveryTime - math.ceil(recoveryTime*0.075))+1+equation.size, ] = equation
         rf = np.heaviside(flat_line,data)
         rf_plot.setXRange(0,recoveryTime)
         rf_plot.setYRange(-0.5,2)
-        rf_plot.plot(rf)
+        rf_plot.plot(rf/2)
 
     elif SSFP_FLAG:
         # flat_line is an array that's going to fill the whole x-axis of the plot (0:recoveryTime+recoveryTime*0.15)
@@ -51,7 +51,28 @@ def drawRF(rf_plot,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FLAG):
         rf = np.heaviside(flat_line,data)
         rf_plot.setXRange(0,recoveryTime)
         rf_plot.setYRange(-0.5,2)
-        rf_plot.plot(rf)
+        rf_plot.plot(rf/2)
+
+    elif SE_FLAG:
+        TE_centerline = (math.floor(recoveryTime*0.15)/2)+2*math.ceil(recoveryTime*0.15)
+        flat_line = np.full((recoveryTime+math.floor(recoveryTime*0.15),),-1)
+        data = np.zeros((recoveryTime+math.floor(recoveryTime*0.15),))
+        temp = np.full((2*math.ceil(recoveryTime*0.075),),0)
+        flat_line[0:math.ceil(temp.size/2),] = temp[0:math.ceil(temp.size/2)]
+        flat_line[recoveryTime - math.ceil(recoveryTime*0.075) : recoveryTime + math.ceil(recoveryTime*0.075), ] = temp
+        flat_line[math.ceil(TE_centerline/2 - recoveryTime*0.015)+1 : math.ceil(TE_centerline/2 - recoveryTime*0.015)+1+math.ceil(temp.size/2),] = temp[0:math.ceil(temp.size/2)]
+        x = np.linspace(-6,6,math.floor(recoveryTime*0.075))
+        equation = np.sin(2*x)/x
+        data[0:equation.size,] = equation
+        data[(recoveryTime - math.ceil(recoveryTime*0.075/2))+1 : recoveryTime + math.ceil(recoveryTime*0.075/2), ] = equation
+        x = np.linspace(-6,6,math.floor(recoveryTime*0.15/2))
+        equation = np.sin(2*x)/x
+        data[math.ceil(TE_centerline/2 - recoveryTime*0.015)+1 : math.ceil(TE_centerline/2 - recoveryTime*0.015)+1+equation.size,] = 2*equation
+        rf = np.heaviside(flat_line,data)
+        rf_plot.setXRange(0,recoveryTime)
+        rf_plot.setYRange(-0.5,2)
+        rf_plot.plot(rf/2)
+
 
 
 def drawGZ(gz_plot,mode,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FLAG):
@@ -74,6 +95,16 @@ def drawGZ(gz_plot,mode,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FLAG):
         gz_plot.setXRange(0,recoveryTime)
         gz_plot.setYRange(-1,1)
         gz_plot.plot(gz)
+    elif SE_FLAG:
+        flat_line = np.full((recoveryTime,),-1)
+        temp = np.full((math.floor(recoveryTime*0.15),),1)
+        flat_line[0:math.ceil(temp.size/2),] = temp[0:math.ceil(temp.size/2)]
+        TE_centerline = (math.floor(recoveryTime*0.15)/2)+2*math.ceil(recoveryTime*0.15)
+        flat_line[math.ceil(TE_centerline/2 - recoveryTime*0.015)+1 : math.ceil(TE_centerline/2 - recoveryTime*0.015)+1+math.floor(recoveryTime*0.15/2),] = temp[0:math.floor(recoveryTime*0.15/2)]
+        step = np.heaviside(flat_line,flat_line)
+        gz_plot.setXRange(0,recoveryTime)
+        gz_plot.setYRange(-1,1)
+        gz_plot.plot(step)
 
 
 
@@ -192,6 +223,17 @@ def drawGY(gy_plot,mode,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FLAG):
         arrow2.setPos(((((recoveryTime - math.ceil(recoveryTime*0.075)))-(((recoveryTime - math.ceil(recoveryTime*0.075))+1)- math.ceil(recoveryTime*0.15)))/2)+(((recoveryTime - math.ceil(recoveryTime*0.075))+1)- math.ceil(recoveryTime*0.15)),-1)
         gy_plot.addItem(arrow2)
 
+    elif SE_FLAG:
+        TE_centerline = (math.floor(recoveryTime*0.15)/2)+2*math.ceil(recoveryTime*0.15)
+        flat_line = np.full((recoveryTime,),-1)
+        temp = np.full((math.floor(recoveryTime*0.15),),1)
+        flat_line[math.ceil(temp.size/2):math.ceil(TE_centerline/2 - recoveryTime*0.015)+1,] = temp[0:math.ceil(TE_centerline/2 - recoveryTime*0.015)+1 - math.ceil(temp.size/2)]
+        step = np.heaviside(flat_line,flat_line)
+        gy_plot.setXRange(0,recoveryTime)
+        gy_plot.setYRange(-1,1)
+        gy_plot.plot(step)
+
+
 
 
 def drawGX(gx_plot,mode,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FLAG):
@@ -211,6 +253,14 @@ def drawGX(gx_plot,mode,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FLAG):
         temp = np.full((math.floor(recoveryTime*0.15),),0)
         flat_line[((recoveryTime - math.ceil(recoveryTime*0.075))+1)- math.ceil(recoveryTime*0.15) : (((recoveryTime - math.ceil(recoveryTime*0.075))+1)- math.ceil(recoveryTime*0.15))+temp.size,] = temp
         step = np.heaviside(flat_line,data)
+        gx_plot.setXRange(0,recoveryTime)
+        gx_plot.setYRange(-1,1)
+        gx_plot.plot(step)
+    if SE_FLAG:
+        flat_line = np.full((recoveryTime,),-1)
+        temp = np.full((1,math.floor(recoveryTime*0.15)),1)
+        flat_line[math.floor(2*recoveryTime*0.15):math.floor(2*recoveryTime*0.15)+temp.size,] = temp
+        step = np.heaviside(flat_line,flat_line)
         gx_plot.setXRange(0,recoveryTime)
         gx_plot.setYRange(-1,1)
         gx_plot.plot(step)
@@ -240,9 +290,22 @@ def drawReadOut(readout_plot,mode,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FL
         readout_plot.setXRange(0,recoveryTime)
         readout_plot.setYRange(-1,1)
         readout_plot.plot(step)
+    elif SE_FLAG:
+        x = np.linspace(0,360,math.floor(recoveryTime*0.15))
+        y = np.linspace(0,2,math.floor(recoveryTime*0.15))
+        attenuatedSine = np.sin(10*x*np.pi/180)*np.exp(-y)
+        data = np.zeros((recoveryTime,))
+        flat_line = np.full((recoveryTime,),-1)
+        temp = np.full((math.floor(recoveryTime*0.15),),0)
+        flat_line[2*math.ceil(recoveryTime*0.15):2*math.ceil(recoveryTime*0.15)+temp.size,] = temp
+        data[2*math.ceil(recoveryTime*0.15):2*math.ceil(recoveryTime*0.15)+attenuatedSine.size,] = attenuatedSine
+        step = np.heaviside(flat_line,data)
+        readout_plot.setXRange(0,recoveryTime)
+        readout_plot.setYRange(-1,1)
+        readout_plot.plot(step)
 
 
-def drawIndicators(rf_plot,gz_plot,gy_plot,gx_plot,readout_plot,recoveryTime,echoTime,):
+def drawIndicators(rf_plot,gz_plot,gy_plot,gx_plot,readout_plot,recoveryTime,echoTime,flipAngle):
     ## Drawing lines for TE and TR
     vLine1 = pg.InfiniteLine(angle=90, movable=False)
     vLine2 = pg.InfiniteLine(angle=90, movable=False)
@@ -286,8 +349,8 @@ def drawIndicators(rf_plot,gz_plot,gy_plot,gx_plot,readout_plot,recoveryTime,ech
     text8 = pg.TextItem(text="TR = " + str(recoveryTime), color= (0,200,0),anchor = (1,0), angle=0)
     text9 = pg.TextItem(text="TE = " + str(echoTime), color= (0,200,0),anchor = (1,0), angle=0)
     text10 = pg.TextItem(text="TR = " + str(recoveryTime), color= (0,200,0),anchor = (1,0), angle=0)
-    text11 = pg.TextItem(text="Alpha" , color= (0,200,0),anchor = (1,0), angle=0)
-    text12 = pg.TextItem(text="-Alpha" , color= (0,200,0),anchor = (1,0), angle=0)
+    text11 = pg.TextItem(text=str(flipAngle) , color= (0,200,0),anchor = (1,0), angle=0)
+    text12 = pg.TextItem(text=str(flipAngle) , color= (0,200,0),anchor = (1,0), angle=0)
     rf_plot.addItem(text1)
     rf_plot.addItem(text2)
     rf_plot.addItem(text11)
@@ -314,3 +377,74 @@ def drawIndicators(rf_plot,gz_plot,gy_plot,gx_plot,readout_plot,recoveryTime,ech
     text10.setPos(recoveryTime, 0.5)
     text11.setPos(math.floor(recoveryTime*0.15)/2,2.1)
     text12.setPos(recoveryTime, 2.1)
+
+def drawPreparation(rf_preparation_plot, gz_preparation_plot, gy_preparation_plot, gx_preparation_plot, recoveryTime, prep_type, prep_parameter):
+    if prep_type == 1:  ## Inversion Time
+        ## RF
+        flat_line = np.full((recoveryTime+math.floor(recoveryTime*0.15),),-1)
+        data = np.zeros((recoveryTime+math.floor(recoveryTime*0.15),))
+        temp = np.full((2*math.ceil(recoveryTime*0.075),),0)
+        flat_line[0:temp.size,] = temp
+        flat_line[recoveryTime - math.ceil(recoveryTime*0.075) : recoveryTime + math.ceil(recoveryTime*0.075), ] = temp
+        x = np.linspace(-6,6,math.floor(recoveryTime*0.15))
+        equation = np.sin(2*x)/x
+        data[0:equation.size,] = equation
+        rf = np.heaviside(flat_line,data)
+        rf_preparation_plot.setXRange(0,recoveryTime)
+        rf_preparation_plot.setYRange(2.5,-1*0.2)
+        rf_preparation_plot.plot(rf)
+        drawPreparationIndicators(rf_preparation_plot, gz_preparation_plot, gy_preparation_plot, gx_preparation_plot, recoveryTime, prep_type, prep_parameter)
+
+        ## Gz
+        flat_line = np.full((recoveryTime,),-1)
+        temp = np.full((math.floor(recoveryTime*0.15),),1)
+        flat_line[0:temp.size,] = temp
+        step = np.heaviside(flat_line,flat_line)
+        gz_preparation_plot.setXRange(0,recoveryTime)
+        gz_preparation_plot.setYRange(-1,1)
+        gz_preparation_plot.plot(step)
+
+    if prep_type == 2: ## T2 Prep
+        # Gx
+        x = np.linspace(0,360,math.floor(recoveryTime*0.15))
+        y = np.linspace(0,2,math.floor(recoveryTime*0.15))
+        attenuatedSine = np.sin(10*x*np.pi/180)*np.exp(-y)
+        data = np.zeros((recoveryTime,))
+        flat_line = np.full((recoveryTime,),-1)
+        temp = np.full((math.floor(recoveryTime*0.15),),0)
+        flat_line[2*math.ceil(recoveryTime*0.15):2*math.ceil(recoveryTime*0.15)+temp.size,] = temp
+        data[2*math.ceil(recoveryTime*0.15):2*math.ceil(recoveryTime*0.15)+attenuatedSine.size,] = attenuatedSine
+        step = np.heaviside(flat_line,data)
+        gx_preparation_plot.setXRange(0,recoveryTime)
+        gx_preparation_plot.setYRange(-1,1)
+        gx_preparation_plot.plot(step)
+
+        #Gy
+        gy_preparation_plot.setXRange(0,recoveryTime)
+        gy_preparation_plot.setYRange(-1,1)
+        gy_preparation_plot.plot(step)
+
+    if prep_type == 3: ## Tagging
+        # RF
+        flat_line = np.full((recoveryTime,),-1)
+        temp = np.full((math.floor(recoveryTime*0.15/10),),1)
+        flat_line[0:temp.size,] = temp
+        flat_line[temp.size+prep_parameter:2*temp.size+prep_parameter,] = temp
+        flat_line[2*temp.size+2*prep_parameter:3*temp.size+2*prep_parameter,] = temp
+        flat_line[3*temp.size+3*prep_parameter:4*temp.size+3*prep_parameter,] = temp
+        flat_line[4*temp.size+4*prep_parameter:5*temp.size+4*prep_parameter,] = temp
+        flat_line[5*temp.size+5*prep_parameter:6*temp.size+5*prep_parameter,] = temp
+        flat_line[6*temp.size+6*prep_parameter:7*temp.size+6*prep_parameter,] = temp
+        step = np.heaviside(flat_line,flat_line)
+        rf_preparation_plot.setXRange(0,recoveryTime)
+        rf_preparation_plot.setYRange(-1,1)
+        rf_preparation_plot.plot(step)
+
+
+def drawPreparationIndicators(rf_preparation_plot, gz_preparation_plot, gy_preparation_plot, gx_preparation_plot, recoveryTime, prep_type, prep_parameter):
+    text11 = pg.TextItem(text="180" , color= (0,200,0),anchor = (1,0), angle=0)
+    rf_preparation_plot.addItem(text11)
+    text11.setPos(math.floor(recoveryTime*0.15)/2,2)
+    text12 = pg.TextItem(text="Inversion Time= " + str(prep_parameter) + " ms" , color= (0,200,0),anchor = (1,0), angle=0)
+    rf_preparation_plot.addItem(text12)
+    text12.setPos(recoveryTime,1)
