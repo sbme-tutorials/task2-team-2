@@ -12,7 +12,7 @@ from PyQt5 import QtWidgets, QtCore
 from PIL import Image, ImageEnhance
 from PyQt5.QtGui import QPixmap, QMouseEvent
 from PyQt5.QtCore import Qt, pyqtSlot
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import QFileDialog,QMessageBox
 import numpy as np
 from MRI_Simulator import Ui_MainWindow,Label
 import qimage2ndarray
@@ -22,6 +22,7 @@ import functionsForTask3
 import graphicalRepresentation as gr
 import ErnstAngle as ea
 import Artifacts
+import preparationSequences
 
 
 
@@ -146,7 +147,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.mode = 1
 
         self.ui.ernst_comboBox.setEnabled(False)
+
         self.prep_type = 1
+
+
+
+        #zoom related variables
+        self.zoom=0
+        self.drag_x=0
+        self.drag_y=0
+
 
 
 
@@ -305,19 +315,19 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         selected_preparation = self.ui.comboBox_3.currentText()
 
         if str(selected_preparation) == ("Inversion Recovery"):
-            self.INVERSTION_RECOVERY=True
+            self.INVERSION_RECOVERY=True
             self.T2PREP=False
             self.TAGGING=False
             self.ui.preparation_label.setText("Inversion Time (ms)")
             self.prep_type = 1
         elif str(selected_preparation) == ("T2 Prep"):
-            self.INVERSTION_RECOVERY=False
+            self.INVERSION_RECOVERY=False
             self.T2PREP=True
             self.TAGGING=False
             self.ui.preparation_label.setText("Time between Flips (ms)")
             self.prep_type = 2
         elif str(selected_preparation) == ("Tagging"):
-            self.INVERSTION_RECOVERY=False
+            self.INVERSION_RECOVERY=False
             self.T2PREP=False
             self.TAGGING=True
             self.ui.preparation_label.setText("Spacing between Sine waves")
@@ -523,7 +533,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
         return super(Label, self.ui.show_phantom_label).eventFilter(source, event)
-
+#
 
     @pyqtSlot()
     def on_size_change(self):
@@ -877,21 +887,23 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
             magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
 
-#            if(self.INVERSTION_RECOVERY):
-#
-#                magneticVector = preparationSequences.inversionRecovery(magneticVector,phantomSize,T1,self.preparation_value,exponentialOfT1AndTR)
-#
-#            if(self.T2PREP):
-#
-#                magneticVector = preparationSequences.T2Prep(magneticVector, phantomSize, self.preparation_value, T2, T1)
-#
-#            if(self.TAGGING):
-#
-#                magneticVector = preparationSequences.Tagging(magneticVector, phantomSize, self.preparation_value)
+            if(self.INVERSION_RECOVERY):
+                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
+                magneticVector = preparationSequences.inversionRecovery(magneticVector,phantomSize,T1,self.preparation_value,exponentialOfT1AndTR)
+
+            if(self.T2PREP):
+                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
+
+                magneticVector = preparationSequences.T2Prep(magneticVector, phantomSize, self.preparation_value, T2, T1)
+
+            if(self.TAGGING):
+                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
+
+                magneticVector = preparationSequences.Tagging(magneticVector, phantomSize, self.preparation_value)
 
 
             if(self.GRE):    #Value coming from comboBox indicating GRE
-                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
+#                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
 
                 for kSpaceRowIndex in range(phantomSize):    # Row Index for kSpace
 
@@ -1022,26 +1034,22 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
             if(self.SE):      #Value coming from comboBox indicating SE
 
-                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
+                functionsForTask3.lookUpForDecay(phantomSize,T1,T2,TE/2,TR,exponentialOfT1AndTR,exponentialOfT1AndTE,exponentialOfT2AndTE,decayMatrices)
                 for kSpaceRowIndex in range(phantomSize):
 
                     magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,np.pi/2,magneticVector)
-                    functionsForTask3.lookUpForDecay(phantomSize,T1,T2,TE/2,TR,exponentialOfT1AndTR,exponentialOfT1AndTE,exponentialOfT2AndTE,decayMatrices)
 
                     magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
-
-
-                    for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
-                        gyStep = 0
-                        gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
-                        magneticVector = functionsForTask3.rotationInXYPlaneFunction(phantomSize, gxStep, gyStep, magneticVector)
-
-
+                    gxStep = 2 * np.pi / phantomSize * kSpaceRowIndex
+                    magneticVector = functionsForTask3.rotationInXYPlaneFunction(phantomSize, gxStep, 0, magneticVector)
                     magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,np.pi,magneticVector)
+
+
                     for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
-                        gxStep = 0
                         gyStep = 2 * np.pi / phantomSize * kSpaceColumnIndex
-                        magneticVector = functionsForTask3.rotationInXYPlaneFunction(phantomSize, gxStep, gyStep, magneticVector)
+                        magneticVector = functionsForTask3.rotationInXYPlaneFunction(phantomSize, 0, gyStep, magneticVector)
+
+
                         summationX = np.sum(magneticVector[:][:][0])
                         summationY = np.sum(magneticVector[:][:][1])
                         magnitude = np.complex(summationX,summationY)
@@ -1245,6 +1253,99 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 #        self.gx_plot.plot()
 #        self.gy_plot.plot()
 #        self.readout_plot.plot()
+
+
+##########################################################################################################################################
+######################################################################################################################################
+    def keyPressEvent(self, event):
+
+
+
+        if event.key() == QtCore.Qt.Key_O:
+            self.zoom=self.zoom-1
+            if self.zoom==0:
+              QMessageBox.question(self, 'Error', "No More ZoomOut allowed", QMessageBox.Ok)
+
+        if event.key() == QtCore.Qt.Key_I:
+            self.zoom=self.zoom+1
+            if self.size_of_matrix_root-self.zoom+self.drag_y ==self.size_of_matrix_root:
+              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
+
+
+        if event.key() == QtCore.Qt.Key_S:
+            self.drag_x=self.drag_x+1
+
+            if self.size_of_matrix_root-self.zoom+self.drag_x ==self.size_of_matrix_root:
+              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
+
+        if event.key() == QtCore.Qt.Key_W:
+            self.drag_x=self.drag_x-1
+
+            if self.zoom+self.drag_x== 0:
+              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
+
+        if event.key() == QtCore.Qt.Key_D:
+            self.drag_y=self.drag_y+1
+            if self.size_of_matrix_root-self.zoom+self.drag_y ==self.size_of_matrix_root:
+              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
+
+
+        if event.key() == QtCore.Qt.Key_A:
+            self.drag_y=self.drag_y-1
+            if self.zoom+self.drag_y== 0:
+              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
+
+        self.getValueFromProperties_ComboBox()
+        PropertyOfPhantom=self.ui.properties_comboBox.currentText()
+        if self.SHEPPLOGAN_FLAG==False:
+           #show phantom according to chosen property
+              if str(PropertyOfPhantom)== ("T1"):
+                  self.ZOOMED=self.T1_mapped [self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
+                  self.phantom=qimage2ndarray.array2qimage(self.ZOOMED)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+
+              #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)
+              elif str(PropertyOfPhantom)== ("Proton Density"):
+                  self.ZOOMED_I=self.I_mapped [self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
+
+                  self.phantom=qimage2ndarray.array2qimage(self.ZOOMED_I)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              else:
+                  self.ZOOMED_T2mapped=self.T2_mapped [self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
+
+                  self.phantom=qimage2ndarray.array2qimage(self.ZOOMED_T2)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+        else:
+              if str(PropertyOfPhantom)== ("T1"):
+                  self.ZOOMED=self.T1 [self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
+
+                  self.phantom=qimage2ndarray.array2qimage(self.ZOOMED)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+
+              #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)
+              elif str(PropertyOfPhantom)== ("Proton Density"):
+                  self.ZOOMED=self.I [self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
+                  self.phantom=qimage2ndarray.array2qimage(self.ZOOMED)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+              else:
+                  self.ZOOMED=self.T2 [self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
+                  self.phantom=qimage2ndarray.array2qimage(self.ZOOMED)
+                  self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
+                  self.getValueFromSize_ComboBox()
+
+
+
+
+
+
+
+
+
 
 
 ##########################################################################################################################################

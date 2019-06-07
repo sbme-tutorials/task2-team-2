@@ -14,7 +14,11 @@ def inversionRecovery(magneticVector,phantomSize,T1,InversionTime,exponentialOfT
         for k in range(phantomSize):
             exponentialOfT1AndInversionTime[j][k] = np.exp(-InversionTime/T1[j][k])
     magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,np.pi,magneticVector)
-    magneticVector = functionsForTask3.spoilerMatrix(phantomSize,magneticVector,exponentialOfT1AndInversionTime,np.pi)
+    for j in range(phantomSize):
+        for k in range(phantomSize):
+            magneticVector[j][k][0] = 0
+            magneticVector[j][k][1] = 0
+            magneticVector[j][k][2] = -1 + 2*exponentialOfT1AndInversionTime[j][k]
     return magneticVector
 
 

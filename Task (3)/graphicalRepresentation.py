@@ -22,7 +22,11 @@ def drawRF(rf_plot,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FLAG):
         x = np.linspace(-6,6,math.floor(recoveryTime*0.15))
         equation = np.sin(2*x)/x
         data[0:equation.size,] = equation
+
         data[(recoveryTime - math.ceil(recoveryTime*0.075))+1 : (recoveryTime - math.ceil(recoveryTime*0.075))+1+equation.size, ] = equation
+
+        data[(recoveryTime - math.ceil(recoveryTime*0.075))+1 : (recoveryTime - math.ceil(recoveryTime*0.075))+1 + equation.size , ] = equation
+
         rf = np.heaviside(flat_line,data)
         rf_plot.setXRange(0,recoveryTime)
         rf_plot.setYRange(-0.5,2)
@@ -47,7 +51,7 @@ def drawRF(rf_plot,recoveryTime,echoTime,GRE_FLAG,SSFP_FLAG,SE_FLAG):
         x = np.linspace(-6,6,math.floor(recoveryTime*0.15))
         equation = np.sin(2*x)/x
         data[0:equation.size,] = equation
-        data[(recoveryTime - math.ceil(recoveryTime*0.075))+1 : recoveryTime + math.ceil(recoveryTime*0.075), ] = equation
+        data[(recoveryTime - math.ceil(recoveryTime*0.075))+1 : (recoveryTime - math.ceil(recoveryTime*0.075))+1+equation.size , ] = equation
         rf = np.heaviside(flat_line,data)
         rf_plot.setXRange(0,recoveryTime)
         rf_plot.setYRange(-0.5,2)
