@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Mar 20 19:34:52 2019
-
 @author: crow
 """
 
@@ -10,8 +9,8 @@ import sys
 import math
 from PyQt5 import QtWidgets, QtCore
 from PIL import Image, ImageEnhance
-from PyQt5.QtGui import QPixmap, QMouseEvent
-from PyQt5.QtCore import Qt, pyqtSlot
+from PyQt5.QtGui import QPixmap, QMouseEvent, QFocusEvent
+from PyQt5.QtCore import Qt, pyqtSlot, QEvent
 from PyQt5.QtWidgets import QFileDialog,QMessageBox
 import numpy as np
 from MRI_Simulator import Ui_MainWindow,Label
@@ -139,7 +138,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.PHANTOM_OPENED = False
         self.ui.preparation_lineEdit.setEnabled(True)
         self.ui.preparation_label.setText("Inversion Time (ms)")
-
+        self.PropertyOfPhantom = "T1"
         self.current_port = 1
 
         self.numOfDumm = 0
@@ -156,6 +155,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.zoom=0
         self.drag_x=0
         self.drag_y=0
+        self.ui.show_phantom_label.setFocusPolicy(Qt.StrongFocus)
 
 
 
@@ -207,17 +207,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
     def getValueFromProperties_ComboBox(self):
 
-          PropertyOfPhantom=self.ui.properties_comboBox.currentText()
+          self.PropertyOfPhantom=self.ui.properties_comboBox.currentText()
 
           if self.SHEPPLOGAN_FLAG==False:
            #show phantom according to chosen property
-              if str(PropertyOfPhantom)== ("T1"):
+              if str(self.PropertyOfPhantom)== ("T1"):
                   self.phantom=qimage2ndarray.array2qimage(self.T1_mapped)
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
 
               #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)
-              elif str(PropertyOfPhantom)== ("Proton Density"):
+              elif str(self.PropertyOfPhantom)== ("Proton Density"):
                   self.phantom=qimage2ndarray.array2qimage(self.I_mapped)
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
@@ -226,13 +226,13 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
           else:
-              if str(PropertyOfPhantom)== ("T1"):
+              if str(self.PropertyOfPhantom)== ("T1"):
                   self.phantom=qimage2ndarray.array2qimage(self.T1)
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
 
               #self.ui.show_phantom_label.setPixmap(pixmap_of_phantom)
-              elif str(PropertyOfPhantom)== ("Proton Density"):
+              elif str(self.PropertyOfPhantom)== ("Proton Density"):
                   self.phantom=qimage2ndarray.array2qimage(self.I)
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
@@ -529,6 +529,9 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 self.ui.show_phantom_label.point.append([self.point5x*self.width_scale,self.point5y*self.height_scale,QtCore.Qt.magenta])
                 self.point5x = self.point5x*self.width_scale
                 self.point5y = self.point5y*self.height_scale
+
+           # elif event.type() == QEvent.KeyPress and source is self.ui.show_phantom_label and self.PHANTOM_OPENED:
+
             else: pass
 
 
@@ -1081,6 +1084,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def generate_Kspace(self):
         if self.tr_entry_flag and self.te_entry_flag and self.flipAngle_entry_flag and self.preparation_value_entry_flag:
             self.clearSequence()
+            self.clearPreparation()
             self.updateSequence()
             self.updatePreparation()
             self.kSpaceThread = threading.Thread(target=self.kSpace_generation,args=())
@@ -1261,42 +1265,39 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
 
+
         if event.key() == QtCore.Qt.Key_O:
-            self.zoom=self.zoom-1
-            if self.zoom==0:
-              QMessageBox.question(self, 'Error', "No More ZoomOut allowed", QMessageBox.Ok)
+            if self.zoom >= 1:
+              self.zoom=self.zoom-1
+            else: pass
 
         if event.key() == QtCore.Qt.Key_I:
-            self.zoom=self.zoom+1
-            if self.size_of_matrix_root-self.zoom+self.drag_y ==self.size_of_matrix_root:
-              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
-
+            if self.zoom <= 10:
+                self.zoom=self.zoom+1
+            else: pass
 
         if event.key() == QtCore.Qt.Key_S:
-            self.drag_x=self.drag_x+1
-
-            if self.size_of_matrix_root-self.zoom+self.drag_x ==self.size_of_matrix_root:
-              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
+            if self.size_of_matrix_root-self.zoom+self.drag_x < self.size_of_matrix_root:
+                self.drag_x=self.drag_x+1
+            else: pass
 
         if event.key() == QtCore.Qt.Key_W:
-            self.drag_x=self.drag_x-1
-
-            if self.zoom+self.drag_x== 0:
-              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
+            if self.zoom+self.drag_x > 0:
+              self.drag_x=self.drag_x-1
+            else: pass
 
         if event.key() == QtCore.Qt.Key_D:
-            self.drag_y=self.drag_y+1
-            if self.size_of_matrix_root-self.zoom+self.drag_y ==self.size_of_matrix_root:
-              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
-
+            if self.size_of_matrix_root-self.zoom+self.drag_y < self.size_of_matrix_root:
+              self.drag_y=self.drag_y+1
+            else: pass
 
         if event.key() == QtCore.Qt.Key_A:
-            self.drag_y=self.drag_y-1
-            if self.zoom+self.drag_y== 0:
-              QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
+            if self.zoom+self.drag_y > 0:
+                self.drag_y=self.drag_y-1
+            else:pass
 
-        self.getValueFromProperties_ComboBox()
         PropertyOfPhantom=self.ui.properties_comboBox.currentText()
+
         if self.SHEPPLOGAN_FLAG==False:
            #show phantom according to chosen property
               if str(PropertyOfPhantom)== ("T1"):
@@ -1315,7 +1316,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
               else:
                   self.ZOOMED_T2mapped=self.T2_mapped [self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
 
-                  self.phantom=qimage2ndarray.array2qimage(self.ZOOMED_T2)
+                  self.phantom=qimage2ndarray.array2qimage(self.ZOOMED_T2mapped)
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
         else:
