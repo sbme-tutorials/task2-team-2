@@ -510,8 +510,8 @@ class Ui_MainWindow(object):
         self.label_24.setText(_translate("MainWindow", "K-Space"))
         self.label_23.setText(_translate("MainWindow", "Re-constructed Image"))
         self.comboBox_4.setItemText(0, _translate("MainWindow", "No Artifacts"))
-        self.comboBox_4.setItemText(1, _translate("MainWindow", "Aliasing"))
-        self.comboBox_4.setItemText(2, _translate("MainWindow", "Non-Uniform Sampling"))
+        self.comboBox_4.setItemText(1, _translate("MainWindow", "Non-Uniform Sampling"))
+        self.comboBox_4.setItemText(2, _translate("MainWindow", "Aliasing"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "Artifacts"))
 
 class Label(QtWidgets.QLabel):

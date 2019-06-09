@@ -157,7 +157,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.drag_y=0
         self.ui.show_phantom_label.setFocusPolicy(Qt.StrongFocus)
         self.ui.label_11.setFocusPolicy(Qt.StrongFocus)
-        
+        self.ui.kspace_label.setFocusPolicy(Qt.StrongFocus)
+        self.ui.kspace_label2.setFocusPolicy(Qt.StrongFocus)
+        self.ui.inverseFourier_label.setFocusPolicy(Qt.StrongFocus)
+        self.ui.inverseFourier_label2.setFocusPolicy(Qt.StrongFocus)
+        self.ui.label_19.setFocusPolicy(Qt.StrongFocus)
 
 
 
@@ -624,11 +628,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
     def artifact_selection(self):
         current_artifact_string= self.ui.comboBox_4.currentText()
         if(current_artifact_string == "Aliasing"):
-            Artifacts.Aliasing_kspace(self)
+            Artifacts.NonUnifromSampling_kspace(self)
             self.ARTIFACT_1 = True
             self.ARTIFACT_2 = False
         elif (current_artifact_string == "Non-Uniform Sampling"):
-            Artifacts.NonUnifromSampling_kspace(self)
+            Artifacts.Aliasing_kspace(self)
             self.ARTIFACT_2 = True
             self.ARTIFACT_1 = False
         else:
@@ -1280,6 +1284,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             
         if event.key() == QtCore.Qt.Key_I:
             self.zoom=self.zoom+1
+            print(self.size_of_matrix_root+1-self.zoom*2)
            # if self.size_of_matrix_root-self.zoom+self.drag_y ==self.size_of_matrix_root:
             if self.size_of_matrix_root+1-self.zoom*2 == 2:
                 pass
@@ -1318,36 +1323,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             else:
                 self.drag_y=self.drag_y-1
 
-
-#        if event.key() == QtCore.Qt.Key_O:
-#            if self.zoom >= 1:
-#              self.zoom=self.zoom-1
-#            else: pass
-#
-#        if event.key() == QtCore.Qt.Key_I:
-#            if self.zoom <= 10:
-#                self.zoom=self.zoom+1
-#            else: pass
-#
-#        if event.key() == QtCore.Qt.Key_S:
-#            if self.size_of_matrix_root-self.zoom+self.drag_x < self.size_of_matrix_root:
-#                self.drag_x=self.drag_x+1
-#            else: pass
-#
-#        if event.key() == QtCore.Qt.Key_W:
-#            if self.zoom+self.drag_x > 0:
-#              self.drag_x=self.drag_x-1
-#            else: pass
-#
-#        if event.key() == QtCore.Qt.Key_D:
-#            if self.size_of_matrix_root-self.zoom+self.drag_y < self.size_of_matrix_root:
-#              self.drag_y=self.drag_y+1
-#            else: pass
-#
-#        if event.key() == QtCore.Qt.Key_A:
-#            if self.zoom+self.drag_y > 0:
-#                self.drag_y=self.drag_y-1
-#            else:pass
 
         PropertyOfPhantom=self.ui.properties_comboBox.currentText()
 
@@ -1391,12 +1366,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                   self.phantom=qimage2ndarray.array2qimage(self.ZOOMED)
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
+                
+                #zoom in ksoace
+            
+#              self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
         self.Kspace1zoomed=self.kSpace1[self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
         pixmap_of_kspace=qimage2ndarray.array2qimage(self.Kspace1zoomed)
         pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
         if (self.current_port == 1):
                   self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
                   self.ui.inverseFourier_label.setText(" ")
+                  print('inzoom')
         else:
                   self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
                   self.ui.inverseFourier_label2.setText(" ")
@@ -1414,12 +1394,21 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         else: self.ui.inverseFourier_label2.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
         #self.ui.convert_button.setEnabled(False)
         self.ui.label_19.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-
-
-
-
-
-
+        
+        #zoom in artifacts
+        current_artifact_string= self.ui.comboBox_4.currentText()
+        if(current_artifact_string == "Aliasing"):
+            Artifacts.Aliasing_kspace(self)
+            Artifacts.Aliasing_kspace.phantomFinal= Artifacts.Aliasing_kspace.self.phantomFinal
+            Artifacts.Aliasing_kspace.phantomFinal = np.fft.fft2(Artifacts.Aliasing_kspace.self.kSpace)
+            Artifacts.Aliasing_kspace.phantomFinal = np.abs(Artifacts.Aliasing_kspace.phantomFinal)
+            Artifacts.Aliasing_kspace.phantomFinal = (Artifacts.Aliasing_kspace.phantomFinal-np.min(phantomFinal))*255/(np.max(Artifacts.Aliasing_kspace.phantomFinal)-np.min(Artifacts.Aliasing_kspace.phantomFinal))
+            phantomFinalArtifact_zoomed=Artifacts.Aliasing_kspace.phantomFinal[self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
+            phantomFinalArtifact_zoomed=qimage2ndarray.array2qimage(phantomFinalArtifact_zoomed)
+            phantomFinalArtifact_zoomed=QPixmap.fromImage(phantomFinalArtifact_zoomed)
+            self.ui.label_19.setPixmap(phantomFinalArtifact_zoomed.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+        elif (current_artifact_string == "Non-Uniform Sampling"):
+            Artifacts.NonUnifromSampling_kspace(self)
 
 
 
