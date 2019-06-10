@@ -141,7 +141,7 @@ def spoilerMatrix (phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle)
             exp = np.array([[1,0,0],
                             [0,1,0],
                             [0,0,exponentialOfT1AndTR[j][k]]])
-            magneticVector[j][k] = np.matmul(exp,magneticVector[j][k]) + np.array([0,0,1-exponentialOfT1AndTR[j][k]])
+            magneticVector[j][k] = np.matmul(exp,magneticVector[j][k]) + np.array([0,0,np.cos(flipAngle) + 1-exponentialOfT1AndTR[j][k]])
 
     return magneticVector
 
@@ -181,8 +181,8 @@ def T2Prep(magneticVector, phantomSize, timeBetweenPulses, T2, T1):
     for j in range(phantomSize):
        for k in range(phantomSize):
            decayMatrix = np.array([[np.exp(-timeBetweenPulses/T2[j][k]),0,0],
-                                    [0,np.exp(-timeBetweenPulses/T2[j][k]),0],
-                                    [0,0,1]])
+                                   [0,np.exp(-timeBetweenPulses/T2[j][k]),0],
+                                   [0,0,np.exp(-timeBetweenPulses/T1[j][k])]])
            decayForT2Prep[j][k][:][:] = decayMatrix
     magneticVector = rotationAroundXFunction(phantomSize,np.pi/2,magneticVector)
     magneticVector = decayFunction(phantomSize,decayForT2Prep,magneticVector)
@@ -205,30 +205,4 @@ def Tagging2(magneticVector, phantomSize, spacingBetweenWaves):
     magneticVector[:][:][1] = 0
 
     return magneticVector
-
-
-
-
-
-
-
-
-
-
-
-
-
-def gradientXY(matrix, stepY, stepX):
-    shape = np.shape(matrix)
-    rows = shape[0]
-    cols = shape[1]
-    newMatrix = np.zeros(shape)
-    for i in range(0, rows):
-        for j in range(0, cols):
-            angle = stepY * j + stepX * i
-            angle = (angle) * (np.pi / 180)
-            newMatrix[i, j] = np.matmul(np.array([[np.cos(angle), -1 * np.sin(angle), 0],
-                                                  [np.sin(angle), np.cos(angle), 0],
-                                                  [0, 0, 1]]), matrix[i, j])
-    return newMatrix
 

@@ -888,29 +888,31 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 
             self.kSpace = np.full((phantomSize, phantomSize), np.finfo(np.float32).eps, dtype=np.complex)
-#            magneticVector = functionsForTask3.startUpCycle2 (magneticVector, phantomSize, flipAngle, T1, TR, decayMatrices, exponentialOfT1AndTR, int(self.numOfDumm))
-
-#            magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
-
-            if(self.INVERSION_RECOVERY):
-#                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
-                magneticVector = functionsForTask3.inversionRecovery(magneticVector,phantomSize,T1,self.preparation_value)
-
-            if(self.T2PREP):
-#                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
-
-                magneticVector = functionsForTask3.T2Prep(magneticVector, phantomSize, self.preparation_value, T2, T1)
-
-            if(self.TAGGING):
-#                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
-
-                magneticVector = functionsForTask3.Tagging(magneticVector, phantomSize, self.preparation_value)
             magneticVector = functionsForTask3.startUpCycle2 (magneticVector, phantomSize, flipAngle, T1, TR, decayMatrices, exponentialOfT1AndTR, int(self.numOfDumm))
+
+
+#            if(self.INVERSION_RECOVERY):
+#                magneticVector = functionsForTask3.inversionRecovery(magneticVector,phantomSize,T1,self.preparation_value)
+#
+#            if(self.T2PREP):
+#                magneticVector = functionsForTask3.T2Prep(magneticVector, phantomSize, self.preparation_value, T2, T1)
+#
+#            if(self.TAGGING):
+#                magneticVector = functionsForTask3.Tagging(magneticVector, phantomSize, self.preparation_value)
 
             if(self.GRE):    #Value coming from comboBox indicating GRE
 #                magneticVector = functionsForTask3.multiplyingPD_ByMagneticVector(magneticVector,self.I,phantomSize,flipAngle,exponentialOfT1AndTR)
 
                 for kSpaceRowIndex in range(phantomSize):    # Row Index for kSpace
+
+                    if(self.INVERSION_RECOVERY):
+                        magneticVector = functionsForTask3.inversionRecovery(magneticVector,phantomSize,T1,self.preparation_value)
+        
+                    if(self.T2PREP):
+                        magneticVector = functionsForTask3.T2Prep(magneticVector, phantomSize, self.preparation_value, T2, T1)
+        
+                    if(self.TAGGING):
+                        magneticVector = functionsForTask3.Tagging(magneticVector, phantomSize, self.preparation_value)
 
 
                     magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle,magneticVector)
@@ -985,42 +987,58 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
 #                magneticVector = functionsForTask3.startUpCycle (magneticVector, phantomSize, flipAngle, exponentialOfT1AndTR, self.numOfDumm)
 
+#                if(self.INVERSION_RECOVERY):
+#                    magneticVector = functionsForTask3.inversionRecovery(magneticVector,phantomSize,T1,self.preparation_value)
+#    
+#                if(self.T2PREP):
+#                    magneticVector = functionsForTask3.T2Prep(magneticVector, phantomSize, self.preparation_value, T2, T1)
+#    
+#                if(self.TAGGING):
+#                    magneticVector = functionsForTask3.Tagging(magneticVector, phantomSize, self.preparation_value)
+#
+#                magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle/2,magneticVector)
+#                magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
+#                phaseEncodingMagneticVector = magneticVector
+#                for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
+#                    gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
+#                    gxStep = 2 * np.pi / phantomSize * 0
+#                    for j in range(phantomSize):
+#                        for k in range(phantomSize):
+#
+#                            alpha = gxStep*j + gyStep*k
+#                            magnitude = np.sqrt(phaseEncodingMagneticVector[j][k][0]*phaseEncodingMagneticVector[j][k][0] + phaseEncodingMagneticVector[j][k][1]*phaseEncodingMagneticVector[j][k][1])
+#                            self.kSpace[0][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
+#
+#                self.phantomFinal = self.kSpace
+#                self.kSpace1 = np.abs(self.kSpace)
+#                self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
+#                pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
+#                pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
+#                if (self.current_port == 1):
+#                        self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+#                        self.ui.inverseFourier_label.setText(" ")
+#                else:
+#                        self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
+#                        self.ui.inverseFourier_label2.setText(" ")
+#                magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle/2)
 
-                magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,flipAngle/2,magneticVector)
-                magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
-                phaseEncodingMagneticVector = magneticVector
-                for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
-                    gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
-                    gxStep = 2 * np.pi / phantomSize * 0
-                    for j in range(phantomSize):
-                        for k in range(phantomSize):
+                for kSpaceRowIndex in range(phantomSize):
+                    if(self.INVERSION_RECOVERY):
+                        magneticVector = functionsForTask3.inversionRecovery(magneticVector,phantomSize,T1,self.preparation_value)
+        
+                    if(self.T2PREP):
+                        magneticVector = functionsForTask3.T2Prep(magneticVector, phantomSize, self.preparation_value, T2, T1)
+        
+                    if(self.TAGGING):
+                        magneticVector = functionsForTask3.Tagging(magneticVector, phantomSize, self.preparation_value)
 
-                            alpha = gxStep*j + gyStep*k
-                            magnitude = np.sqrt(phaseEncodingMagneticVector[j][k][0]*phaseEncodingMagneticVector[j][k][0] + phaseEncodingMagneticVector[j][k][1]*phaseEncodingMagneticVector[j][k][1])
-                            self.kSpace[0][kSpaceColumnIndex] += np.exp(np.complex(0, alpha))*magnitude
-
-                self.phantomFinal = self.kSpace
-                self.kSpace1 = np.abs(self.kSpace)
-                self.kSpace1 = (self.kSpace1-np.min(self.kSpace1))*255/(np.max(self.kSpace1)-np.min(self.kSpace1))
-                pixmap_of_kspace=qimage2ndarray.array2qimage(self.kSpace1)
-                pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
-                if (self.current_port == 1):
-                        self.ui.kspace_label.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-                        self.ui.inverseFourier_label.setText(" ")
-                else:
-                        self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-                        self.ui.inverseFourier_label2.setText(" ")
-                magneticVector = functionsForTask3.spoilerMatrix(phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle/2)
-
-                for kSpaceRowIndex in range(phantomSize-1):
-
-                    magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,((-1)**kSpaceRowIndex)*flipAngle/2,magneticVector)
+                    magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,((-1)**(kSpaceRowIndex))*flipAngle/2,magneticVector)
                     magneticVector = functionsForTask3.decayFunction(phantomSize,decayMatrices,magneticVector)
                     phaseEncodingMagneticVector = magneticVector
                     for kSpaceColumnIndex in range(phantomSize):        # Column Index for kSpace
                         gyStep = 2*np.pi / phantomSize * kSpaceColumnIndex
-                        gxStep = 2 * np.pi / phantomSize * (kSpaceRowIndex+1)
-                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, phaseEncodingMagneticVector, self.kSpace, kSpaceRowIndex+1, kSpaceColumnIndex)
+                        gxStep = 2 * np.pi / phantomSize * (kSpaceRowIndex)
+                        functionsForTask3.gradientMultiplicationFunction(phantomSize,gxStep,gyStep, phaseEncodingMagneticVector, self.kSpace, kSpaceRowIndex, kSpaceColumnIndex)
 
                     self.phantomFinal = self.kSpace
                     self.kSpace1 = np.abs(self.kSpace)
