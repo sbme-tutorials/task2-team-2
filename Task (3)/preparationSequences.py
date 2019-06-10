@@ -8,17 +8,14 @@ Created on Wed Apr 24 00:07:52 2019
 import numpy as np
 import functionsForTask3
 
-def inversionRecovery(magneticVector,phantomSize,T1,InversionTime,exponentialOfT1AndTR):
-    exponentialOfT1AndInversionTime = np.zeros((phantomSize,phantomSize))
-    for j in range(phantomSize):
-        for k in range(phantomSize):
-            exponentialOfT1AndInversionTime[j][k] = np.exp(-InversionTime/T1[j][k])
+def inversionRecovery(magneticVector,phantomSize,T1,InversionTime):
+#    exponentialOfT1AndInversionTime = np.zeros((phantomSize,phantomSize))
     magneticVector = functionsForTask3.rotationAroundXFunction(phantomSize,np.pi,magneticVector)
     for j in range(phantomSize):
         for k in range(phantomSize):
-            magneticVector[j][k][0] = 0
-            magneticVector[j][k][1] = 0
-            magneticVector[j][k][2] = -1 + 2*exponentialOfT1AndInversionTime[j][k]
+#            exponentialOfT1AndInversionTime[j][k] = np.exp(-InversionTime/T1[j][k])
+#            magneticVector[j][k][2] = -1 + 2*exponentialOfT1AndInversionTime[j][k]
+            magneticVector[j][k][2] = 1 - 2*np.exp(-InversionTime/T1[j][k])
     return magneticVector
 
 
@@ -38,7 +35,7 @@ def T2Prep(magneticVector, phantomSize, timeBetweenPulses, T2, T1):
 
 def Tagging(magneticVector, phantomSize, spacingBetweenWaves):
     for j in range(phantomSize):
-        if j%spacingBetweenWaves == 0:
+        if (j%spacingBetweenWaves) == 0:
             for k in range(phantomSize):
                 magneticVector[j][k][2] *= np.sin(2*np.pi/phantomSize*k)
     return magneticVector
