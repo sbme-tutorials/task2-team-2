@@ -7,15 +7,16 @@ Created on Fri Apr 19 12:12:25 2019
 import numpy as np
 
 
-def startUpCycle (magneticVector, phantomSize, flipAngle, T1, TR, x):
-    rotationMatrix = np.array([[1,0,0],
-                               [0,np.cos(flipAngle),np.sin(flipAngle)],
-                               [0,-np.sin(flipAngle),np.cos(flipAngle)]])
+def startUpCycle (magneticVector, phantomSize, flipAngle, T1, TR, decayMatrices, x):
+
     for counter in range(x):
+        magneticVector = rotationAroundXFunction(phantomSize, flipAngle, magneticVector)
+        magneticVector = decayFunction(phantomSize,decayMatrices,magneticVector)
+        magneticVector = rotationAroundXFunction(phantomSize, -1*flipAngle, magneticVector)
+
         for j in range(phantomSize):
             for k in range(phantomSize):
-                magneticVector[j][k] = np.matmul(rotationMatrix,magneticVector[j][k])
-                magneticVector[j][k] = np.array([0,0,np.cos(flipAngle) + 1 - np.exp(-TR/T1[j][k])])
+                magneticVector[j][k] = magneticVector[j][k] + np.array([0,0,np.cos(flipAngle) + magneticVector[j][k][2] - np.exp(-TR/T1[j][k])])
     return magneticVector
 
 #############################################################################################
@@ -48,20 +49,19 @@ def rotationAroundXFunction(phantomSize, flipAngle, magneticVector):
 #############################################################################################
 #############################################################################################
 
-def rotationInXYPlaneFunction(phantomSize, gxStep, gyStep, magneticVector):
-    for j in range(phantomSize):
-        for k in range(phantomSize):
-            rotateX = np.array([[np.cos(gxStep*j), np.sin(gxStep*j), 0],
-                                [-np.sin(gxStep*j), np.cos(gxStep*j), 0],
-                                [0, 0, 1]])
-            rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*k), 0],
-                                [-np.sin(gyStep*k), np.cos(gyStep*k), 0],
-                                [0, 0, 1]])
-            magneticVector[j][k] = np.matmul(rotateX, magneticVector[j][k])
-            magneticVector[j][k] = np.matmul(rotateY, magneticVector[j][k])
+def rotationInXYPlaneFunction(phantomSize, gxStep, gyStep, magneticVector, j, k):
+    
+        rotateX = np.array([[np.cos(gxStep*j), np.sin(gxStep*j), 0],
+                            [-np.sin(gxStep*j), np.cos(gxStep*j), 0],
+                            [0, 0, 1]])
+        rotateY = np.array([[np.cos(gyStep*k), np.sin(gyStep*k), 0],
+                            [-np.sin(gyStep*k), np.cos(gyStep*k), 0],
+                            [0, 0, 1]])
+        magneticVector = np.matmul(rotateX, magneticVector)
+        magneticVector = np.matmul(rotateY, magneticVector)
 
 
-    return magneticVector
+        return magneticVector
 
 #############################################################################################
 #############################################################################################
@@ -116,9 +116,46 @@ def spoilerMatrix (phantomSize, magneticVector, exponentialOfT1AndTR, flipAngle)
         for k in range(phantomSize):
             magneticVector[j][k][0] = 0
             magneticVector[j][k][1] = 0
-            magneticVector[j][k][2] =  np.cos(flipAngle) + 1 - exponentialOfT1AndTR[j][k]
+            magneticVector[j][k][2] =  np.cos(flipAngle) + magneticVector[j][k][2] - exponentialOfT1AndTR[j][k]
 
     return magneticVector
 
 
+#############################################################################################
+############################## Preparation Sequences ########################################
+#############################################################################################
+
+
+
+def inversionRecovery(magneticVector,phantomSize,T1,InversionTime):
+#    exponentialOfT1AndInversionTime = np.zeros((phantomSize,phantomSize))
+    magneticVector = rotationAroundXFunction(phantomSize,np.pi,magneticVector)
+    for j in range(phantomSize):
+        for k in range(phantomSize):
+#            exponentialOfT1AndInversionTime[j][k] = np.exp(-InversionTime/T1[j][k])
+#            magneticVector[j][k][2] = -1 + 2*exponentialOfT1AndInversionTime[j][k]
+            magneticVector[j][k][2] = 1 - 2*np.exp(-InversionTime/T1[j][k])
+    return magneticVector
+
+
+def T2Prep(magneticVector, phantomSize, timeBetweenPulses, T2, T1):
+    decayForT2Prep = np.zeros((phantomSize,phantomSize,3,3))
+    for j in range(phantomSize):
+       for k in range(phantomSize):
+           decayMatrix = np.array([[np.exp(-timeBetweenPulses/T2[j][k]),0,0],
+                                    [0,np.exp(-timeBetweenPulses/T2[j][k]),0],
+                                    [0,0,np.exp(-timeBetweenPulses/T1[j][k])]])
+           decayForT2Prep[j][k][:][:] = decayMatrix
+    magneticVector = rotationAroundXFunction(phantomSize,np.pi/2,magneticVector)
+    magneticVector = decayFunction(phantomSize,decayForT2Prep,magneticVector)
+    magneticVector = rotationAroundXFunction(phantomSize,-np.pi/2,magneticVector)
+    return magneticVector
+
+
+def Tagging(magneticVector, phantomSize, spacingBetweenWaves):
+    for j in range(phantomSize):
+        if (j%spacingBetweenWaves) == 0:
+            for k in range(phantomSize):
+                magneticVector[j][k][2] *= np.sin(2*np.pi/phantomSize*k)
+    return magneticVector
 
