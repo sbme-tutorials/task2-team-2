@@ -156,7 +156,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         self.drag_y=0
         self.ui.show_phantom_label.setFocusPolicy(Qt.StrongFocus)
         self.ui.label_11.setFocusPolicy(Qt.StrongFocus)
-        
+
 
 
 
@@ -489,9 +489,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 
             self.ui.label.setText("Matrix Index  "+"("+str(self.ui.pixel_clicked_x)+","+str(self.ui.pixel_clicked_y)+")")
             self.ui.label_2.setText("Pixel Coordinates  "+"("+str(self.mouse_pos.x())+","+str(self.mouse_pos.y())+")")
-
-
-
             # Plotting
             self.plot()
 
@@ -679,7 +676,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
             self.ui.show_phantom_label.point.append([self.mouse_pos.x(),self.mouse_pos.y(),QtCore.Qt.red])
             self.point1x = self.mouse_pos.x()
             self.point1y = self.mouse_pos.y()
-
 
         elif self.clicks_counter == 1:
             red=0
@@ -1315,12 +1311,17 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                 self.drag_x=0
                 self.drag_y=0
                 self.zoom=self.zoom-1
-                
+                self.getZoomed()
+
             else:
               self.zoom=self.zoom-1
-            
+              self.getZoomed()
+
+
         if event.key() == QtCore.Qt.Key_I:
             self.zoom=self.zoom+1
+            self.getZoomed()
+
            # if self.size_of_matrix_root-self.zoom+self.drag_y ==self.size_of_matrix_root:
             if self.size_of_matrix_root+1-self.zoom*2 == 2:
                 pass
@@ -1328,14 +1329,16 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 #            else:
 #              self.zoom=self.zoom+1
 
-            
+
         if event.key() == QtCore.Qt.Key_S:
             if self.size_of_matrix_root-self.zoom+self.drag_x ==self.size_of_matrix_root:
              # QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
                  pass
             else:
                 self.drag_x=self.drag_x+1
-            
+                self.getZoomed()
+
+
         if event.key() == QtCore.Qt.Key_W:
 
             if self.zoom+self.drag_x== 0:
@@ -1343,21 +1346,27 @@ class ApplicationWindow(QtWidgets.QMainWindow):
              # QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
             else:
               self.drag_x=self.drag_x-1
-            
+              self.getZoomed()
+
+
         if event.key() == QtCore.Qt.Key_D:
-            
+
             if self.size_of_matrix_root-self.zoom+self.drag_y ==self.size_of_matrix_root:
              # QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
                pass
             else:
               self.drag_y=self.drag_y+1
+              self.getZoomed()
+
 
         if event.key() == QtCore.Qt.Key_A:
             if self.zoom+self.drag_y== 0:
              # QMessageBox.question(self, 'Error', "No More Drag is allowed", QMessageBox.Ok)
-                 pass 
+                 pass
             else:
                 self.drag_y=self.drag_y-1
+                self.getZoomed()
+
 
 
 #        if event.key() == QtCore.Qt.Key_O:
@@ -1390,6 +1399,11 @@ class ApplicationWindow(QtWidgets.QMainWindow):
 #                self.drag_y=self.drag_y-1
 #            else:pass
 
+
+
+
+
+    def getZoomed(self):
         PropertyOfPhantom=self.ui.properties_comboBox.currentText()
 
         if self.SHEPPLOGAN_FLAG==False:
@@ -1432,6 +1446,8 @@ class ApplicationWindow(QtWidgets.QMainWindow):
                   self.phantom=qimage2ndarray.array2qimage(self.ZOOMED)
                   self.pixmap_of_phantom=QPixmap.fromImage(self.phantom)
                   self.getValueFromSize_ComboBox()
+
+
         self.Kspace1zoomed=self.kSpace1[self.zoom+self.drag_x:self.size_of_matrix_root-self.zoom+self.drag_x,self.zoom+self.drag_y:self.size_of_matrix_root-self.zoom+self.drag_y  ]
         pixmap_of_kspace=qimage2ndarray.array2qimage(self.Kspace1zoomed)
         pixmap_of_kspace=QPixmap.fromImage(pixmap_of_kspace)
@@ -1441,7 +1457,7 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         else:
                   self.ui.kspace_label2.setPixmap(pixmap_of_kspace.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
                   self.ui.inverseFourier_label2.setText(" ")
-                  
+
                   #zoom in inverse fourier
         phantomFinal= self.phantomFinal
         phantomFinal = np.fft.fft2(self.kSpace)
@@ -1455,10 +1471,6 @@ class ApplicationWindow(QtWidgets.QMainWindow):
         else: self.ui.inverseFourier_label2.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
         #self.ui.convert_button.setEnabled(False)
         self.ui.label_19.setPixmap(phantomFinal.scaled(512,512,Qt.KeepAspectRatio,Qt.FastTransformation))
-
-
-
-
 
 
 
